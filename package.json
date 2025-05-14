@@ -14,7 +14,13 @@
 		"plugin-zip": "wp-scripts plugin-zip",
 		"start": "wp-scripts start --webpack-copy-php --blocks-manifest"
 	},
+	"files": [
+		"[^.]*"
+	],
 	"devDependencies": {
 		"@wordpress/scripts": "^30.16.0"
+	},
+	"dependencies": {
+		"@wordpress/interactivity": "^6.23.0"
 	}
 }

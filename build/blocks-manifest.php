@@ -14,16 +14,16 @@ return array(
 			
 		),
 		'supports' => array(
-			'html' => false
+			'interactivity' => true
 		),
 		'textdomain' => 'cuicpro-leagues',
 		'editorScript' => 'file:./index.js',
 		'editorStyle' => 'file:./index.css',
 		'style' => 'file:./style-index.css',
 		'render' => 'file:./render.php',
-		'viewScript' => 'file:./view.js'
+		'viewScriptModule' => 'file:./view.js'
 	),
-	'cuipro-teams' => array(
+	'cuicpro-teams' => array(
 		'$schema' => 'https://schemas.wp.org/trunk/block.json',
 		'apiVersion' => 3,
 		'name' => 'cuicpro/cuicpro-teams',
@@ -36,7 +36,7 @@ return array(
 			
 		),
 		'supports' => array(
-			'html' => false
+			'interactivity' => true
 		),
 		'textdomain' => 'cuicpro-teams',
 		'editorScript' => 'file:./index.js',

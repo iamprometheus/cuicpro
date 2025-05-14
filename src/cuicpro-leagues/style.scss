@@ -5,8 +5,23 @@
  * Replace them with your own styles or remove the file completely.
  */
 
-.wp-block-cuicpro-cuicpro-block {
-	background-color: #21759b;
-	color: #fff;
-	padding: 2px;
+.wp-block-cuicpro-cuicpro-leagues {
+	font-size: 1em;
+	background: #ffff001a;
+	padding: 1em;
+
+	&.dark-theme {
+		background: #333;
+		color: #fff;
+
+		button {
+			background: #5d04d0;
+			color: #fff;
+			border: 1px solid #777;
+		}
+
+		p {
+			color: #ddd;
+		}
+	}
 }

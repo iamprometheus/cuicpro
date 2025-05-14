@@ -9,7 +9,7 @@
 	"description": "Cuicpro Teams Block",
 	"example": {},
 	"supports": {
-		"html": false
+		"interactivity": true
 	},
 	"textdomain": "cuicpro-teams",
 	"editorScript": "file:./index.js",

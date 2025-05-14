@@ -12,8 +12,8 @@ Class LeaguesDatabase {
         
         $charset_collate = $wpdb->get_charset_collate();
         $sql = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}cuicpro_leagues (
-            league_id tinyint(2) UNSIGNED NOT NULL AUTO_INCREMENT,
-            league_name varchar(255) NOT NULL,
+            league_id SMALLINT(2) UNSIGNED NOT NULL AUTO_INCREMENT,
+            league_name VARCHAR(255) NOT NULL,
             PRIMARY KEY (league_id)
         ) $charset_collate;";
         require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );

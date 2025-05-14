@@ -13,9 +13,9 @@ Class TeamsDatabase {
         
         $charset_collate = $wpdb->get_charset_collate();
         $sql = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}cuicpro_teams (
-            team_id tinyint(2) UNSIGNED NOT NULL AUTO_INCREMENT,
-            team_name varchar(255) NOT NULL,
-            league_id tinyint(2) UNSIGNED NOT NULL,
+            team_id SMALLINT(2) UNSIGNED NOT NULL AUTO_INCREMENT,
+            team_name VARCHAR(255) NOT NULL,
+            league_id SMALLINT(2) UNSIGNED NOT NULL,
             PRIMARY KEY (team_id)
         ) $charset_collate;";
         require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
