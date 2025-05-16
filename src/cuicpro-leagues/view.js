@@ -19,9 +19,6 @@ const { state } = store("cuicpro", {
 		},
 	},
 	callbacks: {
-		logIsOpen: () => {
-			const { isOpen } = getContext();
-			// Log the value of `isOpen` each time it changes.
-		},
+		logIsOpen: () => {},
 	},
 });

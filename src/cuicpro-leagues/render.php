@@ -15,22 +15,46 @@ $unique_id = wp_unique_id( 'p-' );
 
 // Adds the global state.
 wp_interactivity_state(
-	'cuicpro',
-	array(
-		'isDark'    => false,
-		'darkText'  => esc_html__( 'Switch to Light', 'cuicpro' ),
-		'lightText' => esc_html__( 'Switch to Dark', 'cuicpro' ),
-		'themeText'	=> esc_html__( 'Switch to Dark', 'cuicpro' ),
-	)
+	'cuicpro'
 );
 
-function render_leagues($unique_id) {
-	global $wpdb;
-	$leagues = $wpdb->get_results("SELECT * FROM wp_cuicpro_leagues");
+if (!function_exists('render_leagues')) {
+	function render_leagues() {
+			global $wpdb;
+			$leagues = $wpdb->get_results("SELECT * FROM wp_cuicpro_leagues");
 
-	foreach ($leagues as $league) {
-		$league_name = $league->league_name;
-		echo "<p id='".esc_attr($unique_id)."' >".$league_name."</p>";
+			foreach ($leagues as $league) {
+					$league_name = $league->league_name;
+					$league_id = $league->league_id;
+					echo "<div class='league-wrapper' data-wp-on--click='actions.toggleOpen' 
+													".wp_interactivity_data_wp_context(array('isOpen' => false))."
+											>
+											<p>".$league_name."</p>
+											<div class='teams-wrapper' data-wp-bind--hidden='!context.isOpen'>"
+													.render_teams($league_id)
+											."</div>"
+									."</div>";
+			}
+	}
+}
+
+if (!function_exists('render_teams')) {
+	function render_teams($league_id) {
+		global $wpdb;
+		$teams = $wpdb->get_results($wpdb->prepare("SELECT * FROM wp_cuicpro_teams WHERE league_id = %d", $league_id));
+
+		$tddata = "";
+
+		foreach ($teams as $team) {
+			$team_name = $team->team_name;
+			$tddata.="<div class='team-wrapper'>"
+								."<img src='http://test.local/india/' width='50' height='50' />"
+							."<p>"
+								.$team_name
+							."</p>"
+							."</div>";
+		}
+		return $tddata;
 	}
 }
 ?>
@@ -39,28 +63,11 @@ function render_leagues($unique_id) {
 <div
 	<?php echo get_block_wrapper_attributes(); ?>
 	data-wp-interactive="cuicpro"
-	<?php echo wp_interactivity_data_wp_context( array( 'isOpen' => false ) ); ?>
-	data-wp-watch="callbacks.logIsOpen"
-	data-wp-class--dark-theme="state.isDark"
 >
-	<button
-		data-wp-on--click="actions.toggleTheme"
-		data-wp-text="state.themeText"
-	></button>
-
-	<button
-		data-wp-on--click="actions.toggleOpen"
-		data-wp-bind--aria-expanded="context.isOpen"
-		aria-controls="<?php echo esc_attr( $unique_id ); ?>"
-	>
-		<?php esc_html_e( 'Toggle', 'cuicpro' ); ?>
-	</button>
-	<div
-		id="<?php echo esc_attr( $unique_id ); ?>"
-		data-wp-bind--hidden="!context.isOpen"
+	<div class="leagues-wrapper"
 	>
 		<?php
-		render_leagues($unique_id);
+			render_leagues();
 		?>
 	</div>
 	

@@ -1,0 +1,42 @@
+.coaches-wrapper {
+	display: flex;
+	flex-direction: column;
+}
+
+.coaches-header {
+	display: flex;
+	margin-top: 10px;
+}
+
+.coach-wrapper {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	height: 40px;
+}
+
+.coach-cell {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid #ccc;
+	width: 80px;
+	height: 40px;
+	margin: 0px;
+}
+
+.coach-input-cell {
+	display: flex;
+	width: 80px;
+	height: 40px;
+	border: 1px solid #ccc;
+	justify-content: center;
+	align-items: center;
+}
+
+.coach-input-cell input {
+	justify-content: center;
+	align-items: center;
+	width: inherit;
+	height: 20px;
+}
