@@ -8,39 +8,46 @@
 .wp-block-cuicpro-cuicpro-leagues {
 	font-size: 1em;
 
-	.leagues-wrapper {
+	.divisions-container {
 		display: flex;
 		flex-direction: column;
 		gap: 1em;
 	}
 
-	.league-wrapper {
+	.division-container {
 		background-color: #a8e0fa;
 		border-radius: 10px;
 		border: 1px solid #a8e0fa;
 		box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 	}
 
-	.league-wrapper:hover {
+	.division-container:hover {
 		background-color: #3dc2ff;
 	}
 
-	.league-wrapper p {
+	.division-container p {
 		display: flex;
 		justify-content: center;
 		font-weight: bold;
 	}
 
-	.teams-wrapper {
+	.teams-container {
 		border-radius: 10px;
 		display: flex;
 		flex-direction: row;
+		flex-wrap: wrap;
 		background-color: #fff;
-		gap: 1em;
 		padding: 1em;
+		justify-content: space-around;
 	}
 
-	.teams-wrapper[hidden] {
+	.teams-container[hidden] {
 		display: none;
+	}
+
+	.team-container {
+		display: inherit;
+		flex-direction: column;
+		align-items: center;
 	}
 }

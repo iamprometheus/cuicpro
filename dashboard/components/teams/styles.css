@@ -1,0 +1,131 @@
+.teams-view-container {
+	display: flex;
+	gap: 30px;
+}
+
+.teams-view {
+	display: flex;
+	flex-direction: column;
+	overflow: auto;
+	gap: 30px;
+}
+
+.teams-wrapper {
+	display: flex;
+	flex-direction: column;
+	overflow: auto;
+	padding: 0 20px 20px 0;
+}
+
+.teams-header {
+	display: flex;
+	margin-top: 10px;
+	width: max-content;
+}
+
+.team-wrapper {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	height: 60px;
+	width: max-content;
+}
+
+.team-cell-header {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid #ccc;
+	width: 80px;
+	height: 40px;
+	margin: 0px;
+}
+
+.team-cell {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid #ccc;
+	width: 80px;
+	margin: 0px;
+	height: 100%;
+}
+
+.team-cell select {
+	width: 80px;
+}
+
+.team-cell img {
+	width: 40px;
+	height: 40px;
+}
+
+.team-input-table {
+	display: flex;
+	flex-direction: column;
+}
+
+.team-input-row {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	height: max-content;
+	width: max-content;
+}
+
+.team-input-cell-header {
+	display: flex;
+	flex-direction: column;
+	width: 80px;
+	height: 70px;
+	border: 1px solid #ccc;
+	align-items: center;
+	justify-content: center;
+}
+
+.team-input-cell {
+	display: flex;
+	width: 150px;
+	height: 70px;
+	border: 1px solid #ccc;
+	justify-content: center;
+	align-items: center;
+}
+
+.team-input-cell input {
+	justify-content: center;
+	align-items: center;
+	width: inherit;
+	height: 20px;
+}
+
+.team-input-cell-header-result {
+	display: flex;
+	flex-direction: column;
+	width: 80px;
+	height: 70px;
+	border: 1px solid #ccc;
+	justify-content: center;
+	align-items: center;
+}
+
+.team-input-cell-result {
+	display: flex;
+	flex-direction: column;
+	width: 150px;
+	height: 70px;
+	border: 1px solid #ccc;
+	justify-content: center;
+	text-align: center;
+	align-items: center;
+}
+
+.success {
+	background-color: green;
+}
+
+.error {
+	background-color: red;
+}

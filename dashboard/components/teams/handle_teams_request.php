@@ -1,0 +1,247 @@
+<?php
+
+function on_add_team($team) {
+  $team->team_mode = $team->team_mode === "1" ? "Varonil" : ($team->team_mode === "2" ? "Femenino" : "Mixto");
+  $team->team_category = $team->team_category === "1" ? "5v5" : "7v7";
+  $html = "";
+  $logo = str_replace(" ", "-", $team->logo);
+  $html .= "<div class='team-wrapper' id='team-$team->team_id'>";
+  $html .= "<span class='team-cell'>" . esc_html($team->team_name) . "</span>";
+  $html .= "<span class='team-cell'>" . esc_html($team->division_name) . "</span>";
+  $html .= "<span class='team-cell'>" . esc_html($team->team_category) . "</span>";
+  $html .= "<span class='team-cell'>" . esc_html($team->team_mode) . "</span>";
+  $html .= "<div class='team-cell'>
+              <img src='http://test.local/$logo'>
+            </div>";
+  $html .= "<div class='team-cell'>
+              <button id='delete-team-button-tv' data-team-id=$team->team_id>Eliminar</button>
+            </div>";
+  $html .= "</div>";
+  return $html;
+}
+
+function fetch_division_data() {
+  if (!isset($_POST['division_id'])) {
+    wp_send_json_error(['message' => 'No se pudo obtener los equipos']);
+  }
+  $division_id = intval($_POST['division_id']);
+  $teams = TeamsDatabase::get_teams_by_division($division_id);
+
+  // create table header
+  $html = "<div class='teams-wrapper'>
+            <div class='teams-header'>
+              <span class='team-cell'>Equipo: </span>
+              <span class='team-cell'>Entrenador: </span>
+              <span class='team-cell'>Logo: </span>
+            </div>
+            ";
+
+  // add team data to table
+  foreach ($teams as $team) {
+    $coach_name = CoachesDatabase::get_coach_by_id($team->coach_id)->coach_name;
+    $logo = str_replace(" ", "-", $team->logo);
+    $html .= "<div class='team-wrapper' id='team-$team->team_id'>";
+    $html .= "<span class='team-cell'>" . esc_html($team->team_name) . "</span>";
+    $html .= "<span class='team-cell'>" . esc_html($coach_name) . "</span>";
+    $html .= "<div class='team-cell'>
+                <img src='http://test.local/$logo'>
+              </div>";
+    $html .= "</div>";
+  }
+
+  wp_send_json_success(['html' => $html]);
+}
+
+function create_team_entry($team) {
+  $html = "";
+  $logo = str_replace(" ", "-", $team->logo);
+
+  $team->team_category = $team->team_category === "1" ? "Varonil" : ($team->team_category === "2" ? "Femenil" : "Mixto");
+  $team->team_mode = $team->team_mode === "1" ? "5v5" : "7v7";
+
+  $html .= "<div class='team-wrapper' id='team-$team->team_id'>";
+  $html .= "<span class='team-cell'>" . esc_html($team->team_name) . "</span>";
+  $html .= "<div class='team-cell'>
+            <select id='team-division-dropdown' data-team-id=$team->team_id onchange='updateTeamDivision($team->team_id)'>
+              " . create_divisions_dropdown($team->division_id) . "
+            </select>
+            </div>";
+  $html .= "<span class='team-cell'>" . esc_html($team->team_mode) . "</span>";
+  $html .= "<span class='team-cell'>" . esc_html($team->team_category) . "</span>";
+  $html .= "<div class='team-cell'>
+              <img src='http://test.local/$logo'>
+            </div>";
+  $html .= "<div class='team-cell'>
+              <button id='edit-team-button' data-team-id=$team->team_id>Editar</button>
+              <button id='delete-team-button' data-team-id=$team->team_id>Eliminar</button>
+            </div>";
+  $html .= "</div>";
+
+  return $html;
+}
+
+function create_coach_data($coach_id) {
+  $teams = TeamsDatabase::get_teams_by_coach($coach_id);
+
+  // create table header
+  $html = "<div class='teams-wrapper'>
+            <div class='teams-header'>
+              <span class='team-cell-header'>Equipo: </span>
+              <span class='team-cell-header'>Division: </span>
+              <span class='team-cell-header'>Categoria: </span>
+              <span class='team-cell-header'>Modalidad: </span>
+              <span class='team-cell-header'>Logo: </span>
+              <span class='team-cell-header'>Acciones: </span>
+            </div>
+            ";
+
+          
+  // add team data to table
+  foreach ($teams as $team) {
+    $html .= create_team_entry($team);
+  }
+
+  return $html;
+}
+
+function fetch_coach_data() {
+  if (!isset($_POST['coach_id'])) {
+    wp_send_json_error(['message' => 'No se pudo obtener los equipos']);
+  }
+  $coach_id = intval($_POST['coach_id']);
+  
+  $html = create_coach_data($coach_id);
+
+  wp_send_json_success(['html' => $html]);
+}
+
+function edit_team() {
+  if (!isset($_POST['team_id'])) {
+    wp_send_json_error(['message' => 'No se pudo obtener el equipo']);
+  }
+
+  $team_id = intval($_POST['team_id']);
+
+  $team = TeamsDatabase::get_team_by_id($team_id);
+    wp_send_json_success(['message' => 'Editando equipo.', 'team' =>$team, 'dropdown' => create_divisions_dropdown($team->division_id)]);
+}
+
+function delete_team() {
+  if (!isset($_POST['team_id'])) {
+    wp_send_json_error(['message' => 'No se pudo eliminar el equipo']);
+  }
+  $team_id = intval($_POST['team_id']);
+  TeamsDatabase::delete_team($team_id);
+  wp_send_json_success(['message' => 'Equipo eliminado correctamente']);
+}
+
+function update_team() {
+  if (!isset($_POST['team_id']) || !isset($_POST['division_id']) || !isset($_POST['team_name']) || !isset($_POST['team_category']) || !isset($_POST['team_mode']) || !isset($_POST['coach_id']) || !isset($_POST['logo'])) {
+    wp_send_json_error(['message' => 'Faltan datos']);
+  }
+
+  $team_id = intval($_POST['team_id']);
+  $team_name = sanitize_text_field($_POST['team_name']);
+  $coach_id = intval($_POST['coach_id']);
+  $division_id = intval($_POST['division_id']);
+  if ($division_id == 0) {
+    $division_id = null;
+  }
+  $team_category = intval($_POST['team_category']);
+  $team_mode = intval($_POST['team_mode']);
+  $logo = sanitize_text_field($_POST['logo']);
+  $visible = true;
+
+  $result = TeamsDatabase::update_team($team_id, $team_name, $division_id, $team_category, $team_mode, $coach_id, $logo, $visible);
+  if ($result) {
+    $team = TeamsDatabase::get_team_by_id($team_id);
+    wp_send_json_success(['message' => 'Equipo actualizado correctamente', 'coachData' => create_coach_data($team->coach_id), 'coachID' => $team->coach_id]);
+  }
+  wp_send_json_error(['message' => 'Equipo no actualizado, equipo ya existe']);
+}
+
+function update_team_division() {
+  if (!isset($_POST['team_id']) || !isset($_POST['division_id'])) {
+    wp_send_json_error(['message' => 'Faltan datos']);
+  }
+
+  $team_id = intval($_POST['team_id']);
+  $division_id = intval($_POST['division_id']);
+
+  if ($division_id == 0) {
+    $division_id = null;
+  }
+
+  $team = TeamsDatabase::get_team_by_id($team_id);
+  $team->division_id = $division_id;
+  $team->team_category = intval($team->team_category);
+  $team->team_mode = intval($team->team_mode);
+  $team->coach_id = intval($team->coach_id);
+  $team->logo = sanitize_text_field($team->logo);
+  $team->visible = true;
+
+  $result = TeamsDatabase::update_team($team_id, $team->team_name, $division_id, $team->team_category, $team->team_mode, $team->coach_id, $team->logo, $team->visible);
+  if ($result) {
+    wp_send_json_success(['message' => 'Division actualizada correctamente.']);
+  }
+  wp_send_json_error(['message' => 'No se pudo actualizar la division.']);
+}
+
+function add_team() {
+  if (!isset($_POST['division_id']) || !isset($_POST['team_name']) || !isset($_POST['team_category']) || !isset($_POST['team_mode']) || !isset($_POST['coach_id']) || !isset($_POST['logo'])) {
+    wp_send_json_error(['message' => 'Faltan datos']);
+  }
+
+  $team_name = sanitize_text_field($_POST['team_name']);
+  $coach_id = intval($_POST['coach_id']);
+  $division_id = intval($_POST['division_id']);
+  if ($division_id == 0) {
+    $division_id = null;
+  }
+  $team_category = intval($_POST['team_category']);
+  $team_mode = intval($_POST['team_mode']);
+  $logo = sanitize_text_field($_POST['logo']);
+  
+  $result = TeamsDatabase::insert_team($team_name, $division_id, $team_category, $team_mode, $coach_id, $logo);
+  if ($result) {
+    $team = TeamsDatabase::get_team_by_name($team_name, $division_id);
+    $team->division_name = DivisionsDatabase::get_division_by_id($team->division_id)->division_name;
+    $team->team_category = $team->team_category === "1" ? "5v5" : "7v7";
+    $team->team_mode = $team->team_mode === "1" ? "Varonil" : ($team->team_mode === "2" ? "Femenil" : "Mixto");
+    wp_send_json_success(['message' => 'Equipo agregado correctamente', 'html' => on_add_team($team)]);
+  }
+  wp_send_json_error(['message' => 'Equipo no agregado, equipo ya existe']);
+}
+
+function add_teams_bulk() {
+    if (!isset($_POST['team_name']) || !isset($_POST['team_category']) || !isset($_POST['team_mode']) || !isset($_POST['coach_name'])) {
+      wp_send_json_error(['message' => 'Faltan datos']);
+    }
+    $team_name = sanitize_text_field($_POST['team_name']);
+    $coach_name = sanitize_text_field($_POST['coach_name']);
+  
+    $coach_id = CoachesDatabase::get_coach_by_name($coach_name)->coach_id;
+    $team_category = intval($_POST['team_category']);
+    $team_mode = intval($_POST['team_mode']);
+    
+    $result = TeamsDatabase::insert_team($team_name, null, $team_category, $team_mode, $coach_id, $team_name);
+    if ($result) wp_send_json_success(['message' => 'Equipo agregado correctamente']);
+    wp_send_json_error(['message' => 'Equipo no agregado, equipo ya existe']);
+}
+
+add_action('wp_ajax_edit_team', 'edit_team');
+add_action('wp_ajax_nopriv_edit_team', 'edit_team');
+add_action('wp_ajax_update_team', 'update_team');
+add_action('wp_ajax_nopriv_update_team', 'update_team');
+add_action('wp_ajax_update_team_division', 'update_team_division');
+add_action('wp_ajax_nopriv_update_team_division', 'update_team_division');
+add_action('wp_ajax_add_teams_bulk', 'add_teams_bulk');
+add_action('wp_ajax_nopriv_add_teams_bulk', 'add_teams_bulk');
+add_action('wp_ajax_fetch_coach_data', 'fetch_coach_data');
+add_action('wp_ajax_nopriv_fetch_coach_data', 'fetch_coach_data');
+add_action('wp_ajax_fetch_division_data', 'fetch_division_data');
+add_action('wp_ajax_nopriv_fetch_division_data', 'fetch_division_data');
+add_action('wp_ajax_delete_team', 'delete_team');
+add_action('wp_ajax_nopriv_delete_team', 'delete_team');
+add_action('wp_ajax_add_team', 'add_team');
+add_action('wp_ajax_nopriv_add_team', 'add_team');

@@ -40,27 +40,107 @@ function cuicpro_init() {
 // hooks up your code to initialize and register the blocks
 add_action( 'init', 'cuicpro_init' ); 
 
-// load jQuery
-function load_jquery() {
-	wp_enqueue_script('jquery');
-}
-add_action('wp_enqueue_scripts', 'load_jquery');
 
-require_once __DIR__ . '/model/leagues.php';
-require_once __DIR__ . '/model/teams.php';
-require_once __DIR__ . '/model/coaches.php';
-require_once __DIR__ . '/dashboard/leagues/leagues.php';
-require_once __DIR__ . '/dashboard/teams/teams.php';
-require_once __DIR__ . '/dashboard/coaches/coaches.php';
 
-function cuicpro_admin_init() {
-	LeaguesDatabase::init();
-	TeamsDatabase::init();
-	CoachesDatabase::init();
-}
-add_action('admin_menu', 'cuicpro_admin_init');
+require_once __DIR__ . '/model/base/teams.php';
+require_once __DIR__ . '/model/base/coaches.php';
+require_once __DIR__ . '/model/base/officials.php';
+require_once __DIR__ . '/model/base/divisions.php';
+require_once __DIR__ . '/model/base/tournaments.php';
+require_once __DIR__ . '/model/base/modes.php';
+require_once __DIR__ . '/model/base/categories.php';
+require_once __DIR__ . '/model/base/tournament_hours.php';
+require_once __DIR__ . '/model/matches.php';
+require_once __DIR__ . '/model/brackets.php';
+require_once __DIR__ . '/model/pending_matches.php';
+require_once __DIR__ . '/model/tournament_scheduler.php';
+
+
+require_once __DIR__ . '/dashboard/components/divisions/divisions.php';
+require_once __DIR__ . '/dashboard/components/teams/teams.php';
+require_once __DIR__ . '/dashboard/components/coaches/coaches.php';
+require_once __DIR__ . '/dashboard/components/officials/officials.php';
+require_once __DIR__ . '/dashboard/components/tournaments/tournaments.php';
+require_once __DIR__ . '/dashboard/components/brackets/brackets.php';
+
 
 // Initialize database tables if they don't exist
-// 
+function cuicpro_databases() {
+	ModesDatabase::init();
+	CategoriesDatabase::init();
+	CoachesDatabase::init();
+	TournamentsDatabase::init();
+	TournamentHoursDatabase::init();
+	TeamsDatabase::init();
+	OfficialsDatabase::init();
+	DivisionsDatabase::init();
+	MatchesDatabase::init();
+	BracketsDatabase::init();	
+	PendingMatchesDatabase::init();
+}
 
+add_action('admin_menu', 'cuicpro_databases');
 
+if(!defined('WPINC')) {
+	return;
+}
+
+add_action('admin_enqueue_scripts', 'load_jquery');
+// load jQuery
+function load_jquery() {
+	// css
+	wp_enqueue_style('jquery-ui', plugin_dir_url(__FILE__) . 'dashboard/css/jquery-ui.css');
+	wp_enqueue_style('jquery-ui-multidatespicker', plugin_dir_url(__FILE__) . 'dashboard/css/mdp.css');
+	wp_enqueue_style('prettify', plugin_dir_url(__FILE__) . 'dashboard/css/prettify.css');
+	wp_enqueue_style('admin-page', plugin_dir_url(__FILE__) . 'dashboard/css/admin-page.css');
+
+	
+	wp_enqueue_script('jquery');
+	wp_enqueue_script('jquery-ui-tabs');
+	wp_enqueue_script('jquery-ui-slider');
+	wp_enqueue_style('jquery-ui', plugin_dir_url(__FILE__) . 'dashboard/css/jquery-ui.css');
+	wp_enqueue_style('jquery-ui-multidatespicker', plugin_dir_url(__FILE__) . 'dashboard/css/mdp.css');
+	wp_enqueue_style('prettify', plugin_dir_url(__FILE__) . 'dashboard/css/prettify.css');
+	wp_enqueue_script('jquery-ui-multidatespicker', plugin_dir_url(__FILE__) . 'dashboard/dependencies/jquery-ui.multidatespicker.js', array('jquery','jquery-ui-datepicker'));
+	wp_enqueue_script('leader-line', plugin_dir_url(__FILE__) . 'dashboard/dependencies/leader-line.min.js');
+	wp_enqueue_script('custom-script', plugin_dir_url(__FILE__) . 'dashboard/scripts/jQuery-ui-components.js', array('jquery'));
+	
+	// Pass the AJAX URL to JavaScript
+	wp_localize_script('custom-script', 'cuicpro', array(
+		'ajax_url' => admin_url('admin-ajax.php')
+	));
+}
+
+// Add plugin to menu Page
+add_action('admin_menu', 'cuicpro_menu_page');
+
+function cuicpro_menu_page() {
+	add_menu_page(
+		'CUICPRO',
+		'CUICPRO Admin',
+		'manage_options',
+		'cuicpro',
+		'cuicpro_handle_admin_page',
+		"dashicons-admin-multisite",
+		3
+	);
+
+	add_submenu_page(
+		'cuicpro',
+		'Arbitros',
+		'Arbitros',
+		'manage_options',
+		'cuicpro-officials',
+		'cuicpro_handle_officials_page'
+	);
+}
+
+function cuicpro_handle_admin_page() {
+	ob_start();
+	include_once __DIR__ . '/dashboard/views/admin.php';
+	echo ob_get_clean();
+}
+
+function cuicpro_handle_officials_page() {
+	echo "<h1>Officials</h1>";
+}

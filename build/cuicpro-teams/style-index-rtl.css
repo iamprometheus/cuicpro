@@ -7,8 +7,55 @@
  *
  * Replace them with your own styles or remove the file completely.
  */
-.wp-block-cuicpro-cuicpro-block {
-  background-color: #21759b;
+.wp-block-cuicpro-cuicpro-teams {
+  background-color: #ffffff;
   color: #fff;
   padding: 2px;
+  border-radius: 1px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  min-height: 700px;
+}
+
+.wp-block-cuicpro-cuicpro-teams .teams-grid-container p {
+  color: black;
+  font-size: 12px;
+}
+
+.wp-block-cuicpro-cuicpro-teams .teams-grid-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.wp-block-cuicpro-cuicpro-teams .teams-grid-title h2 {
+  color: black;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.wp-block-cuicpro-cuicpro-teams .teams-grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  -moz-column-gap: 30px;
+       column-gap: 30px;
+  row-gap: 20px;
+  padding: 10px 20px;
+}
+
+.wp-block-cuicpro-cuicpro-teams .teams-grid-item {
+  display: flex;
+  flex-direction: row;
+  color: white;
+  padding: 10px 10px;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  transition: all 0.3s ease-in-out;
+}
+
+.wp-block-cuicpro-cuicpro-teams .teams-grid-item:hover {
+  background-color: #a4af7c;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
 }

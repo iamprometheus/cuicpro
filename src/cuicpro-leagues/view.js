@@ -5,20 +5,20 @@ import { store, getContext } from "@wordpress/interactivity";
 
 const { state } = store("cuicpro", {
 	state: {
-		get themeText() {
-			return state.isDark ? state.darkText : state.lightText;
+		get isOpen() {
+			return state.isOpen;
 		},
+		isOpen: true,
 	},
 	actions: {
 		toggleOpen() {
 			const context = getContext();
 			context.isOpen = !context.isOpen;
 		},
-		toggleTheme() {
-			state.isDark = !state.isDark;
-		},
 	},
 	callbacks: {
-		logIsOpen: () => {},
+		logIsOpen: () => {
+			console.log("toggleOpen");
+		},
 	},
 });

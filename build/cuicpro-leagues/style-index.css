@@ -10,35 +10,41 @@
 .wp-block-cuicpro-cuicpro-leagues {
   font-size: 1em;
 }
-.wp-block-cuicpro-cuicpro-leagues .leagues-wrapper {
+.wp-block-cuicpro-cuicpro-leagues .divisions-container {
   display: flex;
   flex-direction: column;
   gap: 1em;
 }
-.wp-block-cuicpro-cuicpro-leagues .league-wrapper {
+.wp-block-cuicpro-cuicpro-leagues .division-container {
   background-color: #a8e0fa;
   border-radius: 10px;
   border: 1px solid #a8e0fa;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
-.wp-block-cuicpro-cuicpro-leagues .league-wrapper:hover {
+.wp-block-cuicpro-cuicpro-leagues .division-container:hover {
   background-color: #3dc2ff;
 }
-.wp-block-cuicpro-cuicpro-leagues .league-wrapper p {
+.wp-block-cuicpro-cuicpro-leagues .division-container p {
   display: flex;
   justify-content: center;
   font-weight: bold;
 }
-.wp-block-cuicpro-cuicpro-leagues .teams-wrapper {
+.wp-block-cuicpro-cuicpro-leagues .teams-container {
   border-radius: 10px;
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   background-color: #fff;
-  gap: 1em;
   padding: 1em;
+  justify-content: space-around;
 }
-.wp-block-cuicpro-cuicpro-leagues .teams-wrapper[hidden] {
+.wp-block-cuicpro-cuicpro-leagues .teams-container[hidden] {
   display: none;
+}
+.wp-block-cuicpro-cuicpro-leagues .team-container {
+  display: inherit;
+  flex-direction: column;
+  align-items: center;
 }
 
 /*# sourceMappingURL=style-index.css.map*/

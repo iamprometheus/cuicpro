@@ -1,0 +1,72 @@
+.tournament-input-header {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.tournament-input-row {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 10px;
+}
+
+.tournament-slider {
+	width: 300px;
+}
+
+.table-row {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+.table-cell-header {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid #ccc;
+	width: 100px;
+	height: 70px;
+	margin: 0px;
+	font-size: 14px;
+	text-align: center;
+}
+
+.table-cell {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid #ccc;
+	width: 200px;
+	height: 70px;
+	font-size: 14px;
+}
+
+.table-cell-column {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	border: 1px solid #ccc;
+	width: 180px;
+	height: 70px;
+	font-size: 14px;
+	padding: 0px 10px;
+}
+
+.hidden {
+	display: none;
+}
+
+.hours-container {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.hours-slider {
+	display: flex;
+	gap: 10px;
+	align-items: center;
+}

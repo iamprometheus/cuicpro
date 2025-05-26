@@ -1,0 +1,96 @@
+.officials-wrapper {
+	display: flex;
+	overflow: auto;
+	justify-content: space-between;
+	gap: 30px;
+}
+
+.officials-header {
+	display: flex;
+	margin-top: 10px;
+	width: max-content;
+}
+
+.official-wrapper {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	height: max-content;
+	width: max-content;
+}
+
+.official-cell {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid #ccc;
+	width: 83px;
+	height: 40px;
+	margin: 0px;
+}
+
+.official-input-wrapper {
+	display: flex;
+	flex-direction: column;
+}
+
+.official-input-row {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	height: max-content;
+	width: max-content;
+}
+
+.official-cell-header {
+	display: flex;
+	flex-direction: column;
+	width: 83px;
+	height: 70px;
+	border: 1px solid #ccc;
+	align-items: center;
+	justify-content: center;
+}
+
+.official-input-cell {
+	display: flex;
+	flex-direction: column;
+	width: 150px;
+	height: 70px;
+	border: 1px solid #ccc;
+	justify-content: center;
+}
+
+.official-input-cell input[type="checkbox"] {
+	width: 17.5px;
+	height: 17.5px;
+	align-self: center;
+}
+
+.official-input-cell input {
+	width: inherit;
+	height: 20px;
+}
+
+.officials-table {
+	width: max-content;
+}
+
+.officials-table-row {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	height: max-content;
+	width: max-content;
+}
+
+.officials-table-cell {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	border: 1px solid #ccc;
+	width: 110px;
+	height: 60px;
+	margin: 0px;
+}

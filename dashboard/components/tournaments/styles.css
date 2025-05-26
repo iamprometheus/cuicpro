@@ -1,0 +1,56 @@
+.cell-hidden {
+	display: none !important;
+}
+
+.tournaments-wrapper {
+	display: flex;
+	flex-direction: column;
+	overflow: auto;
+	padding: 0 20px 20px 0;
+}
+
+.tournaments-header {
+	display: flex;
+	margin-top: 10px;
+	width: max-content;
+}
+
+.tournament-wrapper {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	height: 40px;
+	width: max-content;
+}
+
+.tournament-cell {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid #ccc;
+	width: 80px;
+	height: 40px;
+	margin: 0px;
+	text-align: center;
+}
+
+.tournament-cell img {
+	width: 40px;
+	height: 40px;
+}
+
+.tournament-input-cell {
+	display: flex;
+	width: 80px;
+	height: 40px;
+	border: 1px solid #ccc;
+	justify-content: center;
+	align-items: center;
+}
+
+.tournament-input-cell input {
+	justify-content: center;
+	align-items: center;
+	width: inherit;
+	height: 20px;
+}

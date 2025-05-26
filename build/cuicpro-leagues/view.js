@@ -81,9 +81,10 @@ var __webpack_exports__ = {};
 	const { state } = (0,
 	_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.store)("cuicpro", {
 		state: {
-			get themeText() {
-				return state.isDark ? state.darkText : state.lightText;
+			get isOpen() {
+				return state.isOpen;
 			},
+			isOpen: true,
 		},
 		actions: {
 			toggleOpen() {
@@ -91,18 +92,13 @@ var __webpack_exports__ = {};
 				_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
 				context.isOpen = !context.isOpen;
 			},
-			toggleTheme() {
-				state.isDark = !state.isDark;
-			},
 		},
 		callbacks: {
 			logIsOpen: () => {
-				const { isOpen } = (0,
-				_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
-				// Log the value of `isOpen` each time it changes.
+				console.log("toggleOpen");
 			},
 		},
 	});
 })();
 
-//# sourceMappingURL=view.js.map
+console.log("tttttssss");

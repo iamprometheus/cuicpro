@@ -21,7 +21,7 @@ return array(
 		'editorStyle' => 'file:./index.css',
 		'style' => 'file:./style-index.css',
 		'render' => 'file:./render.php',
-		'viewScriptModule' => 'file:./view.js'
+		'viewScript' => 'file:./view.js'
 	),
 	'cuicpro-teams' => array(
 		'$schema' => 'https://schemas.wp.org/trunk/block.json',

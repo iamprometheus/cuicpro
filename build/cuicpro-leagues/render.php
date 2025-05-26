@@ -18,41 +18,44 @@ wp_interactivity_state(
 	'cuicpro'
 );
 
-if (!function_exists('render_leagues')) {
-	function render_leagues() {
+if (!function_exists('render_divisions')) {
+	function render_divisions() {
 			global $wpdb;
-			$leagues = $wpdb->get_results("SELECT * FROM wp_cuicpro_leagues");
+			$divisions = $wpdb->get_results("SELECT * FROM wp_cuicpro_divisions");
 
-			foreach ($leagues as $league) {
-					$league_name = $league->league_name;
-					$league_id = $league->league_id;
-					echo "<div class='league-wrapper' data-wp-on--click='actions.toggleOpen' 
+			foreach ($divisions as $division) {
+					$division_name = $division->division_name;
+					$division_id = $division->division_id;
+					echo "<div class='division-container' 
 													".wp_interactivity_data_wp_context(array('isOpen' => false))."
 											>
-											<p>".$league_name."</p>
-											<div class='teams-wrapper' data-wp-bind--hidden='!context.isOpen'>"
-													.render_teams($league_id)
+											<div data-wp-on--click='actions.toggleOpen'>
+												<p>".$division_name."</p>
+											</div>
+											<div class='teams-container' data-wp-bind--hidden='!context.isOpen'>"
+													.render_teams_for_division($division_id)
 											."</div>"
 									."</div>";
 			}
 	}
 }
 
-if (!function_exists('render_teams')) {
-	function render_teams($league_id) {
+if (!function_exists('render_teams_for_division')) {
+	function render_teams_for_division($division_id) {
 		global $wpdb;
-		$teams = $wpdb->get_results($wpdb->prepare("SELECT * FROM wp_cuicpro_teams WHERE league_id = %d", $league_id));
+		$teams = $wpdb->get_results($wpdb->prepare("SELECT * FROM wp_cuicpro_teams WHERE division_id = %d", $division_id));
 
 		$tddata = "";
 
 		foreach ($teams as $team) {
 			$team_name = $team->team_name;
-			$tddata.="<div class='team-wrapper'>"
-								."<img src='http://test.local/india/' width='50' height='50' />"
-							."<p>"
-								.$team_name
-							."</p>"
-							."</div>";
+			$logo = str_replace(" ", "-", $team->logo);
+			$tddata.="<div class='team-container'>
+								<img src='http://test.local/$logo' width='50' height='50' />
+								<p>"
+									.$team_name
+								."</p>
+							</div>";
 		}
 		return $tddata;
 	}
@@ -63,11 +66,11 @@ if (!function_exists('render_teams')) {
 <div
 	<?php echo get_block_wrapper_attributes(); ?>
 	data-wp-interactive="cuicpro"
->
-	<div class="leagues-wrapper"
+	>
+	<div class="divisions-container"
 	>
 		<?php
-			render_leagues();
+			render_divisions();
 		?>
 	</div>
 	
