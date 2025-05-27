@@ -1,46 +1,46 @@
 <?php
 
 function create_divisions_dropdown($selected_id = null) {
-		$html = "";
-		$active_tournament = TournamentsDatabase::get_active_tournament();
-		$divisions = DivisionsDatabase::get_divisions($active_tournament->tournament_id);
-		$html .= "<option value='0'>Division Pendiente</option>";
-		foreach ($divisions as $division) {
-			$html .= "<option value='" . esc_attr($division->division_id) . "'" . ($selected_id == $division->division_id ? "selected" : "") . ">" . esc_html($division->division_name) . "</option>";
-		}
-		return $html;
+	$html = "";
+	$active_tournament = TournamentsDatabase::get_active_tournament();
+	$divisions = DivisionsDatabase::get_divisions($active_tournament->tournament_id);
+	$html .= "<option value='0'>Division Pendiente</option>";
+	foreach ($divisions as $division) {
+		$html .= "<option value='" . esc_attr($division->division_id) . "'" . ($selected_id == $division->division_id ? "selected" : "") . ">" . esc_html($division->division_name) . "</option>";
 	}
+	return $html;
+}
 
 function create_input_team() {
 	$html = "";
   // dynamic input fields for adding teams
-  $html .= "<div class='team-input-table'>";
-  $html .= "<div class='team-input-row'>
-							<span class='team-input-cell-header'>Nombre: </span>
-							<div class='team-input-cell'>
+  $html .= "<div>";
+  $html .= "<div class='table-input-row'>
+							<span class='table-cell'>Nombre: </span>
+							<div class='table-input-cell'>
 								<input type='text' id='team-name-table' placeholder='Nombre'>
 							</div>
 						</div>";
-  $html .= "<div class='team-input-row'>
-							<span class='team-input-cell-header'>Division: </span>
-							<div class='team-input-cell'>
+  $html .= "<div class='table-input-row'>
+							<span class='table-cell'>Division: </span>
+							<div class='table-input-cell'>
 								<select id='team-division-table'>
 									" . create_divisions_dropdown() . "
 								</select>
 							</div>
 						</div>";	
-  $html .= "<div class='team-input-row'>
-							<span class='team-input-cell-header'>Modalidad: </span>
-							<div class='team-input-cell'>
+  $html .= "<div class='table-input-row'>
+							<span class='table-cell'>Modalidad: </span>
+							<div class='table-input-cell'>
 								<select id='team-mode-table'>
 									<option value='1'>5v5</option>
 									<option value='2'>7v7</option>
 								</select>
 							</div>
 						</div>";
-  $html .= "<div class='team-input-row'>
-							<span class='team-input-cell-header'>Categoria: </span>
-							<div class='team-input-cell'>
+  $html .= "<div class='table-input-row'>
+							<span class='table-cell'>Categoria: </span>
+							<div class='table-input-cell'>
 								<select id='team-category-table'>
 									<option value='1'>Varonil</option>
 									<option value='2'>Femenil</option>
@@ -48,24 +48,23 @@ function create_input_team() {
 								</select>
 							</div>
             </div>";
-  $html .= "<div class='team-input-row'>
-							<span class='team-input-cell-header'>Logo: </span>
-							<div class='team-input-cell'>	
+  $html .= "<div class='table-input-row'>
+							<span class='table-cell'>Logo: </span>
+							<div class='table-input-cell'>	
 								<input type='text' id='team-logo-table' placeholder='Logo'>
 							</div>
 						</div>";
-  $html .= "<div class='team-input-row'>
-						<span class='team-input-cell-header'>Acciones: </span>
-							<div class='team-input-cell'>
+  $html .= "<div class='table-input-row'>
+						<span class='table-cell'>Acciones: </span>
+							<div class='table-input-cell'>
 								<button id='add-team-button'>Agregar</button>
 								<button id='update-team-button' data-team-id='0' data-team-coach-id='0' class='hidden'>Actualizar</button>
 								<button id='cancel-team-button' class='hidden'>Cancelar</button>
 							</div>
 						</div>";
-						
-	$html .= "<div class='team-input-row'>
-							<span class='team-input-cell-header-result'>Resultado: </span>				
-							<span class='team-input-cell-result' id='team-result-table'>Resultado de la accion.</span>
+	$html .= "<div class='table-input-row'>
+							<span class='table-cell'>Resultado: </span>				
+							<span class='table-input-cell' id='team-result-table'>Resultado de la accion.</span>
 						</div>";
   $html .= "</div>";
 	
@@ -73,10 +72,9 @@ function create_input_team() {
   return $html;
 }
 
-
 // function to display the dropdown of divisions to show teams
 function cuicpro_teams_by_division() {
-  $html = "<div class='teams-view'>";
+  $html = "<div class='table-view'>";
 	$html .= "<select id='divisions-dropdown-tv'>\n";
   $html .= "<option value='0'>Selecciona una Division</option>\n";
 	
@@ -103,7 +101,7 @@ function cuicpro_teams_by_division() {
 }
 
 function cuicpro_teams_by_coach() {
-	$html = "<div class='teams-view'>";
+	$html = "<div class='table-view'>";
 	$html .= "<select id='coaches-dropdown-tv'>\n";
 	$html .= "<option value='0'>Selecciona un Entrenador</option>\n";
 
@@ -127,7 +125,7 @@ function cuicpro_teams_by_coach() {
 }
 
 function cuicpro_teams_viewer() {
-	$html = "<div class='teams-view-container'>";
+	$html = "<div class='table-view-container'>";
 	$html .= create_input_team();
 	$html .= "<div id='teams-data'>";
 	$html .= cuicpro_teams_by_coach();

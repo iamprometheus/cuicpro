@@ -37,27 +37,71 @@ function create_bracket_match($match) {
 function on_fetch_bracket_data(int $bracket_id) {
   $matches = PendingMatchesDatabase::get_matches_by_bracket($bracket_id);
 
+  $hardcoded_match_positions =[
+    2 => [2, 1],
+    4 => [4,2,3,1],
+    8 => [8,4,6,2,7,3,5,1],
+    16 => [16,8,12,4,14,6,10,2,15,7,11,3,13,59,1],
+    32 => [32,16,24,8,28,12,20,4,31,15,23,7,27,13,19,5,30,14,22,6,26,10,25,3,29,9,11,1,33,17,21,18],
+  ];
   $bracket_rounds = array_unique(array_map(function($match) {
     return $match->bracket_round;
   }, $matches));
 
   $html = "<div class='bracket-container'>";
+  $elements = [];
+  $total_rounds = count($bracket_rounds);
   foreach ($bracket_rounds as $round) {
     $html .= "<div id='round_" . $round . "' class='bracket-round'>";
 
-    foreach ($matches as $match) {
-      if ($match->bracket_round == $round) {
-        $html .= "<div id='match_" . $match->match_id . "' class='bracket-match-container'>";
-        $html .= create_bracket_match($match);
-        $html .= "</div>";
+    $elements[$round] = [];
+    if ($round != 0) {
+      foreach ($matches as $match) {
+        if ($match->bracket_round == $round) {
+          $elements[$round][] = "match_" . $match->match_id;
+          $html .= "<div id='match_" . $match->match_id . "' class='bracket-match-container'>";
+          $html .= create_bracket_match($match);
+          $html .= "</div>";
+        }
+      }
+    } else {
+      $matches_this_round = [];
+      $maximum_matches_this_round = pow(2, $total_rounds - $round - 1);
+
+      $temp_matches = [];
+
+      foreach ($matches as $match) {
+        if ($match->bracket_round == $round) {
+          $matches_this_round[] = $match;
+        }
+      }
+
+      if ($maximum_matches_this_round == count($matches_this_round)) {
+        foreach ($matches_this_round as $match) {
+          $elements[$round][] = "match_" . $match->match_id;
+          $html .= "<div id='match_" . $match->match_id . "' class='bracket-match-container'>";
+          $html .= create_bracket_match($match);
+          $html .= "</div>";
+        }
+      } else {
+        for ($i = 0; $i < $maximum_matches_this_round-1; $i++) {
+          $elements[$round][] = null;
+          $temp_matches[] = "<div id='match_null' class='bracket-match-container-empty'></div>";
+        }
+
+        foreach ($matches_this_round as $index => $match) {
+          $elements[$round][$hardcoded_match_positions[$maximum_matches_this_round][$index]-1] = "match_" . $match->match_id;
+          $temp_matches[$hardcoded_match_positions[$maximum_matches_this_round][$index]-1] =  "<div id='match_" . $match->match_id . "' class='bracket-match-container'>" . create_bracket_match($match) . "</div>";
+        }
+
+        $html .= implode("", $temp_matches);
       }
     }
-
     $html .= "</div>";
   }
 
   $html .= "</div>";
-  return $html;
+  return ['html' => $html, 'elements' => $elements];
 }
 
 function fetch_bracket_data() {
@@ -67,7 +111,7 @@ function fetch_bracket_data() {
 
   $bracket_id = intval($_POST['bracket_id']);
 
-  wp_send_json_success(['message' => 'Division agregada correctamente', 'html' => on_fetch_bracket_data($bracket_id)]);
+  wp_send_json_success(['message' => 'Bracket recuperado correctamente', 'html' => on_fetch_bracket_data($bracket_id)['html'], 'elements' => on_fetch_bracket_data($bracket_id)['elements']]);
 }
 
 add_action('wp_ajax_fetch_bracket_data', 'fetch_bracket_data');

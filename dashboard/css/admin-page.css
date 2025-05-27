@@ -15,13 +15,13 @@
 	width: 300px;
 }
 
-.table-row {
+.tournament-table-row {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 }
 
-.table-cell-header {
+.tournament-table-cell-header {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -33,7 +33,7 @@
 	text-align: center;
 }
 
-.table-cell {
+.tournament-table-cell {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -44,7 +44,7 @@
 	font-size: 14px;
 }
 
-.table-cell-column {
+.tournament-table-cell-column {
 	display: flex;
 	flex-direction: column;
 	justify-content: space-around;

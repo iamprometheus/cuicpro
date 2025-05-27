@@ -1,125 +1,90 @@
-.teams-view-container {
-	display: flex;
-	gap: 30px;
+/* just some styling */
+
+/* 
+	flex column elements
+*/
+.table-cell,
+.table-view,
+.table-wrapper,
+.table-input-cell-header {
+	display: flex !important;
+	flex-direction: column !important;
 }
 
-.teams-view {
+.table-view-container {
 	display: flex;
-	flex-direction: column;
-	overflow: auto;
 	gap: 30px;
+	overflow: auto;
+	padding-top: 2px;
 }
 
-.teams-wrapper {
-	display: flex;
-	flex-direction: column;
-	overflow: auto;
+.table-view {
+	gap: 10px;
+}
+
+.table-wrapper {
 	padding: 0 20px 20px 0;
 }
 
-.teams-header {
+.table-row,
+.table-input-row {
 	display: flex;
-	margin-top: 10px;
+	align-items: center;
 	width: max-content;
 }
-
-.team-wrapper {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
+.table-row {
 	height: 60px;
-	width: max-content;
+}
+.table-input-row {
+	height: 70px;
 }
 
-.team-cell-header {
-	display: flex;
-	align-items: center;
-	justify-content: center;
+/* 
+	bordedr box elements
+*/
+.table-cell,
+.table-input-cell-header,
+.table-input-cell {
 	border: 1px solid #ccc;
-	width: 80px;
-	height: 40px;
-	margin: 0px;
+	justify-content: center;
+	align-items: center;
 }
 
-.team-cell {
-	display: flex;
-	flex-direction: column;
+.table-cell {
 	gap: 3px;
-	align-items: center;
-	justify-content: center;
-	border: 1px solid #ccc;
-	width: 80px;
-	margin: 0px;
-	height: 100%;
+	width: 100px;
+	text-align: center;
+	height: inherit;
 }
 
-.team-cell select {
-	width: 80px;
+.table-cell select {
+	width: 100%;
 }
 
-.team-cell img {
+.table-cell img {
 	width: 40px;
 	height: 40px;
 }
 
-.team-input-table {
-	display: flex;
-	flex-direction: column;
-}
-
-.team-input-row {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	height: max-content;
-	width: max-content;
-}
-
-.team-input-cell-header {
-	display: flex;
-	flex-direction: column;
-	width: 80px;
-	height: 70px;
-	border: 1px solid #ccc;
-	align-items: center;
-	justify-content: center;
-}
-
-.team-input-cell {
+.table-input-cell {
 	display: flex;
 	width: 150px;
-	height: 70px;
-	border: 1px solid #ccc;
-	justify-content: center;
-	align-items: center;
+	height: inherit;
+	text-align: center;
 }
 
-.team-input-cell input {
+.table-input-cell input,
+.table-input-cell select {
 	justify-content: center;
 	align-items: center;
 	width: inherit;
 	height: 20px;
 }
 
-.team-input-cell-header-result {
-	display: flex;
-	flex-direction: column;
-	width: 80px;
-	height: 70px;
-	border: 1px solid #ccc;
-	justify-content: center;
-	align-items: center;
-}
-
-.team-input-cell-result {
-	display: flex;
-	flex-direction: column;
-	width: 150px;
-	height: 70px;
-	border: 1px solid #ccc;
-	justify-content: center;
-	text-align: center;
-	align-items: center;
+.table-input-cell input[type="checkbox"] {
+	width: 17.5px;
+	height: 17.5px;
+	align-self: center;
 }
 
 .success {

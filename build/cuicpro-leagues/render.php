@@ -21,7 +21,7 @@ wp_interactivity_state(
 if (!function_exists('render_divisions')) {
 	function render_divisions() {
 			global $wpdb;
-			$divisions = $wpdb->get_results("SELECT * FROM wp_cuicpro_divisions");
+			$divisions = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}cuicpro_divisions");
 
 			foreach ($divisions as $division) {
 					$division_name = $division->division_name;
@@ -43,7 +43,7 @@ if (!function_exists('render_divisions')) {
 if (!function_exists('render_teams_for_division')) {
 	function render_teams_for_division($division_id) {
 		global $wpdb;
-		$teams = $wpdb->get_results($wpdb->prepare("SELECT * FROM wp_cuicpro_teams WHERE division_id = %d", $division_id));
+		$teams = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$wpdb->prefix}cuicpro_teams WHERE division_id = %d", $division_id));
 
 		$tddata = "";
 

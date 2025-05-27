@@ -54,12 +54,12 @@ jQuery(document).ready(function ($) {
 						const newElement = document.querySelector("#coach-data");
 						newElement.innerHTML = response.data.html;
 
-						const result = document.querySelector("#coach-result-table");
+						const result = document.querySelector("#team-result-table");
 						result.classList.remove("success");
 						result.classList.add("error");
 						result.innerHTML = response.data.message;
 					} else {
-						const result = document.querySelector("#coach-result-table");
+						const result = document.querySelector("#team-result-table");
 						result.classList.remove("success");
 						result.classList.add("error");
 						result.innerHTML = response.data.message;

@@ -1,62 +1,95 @@
 <?php
 
-function create_dynamic_input_coach() {
-  $html = "";
+function create_input_coach() {
+	$html = "";
   // dynamic input fields for adding teams
-  $html .= "<div class='coach-wrapper' id='dynamic-input-coach'>";
-  $html .= "<div class='coach-input-cell'>
-              <input type='text' id='coach-name-cv' placeholder='Nombre'>
+  $html .= "<div class='table-input'>";
+  $html .= "<div class='table-input-row'>
+							<span class='table-cell'>Nombre: </span>
+							<div class='table-input-cell'>
+                <input type='text' id='coach-name-cv' placeholder='Nombre'>
+							</div>
+						</div>";
+  $html .= "<div class='table-input-row'>
+              <span class='table-cell'>Contacto: </span>
+              <div class='table-input-cell'>
+                <input type='text' id='coach-contact-cv' placeholder='Contacto'>
+              </div>
             </div>";
-  $html .= "<div class='coach-input-cell'>
-              <input type='text' id='coach-contact-cv' placeholder='Contacto'>
+  $html .= "<div class='table-input-row'>
+              <span class='table-cell'>Ciudad: </span>
+              <div class='table-input-cell'>
+                <input type='text' id='coach-city-cv' placeholder='Ciudad'>
+              </div>
             </div>";
-  $html .= "<div class='coach-input-cell'>
-              <input type='text' id='coach-city-cv' placeholder='Ciudad'>
-            </div>";
-  $html .= "<div class='coach-input-cell'>
-              <input type='text' id='coach-state-cv' placeholder='Estado'>
-            </div>";
-  $html .= "<div class='coach-input-cell'>
-              <input type='text' id='coach-country-cv' placeholder='Pais'>
-            </div>";
-  $html .= "<div class='coach-cell'>
-              <button id='add-coach-button-cv'>Agregar</button>
-            </div>";
+  $html .= "<div class='table-input-row'>
+							<span class='table-cell'>Estado: </span>
+							<div class='table-input-cell'>
+                <input type='text' id='coach-state-cv' placeholder='Estado'>
+							</div>
+						</div>";
+  $html .= "<div class='table-input-row'>
+							<span class='table-cell'>Pais: </span>
+							<div class='table-input-cell'>
+                <input type='text' id='coach-country-cv' placeholder='Pais'>
+							</div>
+						</div>";
+  $html .= "<div class='table-input-row'>
+						<span class='table-cell'>Acciones: </span>
+							<div class='table-input-cell'>
+                <button id='add-coach-button'>Agregar</button>
+								<button id='update-coach-button' data-coach-id='0' class='hidden'>Actualizar</button>
+								<button id='cancel-coach-button' class='hidden'>Cancelar</button>
+							</div>
+						</div>";
+						
+	$html .= "<div class='table-input-row'>
+							<span class='table-cell'>Resultado: </span>				
+							<span class='table-input-cell' id='coach-result-table'>Resultado de la accion.</span>
+						</div>";
   $html .= "</div>";
 
   return $html;
 }
 
-function cuicpro_coach_viewer() {
+function cuicpro_coaches_table() {
   $coaches = CoachesDatabase::get_coaches();
 
   // create table header
-  $html = "<div class='coaches-wrapper'>
-            <div class='coaches-header'>
-              <span class='coach-cell'>Nombre: </span>
-              <span class='coach-cell'>Contacto: </span>
-              <span class='coach-cell'>Ciudad: </span>
-              <span class='coach-cell'>Estado: </span>
-              <span class='coach-cell'>Pais: </span>
-              <span class='coach-cell'>Acciones: </span>
+  $html = "<div class='table-row'>
+              <span class='table-cell'>Nombre: </span>
+              <span class='table-cell'>Contacto: </span>
+              <span class='table-cell'>Ciudad: </span>
+              <span class='table-cell'>Estado: </span>
+              <span class='table-cell'>Pais: </span>
+              <span class='table-cell'>Acciones: </span>
             </div>
             ";
 
   // add team data to table
   foreach ($coaches as $coach) {
-    $html .= "<div class='coach-wrapper' id='coach-$coach->coach_id'>";
-    $html .= "<span class='coach-cell'>" . esc_html($coach->coach_name) . "</span>";
-    $html .= "<span class='coach-cell'>" . esc_html($coach->coach_contact) . "</span>";
-    $html .= "<span class='coach-cell'>" . esc_html($coach->coach_city) . "</span>";
-    $html .= "<span class='coach-cell'>" . esc_html($coach->coach_state) . "</span>";
-    $html .= "<span class='coach-cell'>" . esc_html($coach->coach_country) . "</span>";
-    $html .= "<div class='coach-cell'>
+    $html .= "<div class='table-row' id='coach-$coach->coach_id'>";
+    $html .= "<span class='table-cell'>" . esc_html($coach->coach_name) . "</span>";
+    $html .= "<span class='table-cell'>" . esc_html($coach->coach_contact) . "</span>";
+    $html .= "<span class='table-cell'>" . esc_html($coach->coach_city) . "</span>";
+    $html .= "<span class='table-cell'>" . esc_html($coach->coach_state) . "</span>";
+    $html .= "<span class='table-cell'>" . esc_html($coach->coach_country) . "</span>";
+    $html .= "<div class='table-cell'>
+                <button id='edit-coach-button' data-coach-id=$coach->coach_id>Editar</button>
                 <button id='delete-coach-button' data-coach-id=$coach->coach_id>Eliminar</button>
               </div>";
     $html .= "</div>";
   }
 
-  $html .= create_dynamic_input_coach();
+  return $html;
+}
+
+function cuicpro_coach_viewer() {
+  $html = "<div class='table-view-container'>";
+  $html .= create_input_coach();
+  $html .= "<div id='coaches-data'>";
+  $html .= cuicpro_coaches_table();
+  $html .= "</div>";
   $html .= "</div>";
 
   echo $html;

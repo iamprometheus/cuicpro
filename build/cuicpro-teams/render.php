@@ -19,7 +19,7 @@ if (!function_exists('cuicpro_teams_render_teams')) {
 	function cuicpro_teams_render_teams() {
 
 		global $wpdb;
-		$teams = $wpdb->get_results("SELECT * FROM wp_cuicpro_teams");
+		$teams = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}cuicpro_teams");
 
 		$tddata = "";
 

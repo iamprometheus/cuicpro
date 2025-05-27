@@ -31,7 +31,7 @@
       <?php cuicpro_brackets_viewer(); ?>
     </div>
     <div id='tabs-7'>
-      <div class='finished-matches'>
+      <div>
         <p>Partidos terminados</p>
       </div>
     </div>

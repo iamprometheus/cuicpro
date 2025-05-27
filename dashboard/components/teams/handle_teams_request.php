@@ -5,15 +5,15 @@ function on_add_team($team) {
   $team->team_category = $team->team_category === "1" ? "5v5" : "7v7";
   $html = "";
   $logo = str_replace(" ", "-", $team->logo);
-  $html .= "<div class='team-wrapper' id='team-$team->team_id'>";
-  $html .= "<span class='team-cell'>" . esc_html($team->team_name) . "</span>";
-  $html .= "<span class='team-cell'>" . esc_html($team->division_name) . "</span>";
-  $html .= "<span class='team-cell'>" . esc_html($team->team_category) . "</span>";
-  $html .= "<span class='team-cell'>" . esc_html($team->team_mode) . "</span>";
-  $html .= "<div class='team-cell'>
-              <img src='http://test.local/$logo'>
+  $html .= "<div class='table-row' id='team-$team->team_id'>";
+  $html .= "<span class='table-cell'>" . esc_html($team->team_name) . "</span>";
+  $html .= "<span class='table-cell'>" . esc_html($team->division_name) . "</span>";
+  $html .= "<span class='table-cell'>" . esc_html($team->team_category) . "</span>";
+  $html .= "<span class='table-cell'>" . esc_html($team->team_mode) . "</span>";
+  $html .= "<div class='table-cell'>
+              <img src='http://cuic.pro/$logo'>
             </div>";
-  $html .= "<div class='team-cell'>
+  $html .= "<div class='table-cell'>
               <button id='delete-team-button-tv' data-team-id=$team->team_id>Eliminar</button>
             </div>";
   $html .= "</div>";
@@ -28,11 +28,11 @@ function fetch_division_data() {
   $teams = TeamsDatabase::get_teams_by_division($division_id);
 
   // create table header
-  $html = "<div class='teams-wrapper'>
-            <div class='teams-header'>
-              <span class='team-cell'>Equipo: </span>
-              <span class='team-cell'>Entrenador: </span>
-              <span class='team-cell'>Logo: </span>
+  $html = "<div class='table-wrapper'>
+            <div class='table-row'>
+              <span class='table-cell'>Equipo: </span>
+              <span class='table-cell'>Entrenador: </span>
+              <span class='table-cell'>Logo: </span>
             </div>
             ";
 
@@ -40,11 +40,11 @@ function fetch_division_data() {
   foreach ($teams as $team) {
     $coach_name = CoachesDatabase::get_coach_by_id($team->coach_id)->coach_name;
     $logo = str_replace(" ", "-", $team->logo);
-    $html .= "<div class='team-wrapper' id='team-$team->team_id'>";
-    $html .= "<span class='team-cell'>" . esc_html($team->team_name) . "</span>";
-    $html .= "<span class='team-cell'>" . esc_html($coach_name) . "</span>";
-    $html .= "<div class='team-cell'>
-                <img src='http://test.local/$logo'>
+    $html .= "<div class='table-row' id='team-$team->team_id'>";
+    $html .= "<span class='table-cell'>" . esc_html($team->team_name) . "</span>";
+    $html .= "<span class='table-cell'>" . esc_html($coach_name) . "</span>";
+    $html .= "<div class='table-cell'>
+                <img src='http://cuic.pro/$logo'>
               </div>";
     $html .= "</div>";
   }
@@ -59,19 +59,19 @@ function create_team_entry($team) {
   $team->team_category = $team->team_category === "1" ? "Varonil" : ($team->team_category === "2" ? "Femenil" : "Mixto");
   $team->team_mode = $team->team_mode === "1" ? "5v5" : "7v7";
 
-  $html .= "<div class='team-wrapper' id='team-$team->team_id'>";
-  $html .= "<span class='team-cell'>" . esc_html($team->team_name) . "</span>";
-  $html .= "<div class='team-cell'>
+  $html .= "<div class='table-row' id='team-$team->team_id'>";
+  $html .= "<span class='table-cell'>" . esc_html($team->team_name) . "</span>";
+  $html .= "<div class='table-cell'>
             <select id='team-division-dropdown' data-team-id=$team->team_id onchange='updateTeamDivision($team->team_id)'>
               " . create_divisions_dropdown($team->division_id) . "
             </select>
             </div>";
-  $html .= "<span class='team-cell'>" . esc_html($team->team_mode) . "</span>";
-  $html .= "<span class='team-cell'>" . esc_html($team->team_category) . "</span>";
-  $html .= "<div class='team-cell'>
-              <img src='http://test.local/$logo'>
+  $html .= "<span class='table-cell'>" . esc_html($team->team_mode) . "</span>";
+  $html .= "<span class='table-cell'>" . esc_html($team->team_category) . "</span>";
+  $html .= "<div class='table-cell'>
+              <img src='http://cuic.pro/$logo'>
             </div>";
-  $html .= "<div class='team-cell'>
+  $html .= "<div class='table-cell'>
               <button id='edit-team-button' data-team-id=$team->team_id>Editar</button>
               <button id='delete-team-button' data-team-id=$team->team_id>Eliminar</button>
             </div>";
@@ -84,14 +84,14 @@ function create_coach_data($coach_id) {
   $teams = TeamsDatabase::get_teams_by_coach($coach_id);
 
   // create table header
-  $html = "<div class='teams-wrapper'>
-            <div class='teams-header'>
-              <span class='team-cell-header'>Equipo: </span>
-              <span class='team-cell-header'>Division: </span>
-              <span class='team-cell-header'>Categoria: </span>
-              <span class='team-cell-header'>Modalidad: </span>
-              <span class='team-cell-header'>Logo: </span>
-              <span class='team-cell-header'>Acciones: </span>
+  $html = "<div class='table-wrapper'>
+            <div class='table-row'>
+              <span class='table-cell'>Equipo: </span>
+              <span class='table-cell'>Division: </span>
+              <span class='table-cell'>Categoria: </span>
+              <span class='table-cell'>Modalidad: </span>
+              <span class='table-cell'>Logo: </span>
+              <span class='table-cell'>Acciones: </span>
             </div>
             ";
 

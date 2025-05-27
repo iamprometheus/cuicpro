@@ -61,33 +61,33 @@ function cuicpro_tournament_viewer() {
 
   // create table header
   $html = "<div class='tournament-data'>
-            <div class='table-row'>
-              <span class='table-cell-header'>Torneo:</span>
-              <span class='table-cell'>" . esc_html($tournament->tournament_name) . "</span>
+            <div class='tournament-table-row'>
+              <span class='tournament-table-cell-header'>Torneo:</span>
+              <span class='tournament-table-cell'>" . esc_html($tournament->tournament_name) . "</span>
             </div>
-            <div class='table-row'>
-              <span class='table-cell-header'>Calendario:</span>
-              <span class='table-cell'>
+            <div class='tournament-table-row'>
+              <span class='tournament-table-cell-header'>Calendario:</span>
+              <span class='tournament-table-cell'>
               <input type='text' id='tournament-selected-days' readonly value='$tournament->tournament_days'>
               </span>
             </div>
-            <div class='table-row'>
-              <span class='table-cell-header'>Horarios:</span>
-              <div id='tournament-hours' class='table-cell-column'>
+            <div class='tournament-table-row'>
+              <span class='tournament-table-cell-header'>Horarios:</span>
+              <div id='tournament-hours' class='tournament-table-cell-column'>
               " . create_tournament_hours($tournament->tournament_id) . "
               </div>
             </div>
-            <div class='table-row'>
-              <span class='table-cell-header'>Campos 5v5:</span>
-              <span class='table-cell'>" . esc_html($tournament->tournament_fields_5v5_start) . " - " . esc_html($tournament->tournament_fields_5v5_end) . "</span>
+            <div class='tournament-table-row'>
+              <span class='tournament-table-cell-header'>Campos 5v5:</span>
+              <span class='tournament-table-cell'>" . esc_html($tournament->tournament_fields_5v5_start) . " - " . esc_html($tournament->tournament_fields_5v5_end) . "</span>
             </div>
-            <div class='table-row'>
-              <span class='table-cell-header'>Campos 7v7:</span>
-              <span class='table-cell'>" . esc_html($tournament->tournament_fields_7v7_start) . " - " . esc_html($tournament->tournament_fields_7v7_end) . "</span>
+            <div class='tournament-table-row'>
+              <span class='tournament-table-cell-header'>Campos 7v7:</span>
+              <span class='tournament-table-cell'>" . esc_html($tournament->tournament_fields_7v7_start) . " - " . esc_html($tournament->tournament_fields_7v7_end) . "</span>
             </div>
-            <div class='table-row'>
-              <span class='table-cell-header'>Acciones:</span>
-              <div class='table-cell-column'>
+            <div class='tournament-table-row'>
+              <span class='tournament-table-cell-header'>Acciones:</span>
+              <div class='tournament-table-cell-column'>
                 <button id='start-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "'>Iniciar Torneo</button>
                 <button id='delete-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "'>Eliminar</button>
               </div>

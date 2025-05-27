@@ -1,49 +1,74 @@
 <?php
 
-function create_dynamic_input_division() {
-  $html = "";
+function create_input_division() {
+	$html = "";
   // dynamic input fields for adding teams
-  $html .= "<div class='division-wrapper' id='dynamic-input-division'>";
-  $html .= "<div class='division-input-cell'>
-              <input type='text' id='division-name-lv' placeholder='Nombre'>
+  $html .= "<div class='table-input'>";
+  $html .= "<div class='table-input-row'>
+							<span class='table-cell'>Nombre: </span>
+							<div class='table-input-cell'>
+								<input type='text' id='division-name-lv' placeholder='Nombre'>
+							</div>
+						</div>";
+  $html .= "<div class='table-input-row'>
+							<span class='table-cell'>Modalidad: </span>
+							<div class='table-input-cell'>
+								<select id='division-mode-lv'>
+                  <option value='1'>5v5</option>
+                  <option value='2'>7v7</option>
+                </select>
+							</div>
+						</div>";
+  $html .= "<div class='table-input-row'>
+							<span class='table-cell'>Categoria: </span>
+							<div class='table-input-cell'>
+								<select id='division-category-lv'>
+                  <option value='1'>Varonil</option>
+                  <option value='2'>Femenil</option>
+                  <option value='3'>Mixto</option>
+                </select>
+							</div>
             </div>";
-  $html .= "<div class='division-input-cell'>
-              <select id='division-category-lv'>
-                <option value='1'>Varonil</option>
-                <option value='2'>Femenil</option>
-                <option value='3'>Mixto</option>
-              </select>
+  $html .= "<div class='table-input-row'>
+              <span class='table-cell'>Equipos Minimo: </span>
+              <div class='table-input-cell'>
+                <input type='number' id='division-min-teams-lv' placeholder='Equipos Minimo' value='4' min='4'>
+              </div>
             </div>";
-  $html .= "<div class='division-input-cell'>
-              <select id='division-mode-lv'>
-                <option value='1'>5v5</option>
-                <option value='2'>7v7</option>
-              </select>
+  $html .= "<div class='table-input-row'>
+              <span class='table-cell'>Equipos Maximo: </span>
+              <div class='table-input-cell'>
+                <input type='number' id='division-max-teams-lv' placeholder='Equipos Maximo' value='30' min='4'>
+              </div>
             </div>";
-  $html .= "<div class='division-input-cell'>
-              <input type='number' id='division-min-teams-lv' placeholder='Equipos Minimo' value='4' min='4'>
-            </div>";
-  $html .= "<div class='division-input-cell'>
-              <input type='number' id='division-max-teams-lv' placeholder='Equipos Maximo' value='30' min='4'>
-            </div>";
-  $html .= "<div class='division-cell'>
-              <button id='add-division-button-lv'>Agregar</button>
-            </div>";
+  $html .= "<div class='table-input-row'>
+						<span class='table-cell'>Acciones: </span>
+							<div class='table-input-cell'>
+                <button id='add-division-button-lv'>Agregar</button>
+								<button id='update-division-button' data-division-id='0' class='hidden'>Actualizar</button>
+								<button id='cancel-division-button' class='hidden'>Cancelar</button>
+							</div>
+						</div>";
+						
+	$html .= "<div class='table-input-row'>
+							<span class='table-cell'>Resultado: </span>				
+							<span class='table-input-cell' id='division-result-table'>Resultado de la accion.</span>
+						</div>";
   $html .= "</div>";
 
   return $html;
 }
 
-function cuicpro_division_viewer() {
-  // create table header
-  $html = "<div class='divisions-wrapper'>
-            <div class='divisions-header'>
-              <span class='division-cell'>Nombre: </span>
-              <span class='division-cell'>Categoria: </span>
-              <span class='division-cell'>Modalidad: </span>
-              <span class='division-cell'>Equipos Minimo: </span>
-              <span class='division-cell'>Equipos Maximo: </span>
-              <span class='division-cell'>Acciones: </span>
+function cuicpro_divisions() {
+  $html = "";
+
+  $html .= "<div class='table-row'>
+              <span class='table-cell'>Nombre: </span>
+              <span class='table-cell'>Categoria: </span>
+              <span class='table-cell'>Modalidad: </span>
+              <span class='table-cell'>Equipos Minimo: </span>
+              <span class='table-cell'>Equipos Maximo: </span>
+              <span class='table-cell'>Acciones: </span>
             </div>
             ";
 
@@ -54,28 +79,39 @@ function cuicpro_division_viewer() {
 
   // add team data to table
   if ($divisions) {
-    foreach ($divisions as $division) {
-      $division->division_category = ($division->division_category == 1 ? "Varonil" : ($division->division_category == 2 ? "Femenil" : "Mixto"));
-      $division->division_mode = ($division->division_mode == 1 ? "5v5" : ($division->division_mode == 2 ? "7v7" : "Ambos"));
-      $html .= "<div class='division-wrapper' id='division-$division->division_id'>";
-      $html .= "<span class='division-cell'>" . esc_html($division->division_name) . "</span>";
-      $html .= "<span class='division-cell'>" . esc_html($division->division_category) . "</span>";
-      $html .= "<span class='division-cell'>" . esc_html($division->division_mode) . "</span>";
-      $html .= "<span class='division-cell'>" . esc_html($division->division_min_teams) . "</span>";
-      $html .= "<span class='division-cell'>" . esc_html($division->division_max_teams) . "</span>";
-      $html .= "<div class='division-cell'>
-                  <button id='delete-division-button-lv' data-division-id=$division->division_id>Eliminar</button>
-                </div>";
-      $html .= "</div>";
-    }
+  foreach ($divisions as $division) {
+  $division->division_category = ($division->division_category == 1 ? "Varonil" : ($division->division_category == 2 ? "Femenil" : "Mixto"));
+  $division->division_mode = ($division->division_mode == 1 ? "5v5" : ($division->division_mode == 2 ? "7v7" : "Ambos"));
+  $html .= "<div class='table-row' id='division-$division->division_id'>";
+  $html .= "<span class='table-cell'>" . esc_html($division->division_name) . "</span>";
+  $html .= "<span class='table-cell'>" . esc_html($division->division_category) . "</span>";
+  $html .= "<span class='table-cell'>" . esc_html($division->division_mode) . "</span>";
+  $html .= "<span class='table-cell'>" . esc_html($division->division_min_teams) . "</span>";
+  $html .= "<span class='table-cell'>" . esc_html($division->division_max_teams) . "</span>";
+  $html .= "<div class='table-cell'>
+              <button id='edit-division-button' data-division-id=$division->division_id>Editar</button>
+              <button id='delete-division-button-lv' data-division-id=$division->division_id>Eliminar</button>
+            </div>";
+  $html .= "</div>";
+  }
   } else {
-    $html .= "<div class='division-wrapper cell-hidden' id='division-data'>";
-    $html .= "</div>";
+  $html .= "<div class='table-row cell-hidden' id='division-data'>";
+  $html .= "</div>";
   }
 
+$html .= "</div>";
 
-  $html .= create_dynamic_input_division();
-  $html .= "</div> </div>";
+return $html;
+}
+
+function cuicpro_division_viewer() {
+  // create table header
+  $html = "<div class='table-view-container'>";
+  $html .= create_input_division();
+  $html .= "<div id='divisions-data'>";
+  $html .= cuicpro_divisions();
+  $html .= "</div>";
+  $html .= "</div>";
 
   echo $html;
 }

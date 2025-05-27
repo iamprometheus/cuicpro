@@ -27,8 +27,6 @@ jQuery(document).on("click", "#add-tournament-button", function (e) {
 	const tournamentName = jQuery("#tournament-name").val();
 	const tournamentDays =
 		jQuery("#tournament-days").multiDatesPicker("getDates");
-	const tournamentHoursStart = jQuery("#slider-hours").slider("values", 0);
-	const tournamentHoursEnd = jQuery("#slider-hours").slider("values", 1);
 
 	const tournamentHours = [];
 	jQuery("#hours-container")

@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       CUICPRO
  * Description:       CUICPRO Extension for data management
- * Version:           0.1.0
+ * Version:           0.8.0
  * Requires at least: 6.7
  * Requires PHP:      8.2
  * Author:            Aly Castro
@@ -94,13 +94,10 @@ function load_jquery() {
 	wp_enqueue_style('prettify', plugin_dir_url(__FILE__) . 'dashboard/css/prettify.css');
 	wp_enqueue_style('admin-page', plugin_dir_url(__FILE__) . 'dashboard/css/admin-page.css');
 
-	
 	wp_enqueue_script('jquery');
+	wp_enqueue_script('jquery-ui');
 	wp_enqueue_script('jquery-ui-tabs');
 	wp_enqueue_script('jquery-ui-slider');
-	wp_enqueue_style('jquery-ui', plugin_dir_url(__FILE__) . 'dashboard/css/jquery-ui.css');
-	wp_enqueue_style('jquery-ui-multidatespicker', plugin_dir_url(__FILE__) . 'dashboard/css/mdp.css');
-	wp_enqueue_style('prettify', plugin_dir_url(__FILE__) . 'dashboard/css/prettify.css');
 	wp_enqueue_script('jquery-ui-multidatespicker', plugin_dir_url(__FILE__) . 'dashboard/dependencies/jquery-ui.multidatespicker.js', array('jquery','jquery-ui-datepicker'));
 	wp_enqueue_script('leader-line', plugin_dir_url(__FILE__) . 'dashboard/dependencies/leader-line.min.js');
 	wp_enqueue_script('custom-script', plugin_dir_url(__FILE__) . 'dashboard/scripts/jQuery-ui-components.js', array('jquery'));
