@@ -16,9 +16,16 @@
 /* begin: jQuery UI Datepicker moving pixels fix */
 table.ui-datepicker-calendar {
 	border-collapse: separate;
+	background-color: white;
 }
 .ui-datepicker-calendar td {
 	border: 1px solid transparent;
+}
+
+.ui-datepicker-calendar span {
+	display: flex;
+	justify-content: center;
+	width: auto;
 }
 
 table.ui-datepicker-calendar tbody a {
@@ -26,9 +33,11 @@ table.ui-datepicker-calendar tbody a {
 	background: #555555 url("images/ui-bg_glass_20_555555_1x400.png") 50% 50%
 		repeat-x;
 	font-weight: bold;
+	justify-content: center;
 	color: #eeeeee;
 	display: flex;
 }
+
 /* end: jQuery UI Datepicker moving pixels fix */
 
 /* begin: jQuery UI Datepicker emphasis on selected dates */

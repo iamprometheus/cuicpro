@@ -7,31 +7,31 @@ function create_input_coach() {
   $html .= "<div class='table-input-row'>
 							<span class='table-cell'>Nombre: </span>
 							<div class='table-input-cell'>
-                <input type='text' id='coach-name-cv' placeholder='Nombre'>
+                <input type='text' id='coach-name' placeholder='Nombre'>
 							</div>
 						</div>";
   $html .= "<div class='table-input-row'>
               <span class='table-cell'>Contacto: </span>
               <div class='table-input-cell'>
-                <input type='text' id='coach-contact-cv' placeholder='Contacto'>
+                <input type='text' id='coach-contact' placeholder='Contacto'>
               </div>
             </div>";
   $html .= "<div class='table-input-row'>
               <span class='table-cell'>Ciudad: </span>
               <div class='table-input-cell'>
-                <input type='text' id='coach-city-cv' placeholder='Ciudad'>
+                <input type='text' id='coach-city' placeholder='Ciudad'>
               </div>
             </div>";
   $html .= "<div class='table-input-row'>
 							<span class='table-cell'>Estado: </span>
 							<div class='table-input-cell'>
-                <input type='text' id='coach-state-cv' placeholder='Estado'>
+                <input type='text' id='coach-state' placeholder='Estado'>
 							</div>
 						</div>";
   $html .= "<div class='table-input-row'>
 							<span class='table-cell'>Pais: </span>
 							<div class='table-input-cell'>
-                <input type='text' id='coach-country-cv' placeholder='Pais'>
+                <input type='text' id='coach-country' placeholder='Pais'>
 							</div>
 						</div>";
   $html .= "<div class='table-input-row'>

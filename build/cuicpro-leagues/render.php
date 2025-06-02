@@ -51,7 +51,7 @@ if (!function_exists('render_teams_for_division')) {
 			$team_name = $team->team_name;
 			$logo = str_replace(" ", "-", $team->logo);
 			$tddata.="<div class='team-container'>
-								<img src='http://test.local/$logo' width='50' height='50' />
+								<img src='http://cuic.pro/$logo' width='50' height='50' />
 								<p>"
 									.$team_name
 								."</p>

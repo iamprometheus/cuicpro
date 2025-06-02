@@ -28,6 +28,8 @@ Class PendingMatchesDatabase {
             match_time TINYINT UNSIGNED NOT NULL,
             goals_team_1 INT UNSIGNED NULL,
             goals_team_2 INT UNSIGNED NULL,
+            match_link_1 MEDIUMINT UNSIGNED NULL,
+            match_link_2 MEDIUMINT UNSIGNED NULL,
             bracket_round TINYINT UNSIGNED NOT NULL,
             PRIMARY KEY (match_id),
             FOREIGN KEY (tournament_id) REFERENCES {$wpdb->prefix}cuicpro_tournaments(tournament_id),
@@ -76,6 +78,12 @@ Class PendingMatchesDatabase {
         return $match;
     }
 
+    public static function get_match_by_bracket_match(int $bracket_match, int $bracket_id) {
+        global $wpdb;
+        $match = $wpdb->get_row( "SELECT * FROM {$wpdb->prefix}cuicpro_pending_matches WHERE bracket_match = $bracket_match AND bracket_id = $bracket_id" );
+        return $match;
+    }
+
     public static function insert_match(
         int $tournament_id, 
         int $division_id, 
@@ -105,6 +113,8 @@ Class PendingMatchesDatabase {
                 'match_time' => $match_time,
                 'bracket_match' => $bracket_match,
                 'bracket_round' => $bracket_round,
+                'match_link_1' => null,
+                'match_link_2' => null,
             )
         );
 
@@ -112,6 +122,24 @@ Class PendingMatchesDatabase {
             return true;
         }
         return false;
+    }
+
+    public static function update_match_link(int $match_id, int | null $match_link_1, int | null $match_link_2) {
+        global $wpdb;
+        $result = $wpdb->update(
+            $wpdb->prefix . 'cuicpro_pending_matches',
+            array(
+                'match_link_1' => $match_link_1,
+                'match_link_2' => $match_link_2,
+            ),
+            array(
+                'match_id' => $match_id,
+            )
+        );
+        if ( $result ) {
+            return "Match link updated successfully";
+        }
+        return "Match link not updated";
     }
 
     public static function update_match(int $match_id, int | null $team_id_1, int | null $team_id_2, int | null $goals_team_1, int | null $goals_team_2 ) {
@@ -137,7 +165,7 @@ Class PendingMatchesDatabase {
 
     public static function delete_match(int $match_id ) {
         global $wpdb;
-        $result = $wpdb->delete(
+        $result = $wpdb->query(
             $wpdb->prefix . 'cuicpro_pending_matches',
             array(
                 'match_id' => $match_id,
@@ -147,5 +175,20 @@ Class PendingMatchesDatabase {
             return "Match deleted successfully";
         }
         return "Match not deleted or match not found";
+    }
+
+    public static function delete_pending_matches_by_tournament(int $tournament_id ) {
+        global $wpdb;
+        $wpdb->show_errors();
+        $result = $wpdb->delete(
+            $wpdb->prefix . 'cuicpro_pending_matches',
+            array(
+                'tournament_id' => $tournament_id,
+            )
+        );
+        if ( $result ) {
+            return "Pending matches deleted successfully";
+        }
+        return "Pending matches not deleted or pending matches not found";
     }
 }

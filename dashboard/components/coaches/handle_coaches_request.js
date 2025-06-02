@@ -1,11 +1,11 @@
-jQuery(document).on("click", "#add-coach-button-cv", function (e) {
+jQuery(document).on("click", "#add-coach-button", function (e) {
 	e.preventDefault();
 
-	const coachName = jQuery("#coach-name-cv").val();
-	const coachContact = jQuery("#coach-contact-cv").val();
-	const coachCity = jQuery("#coach-city-cv").val();
-	const coachState = jQuery("#coach-state-cv").val();
-	const coachCountry = jQuery("#coach-country-cv").val();
+	const coachName = jQuery("#coach-name").val();
+	const coachContact = jQuery("#coach-contact").val();
+	const coachCity = jQuery("#coach-city").val();
+	const coachState = jQuery("#coach-state").val();
+	const coachCountry = jQuery("#coach-country").val();
 
 	if (coachName === "") {
 		alert("Agregar un nombre al entrenador");
@@ -29,47 +29,28 @@ jQuery(document).on("click", "#add-coach-button-cv", function (e) {
 			coach_country: coachCountry,
 		},
 		success: function (response) {
+			console.log(response);
 			if (response.success) {
-				alert(response.data.message);
-
 				// add coach to the table
-				const element = document.querySelector("#dynamic-input-coach");
-				const newElement = document.createElement("div");
-				newElement.innerHTML = `
-				<div class="coach-wrapper" id="coach-${response.data.coach.coach_id}">
-					<span class="coach-cell">${response.data.coach.coach_name}</span>
-					<span class="coach-cell">${response.data.coach.coach_contact}</span>
-					<span class="coach-cell">${response.data.coach.coach_city}</span>
-					<span class="coach-cell">${response.data.coach.coach_state}</span>
-					<span class="coach-cell">${response.data.coach.coach_country}</span>
-				<div class="team-cell">	
-					<button id="delete-coach-button-cv" data-coach-id="${response.data.coach.coach_id}">Eliminar</button>
-				</div></div>
-				`;
-				element.insertAdjacentElement("beforebegin", newElement);
 
-				const inputName = document.querySelector("#coach-name-cv");
-				inputName.value = "";
-				const inputContact = document.querySelector("#coach-contact-cv");
-				inputContact.value = "";
-				const inputCity = document.querySelector("#coach-city-cv");
-				inputCity.value = "";
-				const inputState = document.querySelector("#coach-state-cv");
-				inputState.value = "";
-				const inputCountry = document.querySelector("#coach-country-cv");
-				inputCountry.value = "";
+				jQuery("#coaches-data").append(response.data.html);
 
-				// update coaches dropdown from team by league viewer
-				const dropdown = document.querySelector("#team-coach-ta");
-				if (dropdown) {
-					dropdown.innerHTML += `<option value="${response.data.coach.coach_id}">${response.data.coach.coach_name}</option>`;
-				}
+				clearCoachInputs();
 
 				// update coaches dropdown from teams by coach viewer
-				const dropdown2 = document.querySelector("#coaches-dropdown-tv");
-				dropdown2.innerHTML += `<option value="${response.data.coach.coach_id}">${response.data.coach.coach_name}</option>`;
+				jQuery("#coaches-dropdown-tv").append(
+					`<option value="${response.data.coach.coach_id}">${response.data.coach.coach_name}</option>`,
+				);
+
+				jQuery("#coach-result-table")
+					.removeClass("error")
+					.addClass("success")
+					.html(response.data.message);
 			} else {
-				alert(response.data.message);
+				jQuery("#coach-result-table")
+					.removeClass("success")
+					.addClass("error")
+					.html(response.data.message);
 			}
 		},
 		error: function (xhr, status, error) {
@@ -89,24 +70,25 @@ jQuery(document).on("click", "#delete-coach-button", function () {
 			coach_id: coachID,
 		},
 		success: function (response) {
-			alert(response.data.message);
+			console.log(response);
 			if (response.success) {
-				const parent = document
-					.querySelector(`#coach-${coachID}`)
-					.closest("div");
+				const parent = jQuery(`#coach-${coachID}`).closest("div");
 				parent.remove();
 
-				// remove option from teams by league viewer dropdown
-				const dropdown = document.querySelector("#team-coach-ta");
-				if (dropdown) {
-					dropdown.querySelector(`option[value="${coachID}"]`).remove();
-				}
-
 				// remove option from teams by coach viewer dropdown
-				const dropdown2 = document.querySelector("#coaches-dropdown-tv");
-				dropdown2.querySelector(`option[value="${coachID}"]`).remove();
-				const element = document.querySelector("#coach-data");
-				element.innerHTML = "";
+				jQuery("#coaches-dropdown-tv")
+					.find(`option[value="${coachID}"]`)
+					.remove();
+
+				jQuery("#coach-result-table")
+					.removeClass("error")
+					.addClass("success")
+					.html(response.data.message);
+			} else {
+				jQuery("#coach-result-table")
+					.removeClass("success")
+					.addClass("error")
+					.html(response.data.message);
 			}
 		},
 		error: function (xhr, status, error) {
@@ -114,3 +96,117 @@ jQuery(document).on("click", "#delete-coach-button", function () {
 		},
 	});
 });
+
+jQuery(document).on("click", "#edit-coach-button", function (e) {
+	e.preventDefault();
+	const coachID = jQuery(this).data("coach-id");
+
+	jQuery.ajax({
+		type: "POST",
+		url: cuicpro.ajax_url,
+		data: {
+			action: "edit_coach",
+			coach_id: coachID,
+		},
+		success: function (response) {
+			if (response.success) {
+				jQuery("#coach-name").val(response.data.coach.coach_name);
+				jQuery("#coach-contact").val(response.data.coach.coach_contact);
+				jQuery("#coach-city").val(response.data.coach.coach_city);
+				jQuery("#coach-state").val(response.data.coach.coach_state);
+				jQuery("#coach-country").val(response.data.coach.coach_country);
+
+				jQuery("#add-coach-button").addClass("hidden");
+				jQuery("#update-coach-button").removeClass("hidden");
+				jQuery("#cancel-coach-button").removeClass("hidden");
+
+				jQuery("#update-coach-button").attr(
+					"data-coach-id",
+					response.data.coach.coach_id,
+				);
+
+				jQuery("#coach-result-table")
+					.removeClass("error")
+					.addClass("success")
+					.html(response.data.message);
+			} else {
+				jQuery("#coach-result-table")
+					.removeClass("success")
+					.addClass("error")
+					.html(response.data.message);
+			}
+		},
+		error: function (xhr, status, error) {
+			console.error("Error:", error);
+		},
+	});
+});
+
+jQuery(document).on("click", "#cancel-coach-button", function () {
+	clearCoachInputs();
+
+	jQuery("#add-coach-button").removeClass("hidden");
+	jQuery("#update-coach-button").addClass("hidden");
+	jQuery("#cancel-coach-button").addClass("hidden");
+
+	jQuery("#coach-result-table")
+		.removeClass("error")
+		.addClass("success")
+		.html("Edicion cancelada");
+});
+
+jQuery(document).on("click", "#update-coach-button", function () {
+	const coachID = jQuery(this).data("coach-id");
+	const coachName = jQuery("#coach-name").val();
+	const coachContact = jQuery("#coach-contact").val();
+	const coachCity = jQuery("#coach-city").val();
+	const coachState = jQuery("#coach-state").val();
+	const coachCountry = jQuery("#coach-country").val();
+
+	jQuery.ajax({
+		type: "POST",
+		url: cuicpro.ajax_url,
+		data: {
+			action: "update_coach",
+			coach_id: coachID,
+			coach_name: coachName,
+			coach_contact: coachContact,
+			coach_city: coachCity,
+			coach_state: coachState,
+			coach_country: coachCountry,
+		},
+		success: function (response) {
+			if (response.success) {
+				// update coach in the table
+				jQuery(`#coach-${coachID}`).replaceWith(response.data.html);
+
+				clearCoachInputs();
+
+				jQuery("#add-coach-button").removeClass("hidden");
+				jQuery("#update-coach-button").addClass("hidden");
+				jQuery("#cancel-coach-button").addClass("hidden");
+
+				jQuery("#coach-result-table")
+					.removeClass("error")
+					.addClass("success")
+					.html(response.data.message);
+			} else {
+				jQuery("#coach-result-table")
+					.removeClass("success")
+					.addClass("error")
+					.html(response.data.message);
+			}
+		},
+		error: function (xhr, status, error) {
+			console.error("Error:", error);
+		},
+	});
+});
+
+function clearCoachInputs() {
+	jQuery("#coach-name").val("");
+	jQuery("#coach-contact").val("");
+	jQuery("#coach-city").val("");
+	jQuery("#coach-state").val("");
+	jQuery("#coach-country").val("");
+}

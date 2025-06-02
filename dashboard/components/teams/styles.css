@@ -14,7 +14,6 @@
 .table-view-container {
 	display: flex;
 	gap: 30px;
-	overflow: auto;
 	padding-top: 2px;
 }
 
@@ -45,7 +44,7 @@
 .table-cell,
 .table-input-cell-header,
 .table-input-cell {
-	border: 1px solid #ccc;
+	border: 1px solid #414141;
 	justify-content: center;
 	align-items: center;
 }
@@ -85,6 +84,11 @@
 	width: 17.5px;
 	height: 17.5px;
 	align-self: center;
+}
+
+.table-input-cell input[type="file"] {
+	width: 100%;
+	padding: 0;
 }
 
 .success {

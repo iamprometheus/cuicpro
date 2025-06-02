@@ -7,14 +7,19 @@ function on_add_team($team) {
   $logo = str_replace(" ", "-", $team->logo);
   $html .= "<div class='table-row' id='team-$team->team_id'>";
   $html .= "<span class='table-cell'>" . esc_html($team->team_name) . "</span>";
-  $html .= "<span class='table-cell'>" . esc_html($team->division_name) . "</span>";
+  $html .= "<div class='table-cell'>
+              <select id='team-division-dropdown' data-team-id=$team->team_id onchange='updateTeamDivision($team->team_id)'>
+                " . create_divisions_dropdown($team->division_id) . "
+              </select>
+            </div>";
   $html .= "<span class='table-cell'>" . esc_html($team->team_category) . "</span>";
   $html .= "<span class='table-cell'>" . esc_html($team->team_mode) . "</span>";
   $html .= "<div class='table-cell'>
               <img src='http://cuic.pro/$logo'>
             </div>";
   $html .= "<div class='table-cell'>
-              <button id='delete-team-button-tv' data-team-id=$team->team_id>Eliminar</button>
+              <button id='edit-team-button' data-team-id=$team->team_id>Editar</button>
+              <button id='delete-team-button' data-team-id=$team->team_id>Eliminar</button>
             </div>";
   $html .= "</div>";
   return $html;
@@ -54,7 +59,6 @@ function fetch_division_data() {
 
 function create_team_entry($team) {
   $html = "";
-  $logo = str_replace(" ", "-", $team->logo);
 
   $team->team_category = $team->team_category === "1" ? "Varonil" : ($team->team_category === "2" ? "Femenil" : "Mixto");
   $team->team_mode = $team->team_mode === "1" ? "5v5" : "7v7";
@@ -62,14 +66,14 @@ function create_team_entry($team) {
   $html .= "<div class='table-row' id='team-$team->team_id'>";
   $html .= "<span class='table-cell'>" . esc_html($team->team_name) . "</span>";
   $html .= "<div class='table-cell'>
-            <select id='team-division-dropdown' data-team-id=$team->team_id onchange='updateTeamDivision($team->team_id)'>
-              " . create_divisions_dropdown($team->division_id) . "
-            </select>
+              <select id='team-division-dropdown' data-team-id=$team->team_id onchange='updateTeamDivision($team->team_id)'>
+                " . create_divisions_dropdown($team->division_id) . "
+              </select>
             </div>";
-  $html .= "<span class='table-cell'>" . esc_html($team->team_mode) . "</span>";
   $html .= "<span class='table-cell'>" . esc_html($team->team_category) . "</span>";
+  $html .= "<span class='table-cell'>" . esc_html($team->team_mode) . "</span>";
   $html .= "<div class='table-cell'>
-              <img src='http://cuic.pro/$logo'>
+              <img src='http://cuic.pro/$team->logo'>
             </div>";
   $html .= "<div class='table-cell'>
               <button id='edit-team-button' data-team-id=$team->team_id>Editar</button>
@@ -84,7 +88,7 @@ function create_coach_data($coach_id) {
   $teams = TeamsDatabase::get_teams_by_coach($coach_id);
 
   // create table header
-  $html = "<div class='table-wrapper'>
+  $html = "<div class='table-wrapper' id='teams-coach-data'>
             <div class='table-row'>
               <span class='table-cell'>Equipo: </span>
               <span class='table-cell'>Division: </span>
@@ -112,7 +116,7 @@ function fetch_coach_data() {
   
   $html = create_coach_data($coach_id);
 
-  wp_send_json_success(['html' => $html]);
+  wp_send_json_success(['message' => 'Equipos obtenidos correctamente', 'html' => $html]);
 }
 
 function edit_team() {
@@ -187,25 +191,37 @@ function update_team_division() {
   wp_send_json_error(['message' => 'No se pudo actualizar la division.']);
 }
 
-function add_team() {
-  if (!isset($_POST['division_id']) || !isset($_POST['team_name']) || !isset($_POST['team_category']) || !isset($_POST['team_mode']) || !isset($_POST['coach_id']) || !isset($_POST['logo'])) {
-    wp_send_json_error(['message' => 'Faltan datos']);
-  }
+function addImageToWordPressMediaLibrary(string $path_to_file, string $image, string $title, &$attachment_id = null): bool { 
+  $file_array = ["name" => $image, "tmp_name" => $path_to_file, "title" => $title]; // Add image to Media Library 
+  $attachment_id = media_handle_sideload($file_array , 0, ''); 
+  if(!is_numeric($attachment_id )){ 
+    return false;
+  } 
+  return true; 
+}
 
+function add_team() {
+  if (!isset($_POST['division_id']) || !isset($_POST['team_name']) || !isset($_POST['team_category']) || !isset($_POST['team_mode']) || !isset($_POST['coach_id']) || !isset($_FILES['logo'])) {
+    wp_send_json_error(['message' => 'Faltan datos', 'data' => $_POST]);
+  }
   $team_name = sanitize_text_field($_POST['team_name']);
-  $coach_id = intval($_POST['coach_id']);
   $division_id = intval($_POST['division_id']);
   if ($division_id == 0) {
     $division_id = null;
   }
   $team_category = intval($_POST['team_category']);
   $team_mode = intval($_POST['team_mode']);
-  $logo = sanitize_text_field($_POST['logo']);
+  $coach_id = intval($_POST['coach_id']);
+  $logo = $_FILES['logo'];
   
-  $result = TeamsDatabase::insert_team($team_name, $division_id, $team_category, $team_mode, $coach_id, $logo);
+  // upload image to wordpress and get the attachment id to link to team
+  $attachment_id = null;
+  addImageToWordPressMediaLibrary($logo['tmp_name'], $logo['name'], $logo['name'], $attachment_id);
+  
+  $result = TeamsDatabase::insert_team($team_name, $division_id, $team_category, $team_mode, $coach_id, strval($attachment_id));
   if ($result) {
     $team = TeamsDatabase::get_team_by_name($team_name, $division_id);
-    $team->division_name = DivisionsDatabase::get_division_by_id($team->division_id)->division_name;
+    $team->division_id = $division_id;
     $team->team_category = $team->team_category === "1" ? "5v5" : "7v7";
     $team->team_mode = $team->team_mode === "1" ? "Varonil" : ($team->team_mode === "2" ? "Femenil" : "Mixto");
     wp_send_json_success(['message' => 'Equipo agregado correctamente', 'html' => on_add_team($team)]);

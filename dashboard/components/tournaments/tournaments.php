@@ -3,38 +3,44 @@
 // function to display the dropdown of leagues to show teams
 function create_tournament_fields() {
   $html = "<div id='tournament-data'>
-            <div class='tournament-input-header'>";
-  $html .= "<div class='tournament-input-row'>
-              <label for='tournament-name'>Nombre:</label>
-              <input type='text' id='tournament-name' placeholder='Nombre'>
+            <div class='tournament-table-row'>
+              <span class='tournament-table-cell-header'>Nombre:</span>
+              <div class='tournament-table-cell'>
+                <input type='text' id='tournament-name' placeholder='Nombre'>
+              </div>
             </div>";
 
-  $html .= "<div class='tournament-input-row'>
-              <label for='tournament-days'>Dias de juego:</label>
-              <input type='text' id='tournament-days' readonly placeholder='Dias de juego'>
+  $html .= "<div class='tournament-table-row'>
+              <span class='tournament-table-cell-header'>Dias de juego:</span>
+              <div class='tournament-table-cell'>
+                <input type='text' id='tournament-days' readonly placeholder='Dias de juego'>
+              </div>
             </div>";
 
-  $html .= "<div class='tournament-input-row'>
-              <label for='hours-range'>Horarios:</label>
+  $html .= "<div class='tournament-table-row'>
+              <span class='tournament-table-cell-header'>Horarios:</span>
               <div id='hours-container' class='hours-container'>
                 
               </div>
             </div>";
 
-  $html .= "<div class='tournament-input-row'>
-            <label for='fields-5v5-range'>Campos 5v5:</label>
-            <input type='text' id='fields-5v5-range' readonly style='border:0; color:#f6931f; font-weight:bold;'>
-            <div id='slider-fields-5v5' class='tournament-slider'></div>
-          </div>";
+  $html .= "<div class='tournament-table-row'>
+              <span class='tournament-table-cell-header'>Campos 5v5:</span>
+              <div class='tournament-table-cell'>
+                <input type='text' id='fields-5v5-range' readonly style='border:0; color:#f6931f; font-weight:bold;'>
+              </div>
+              <div id='slider-fields-5v5' class='tournament-slider'></div>
+            </div>";
 
-  $html .= "<div class='tournament-input-row'>
-            <label for='fields-7v7-range'>Campos 7v7:</label>
-            <input type='text' id='fields-7v7-range' readonly style='border:0; color:#f6931f; font-weight:bold;'>
-            <div id='slider-fields-7v7' class='tournament-slider'></div>
-          </div>";
+  $html .= "<div class='tournament-table-row'>
+              <span class='tournament-table-cell-header'>Campos 7v7:</span>
+              <div class='tournament-table-cell'>
+                <input type='text' id='fields-7v7-range' readonly style='border:0; color:#f6931f; font-weight:bold;'>
+              </div>
+              <div id='slider-fields-7v7' class='tournament-slider'></div>
+            </div>";
 
   $html .= "<button id='add-tournament-button'>Crear</button>";
-  $html .= "</div>";
   $html .= "</div>"; 
 
   return $html;
@@ -59,6 +65,8 @@ function cuicpro_tournament_viewer() {
     return;
   }
 
+  $tournament_days = str_replace(',', ', ', $tournament->tournament_days);
+
   // create table header
   $html = "<div class='tournament-data'>
             <div class='tournament-table-row'>
@@ -67,9 +75,9 @@ function cuicpro_tournament_viewer() {
             </div>
             <div class='tournament-table-row'>
               <span class='tournament-table-cell-header'>Calendario:</span>
-              <span class='tournament-table-cell'>
-              <input type='text' id='tournament-selected-days' readonly value='$tournament->tournament_days'>
-              </span>
+              <div class='tournament-table-cell'>
+                <input type='text' id='tournament-selected-days' readonly value='$tournament_days'>
+              </div>
             </div>
             <div class='tournament-table-row'>
               <span class='tournament-table-cell-header'>Horarios:</span>
@@ -91,6 +99,10 @@ function cuicpro_tournament_viewer() {
                 <button id='start-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "'>Iniciar Torneo</button>
                 <button id='delete-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "'>Eliminar</button>
               </div>
+            </div>
+            <div class='tournament-table-row'>
+              <span class='tournament-table-cell-header'>Resultado:</span>
+              <span class='tournament-table-cell' id='tournament-result-table'>Resultado de la accion.</span>
             </div>
           </div>
             ";

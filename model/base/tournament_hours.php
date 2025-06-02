@@ -91,4 +91,19 @@ Class TournamentHoursDatabase {
       $tournament = $wpdb->get_row( $sql );
       return $tournament;
     }
+
+    public static function delete_tournament_hours_by_tournament(int $tournament_id ) {
+      global $wpdb;
+      $wpdb->show_errors();
+      $result = $wpdb->delete(
+          $wpdb->prefix . 'cuicpro_tournament_hours',
+          array(
+              'tournament_id' => $tournament_id,
+          )
+      );
+      if ( $result ) {
+          return "Tournament hours deleted successfully";
+      }
+      return "Tournament hours not deleted or tournament hours not found";
+    }
 }

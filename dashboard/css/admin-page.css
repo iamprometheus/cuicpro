@@ -25,10 +25,9 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	border: 1px solid #ccc;
+	border: 1px solid #696969;
 	width: 100px;
 	height: 70px;
-	margin: 0px;
 	font-size: 14px;
 	text-align: center;
 }
@@ -38,7 +37,7 @@
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	border: 1px solid #ccc;
+	border: 1px solid #696969;
 	width: 200px;
 	height: 70px;
 	font-size: 14px;
@@ -48,7 +47,7 @@
 	display: flex;
 	flex-direction: column;
 	justify-content: space-around;
-	border: 1px solid #ccc;
+	border: 1px solid #696969;
 	width: 180px;
 	height: 70px;
 	font-size: 14px;
@@ -63,10 +62,28 @@
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
+	padding: 0px 10px;
 }
 
 .hours-slider {
 	display: flex;
 	gap: 10px;
 	align-items: center;
+}
+
+#coaches-data,
+#divisions-data {
+	max-height: 60vh;
+	width: 100%;
+	overflow: auto;
+	padding-right: 40px;
+	padding-top: 2px;
+}
+
+#officials-data {
+	max-height: 80vh;
+	width: 100%;
+	overflow: auto;
+	padding-right: 40px;
+	padding-top: 2px;
 }

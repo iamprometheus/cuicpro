@@ -98,4 +98,19 @@ Class BracketsDatabase {
         }
         return "Bracket not deleted or bracket not found";
     }
+
+    public static function delete_brackets_by_tournament(int $tournament_id ) {
+      global $wpdb;
+      $wpdb->show_errors();
+      $result = $wpdb->delete(
+          $wpdb->prefix . 'cuicpro_brackets',
+          array(
+              'tournament_id' => $tournament_id,
+          )
+      );
+      if ( $result ) {
+          return "Brackets deleted successfully";
+      }
+      return "Brackets not deleted or brackets not found";
+  }
 }

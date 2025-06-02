@@ -150,6 +150,8 @@ Class TournamentsDatabase {
             array(
                 'tournament_visible' => false,
                 'tournament_is_active' => false,
+                'tournament_start_date' => null,
+                'tournament_end_date' => null,
             ),
             array(
                 'tournament_id' => $tournament_id,

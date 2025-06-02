@@ -2,11 +2,13 @@
 
 function create_divisions_dropdown($selected_id = null) {
 	$html = "";
-	$active_tournament = TournamentsDatabase::get_active_tournament();
-	$divisions = DivisionsDatabase::get_divisions($active_tournament->tournament_id);
+	$divisions = DivisionsDatabase::get_divisions();
+
 	$html .= "<option value='0'>Division Pendiente</option>";
 	foreach ($divisions as $division) {
-		$html .= "<option value='" . esc_attr($division->division_id) . "'" . ($selected_id == $division->division_id ? "selected" : "") . ">" . esc_html($division->division_name) . "</option>";
+		$category = $division->division_category === "1" ? "Varonil" : ($division->division_category === "2" ? "Femenil" : "Mixto");
+		$mode = $division->division_mode === "1" ? "5v5" : "7v7";
+		$html .= "<option value='" . esc_attr($division->division_id) . "'" . ($selected_id == $division->division_id ? "selected" : "") . ">" . esc_html($division->division_name) . " " . esc_html($mode) . " " . esc_html($category) . "</option>";
 	}
 	return $html;
 }
@@ -51,7 +53,7 @@ function create_input_team() {
   $html .= "<div class='table-input-row'>
 							<span class='table-cell'>Logo: </span>
 							<div class='table-input-cell'>	
-								<input type='text' id='team-logo-table' placeholder='Logo'>
+								<input type='file' id='team-logo-input' accept='.png, .jpg, .jpeg' placeholder='Seleccionar Logo'>
 							</div>
 						</div>";
   $html .= "<div class='table-input-row'>
@@ -79,8 +81,7 @@ function cuicpro_teams_by_division() {
   $html .= "<option value='0'>Selecciona una Division</option>\n";
 	
   // Fetch divisions from database
-  $active_tournament = TournamentsDatabase::get_active_tournament();
-  $divisions = $active_tournament ? DivisionsDatabase::get_divisions($active_tournament->tournament_id) : null;
+  $divisions = DivisionsDatabase::get_divisions();
 
   if ($divisions) {
       foreach ($divisions as $division) {

@@ -16,10 +16,48 @@ function create_bracket_match($match) {
 
   $match_time = $match->match_time . ":00";
 
+  if ($team_1_name == "TBD") {
+    // get match info
+    $team_1_name = "";
+    $match_info = PendingMatchesDatabase::get_match_by_bracket_match($match->bracket_match, $match->bracket_id);
+
+    if ($match_info->match_link_1) {
+      $previous_match_info = PendingMatchesDatabase::get_match_by_bracket_match($match_info->match_link_1, $match->bracket_id);
+      $team_1_name = "<select name='team_1_winner'>";
+      $team_1_name .= "<option value=''>Seleccionar</option>";
+      $team_1_name .= "<option value='" . $previous_match_info->team_id_2 . "'>" . TeamsDatabase::get_team_by_id($previous_match_info->team_id_2)->team_name . "</option>";
+      $team_1_name .= "<option value='" . $previous_match_info->team_id_1 . "'>" . TeamsDatabase::get_team_by_id($previous_match_info->team_id_1)->team_name . "</option>";
+      $team_1_name .= "</select>";
+    } else {
+      $team_1_name = "<select name='team_1_winner'>";
+      $team_1_name .= "<option value=''>Seleccionar</option>";
+      $team_1_name .= "</select>";
+    }
+  }
+
+  if ($team_2_name == "TBD") {
+    // get match info
+    $team_2_name = "";
+    $match_info = PendingMatchesDatabase::get_match_by_bracket_match($match->bracket_match, $match->bracket_id);
+    
+    if ($match_info->match_link_2) {
+      $previous_match_info = PendingMatchesDatabase::get_match_by_bracket_match($match_info->match_link_2, $match->bracket_id);
+      $team_2_name = "<select name='team_2_winner'>";
+      $team_2_name .= "<option value=''>Seleccionar</option>";
+      $team_2_name .= "<option value='" . $previous_match_info->team_id_2 . "'>" . TeamsDatabase::get_team_by_id($previous_match_info->team_id_2)->team_name . "</option>";
+      $team_2_name .= "<option value='" . $previous_match_info->team_id_1 . "'>" . TeamsDatabase::get_team_by_id($previous_match_info->team_id_1)->team_name . "</option>";
+      $team_2_name .= "</select>";
+    } else {
+      $team_2_name = "<select name='team_2_winner'>";
+      $team_2_name .= "<option value=''>Seleccionar</option>";
+      $team_2_name .= "</select>";
+    }
+  }
+
   $html = "<div id='match_" . $match->match_id . "' class='bracket-match'>";
-  $html .= "<span>" . $team_1_name . "</span>";
-  $html .= "<span>VS</span>";
   $html .= "<span>" . $team_2_name . "</span>";
+  $html .= "<span>VS</span>";
+  $html .= "<span>" . $team_1_name . "</span>";
   $html .= "</div>";
   $html .= "<div class='match-data-container'>";
   $html .= "<div class='match-data'>";
@@ -41,7 +79,7 @@ function on_fetch_bracket_data(int $bracket_id) {
     2 => [2, 1],
     4 => [4,2,3,1],
     8 => [8,4,6,2,7,3,5,1],
-    16 => [16,8,12,4,14,6,10,2,15,7,11,3,13,59,1],
+    16 => [16,8,12,4,14,6,10,2,15,7,11,3,13,5,9,1],
     32 => [32,16,24,8,28,12,20,4,31,15,23,7,27,13,19,5,30,14,22,6,26,10,25,3,29,9,11,1,33,17,21,18],
   ];
   $bracket_rounds = array_unique(array_map(function($match) {

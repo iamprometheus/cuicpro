@@ -158,7 +158,6 @@ class TournamentScheduler {
   }
 
   private function initializeBrackets($divisions) {
-  	
     $total_hours = [];
     $days = $this->hours;
     foreach ($days as $hour) {
@@ -216,16 +215,15 @@ class TournamentScheduler {
       }
       // if last day has no matches, 
       if ($matches_per_day[count($tournament_days)-1] == 0) 
-          $matches_per_day = array_reverse($matches_per_day);
-
-      $division['matches_per_day'] = $matches_per_day;
-  $division['bye_teams'] = $bye_teams;
-      $division['matches'] = $matches;
+        $matches_per_day = array_reverse($matches_per_day);
+        $division['matches_per_day'] = $matches_per_day;
+        $division['bye_teams'] = $bye_teams;
+        $division['matches'] = $matches;
+      }
+      return $divisions;
   }
-  return $divisions;
-}
   
-    public function scheduleMatches() {
+  public function scheduleMatches() {
     // First, assign randomized teams to round 1, handle BYEs
     foreach ($this->brackets as &$division) {
         $teams = $division['teams'];

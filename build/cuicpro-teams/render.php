@@ -27,7 +27,7 @@ if (!function_exists('cuicpro_teams_render_teams')) {
 			$team_name = $team->team_name;
 			$logo = str_replace(" ", "-", $team->logo);
 			$tddata.="<div class='teams-grid-item'>
-								<img src='http://test.local/$logo' width='25' height='25' />
+								<img src='http://cuic.pro/$logo' width='25' height='25' />
 								<p>"
 									.$team_name
 								."</p>

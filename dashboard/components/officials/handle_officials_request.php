@@ -25,9 +25,6 @@ function delete_official() {
   if (!isset($_POST['official_id'])) {
     wp_send_json_error(['message' => 'No se pudo eliminar el arbitro']);
   }
-  if (OfficialsDatabase::get_official_by_id(intval($_POST['official_id']))) {
-    wp_send_json_error(['message' => 'No se pudo eliminar el arbitro, hay equipos asociados']);
-  }
   $official_id = intval($_POST['official_id']);
   OfficialsDatabase::delete_official($official_id);
   wp_send_json_success(['message' => 'Arbitro eliminado correctamente']);

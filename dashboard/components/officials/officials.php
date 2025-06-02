@@ -13,7 +13,15 @@ function render_teams() {
 
 function create_input_official() {
   $tournament = TournamentsDatabase::get_active_tournament();
-  
+
+
+  $tournament_days =  "";
+  if (!$tournament) {
+     $tournament_days = "";
+  } else {
+    $tournament_days = str_replace(',', ', ', $tournament->tournament_days);
+  }
+
   $html = "";
   // dynamic input fields for adding teams
   $html .= "<div class='table-input' id='dynamic-input-official'>";
@@ -33,7 +41,7 @@ function create_input_official() {
   $html .= "<div class='table-input-row'>
               <span class='table-cell'>Dias: </span>
               <div class='table-input-cell'>
-                <input type='text' id='official-schedule' readonly value='$tournament->tournament_days'>
+                <input type='text' id='official-schedule' readonly value='$tournament_days'>
               </div>
             </div>";
   $html .= "<div class='table-input-row'>

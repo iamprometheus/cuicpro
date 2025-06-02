@@ -85,7 +85,7 @@ jQuery(document).on("click", "#add-official-button", function (e) {
 	});
 });
 
-jQuery(document).on("click", "#delete-official-button-cv", function () {
+jQuery(document).on("click", "#delete-official-button", function () {
 	const officialID = jQuery(this).data("official-id");
 
 	jQuery.ajax({

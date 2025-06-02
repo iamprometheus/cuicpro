@@ -4,6 +4,7 @@ function generate_brackets_dropdown() {
   $html = "";
   $active_tournament = TournamentsDatabase::get_active_tournament();
   if (!$active_tournament) {
+    $html .= "<option value='0'>No hay torneos activos</option>";
     return $html;
   }
   $brackets = BracketsDatabase::get_brackets($active_tournament->tournament_id);

@@ -28,6 +28,7 @@
 	display: flex;
 	justify-content: space-between;
 	min-height: inherit;
+	margin-bottom: 15px;
 }
 
 .bracket-round {
@@ -42,8 +43,8 @@
 .bracket-match-container {
 	display: flex;
 	flex-direction: column;
-	border: 1px solid #ccc;
-	padding: 10px;
+	border: 1px solid #000000;
+	padding: 20px;
 	border-radius: 10px;
 	gap: 10px;
 	width: 250px;
@@ -78,5 +79,5 @@
 }
 
 .match-data span {
-	font-size: 12px;
+	font-size: 14px;
 }

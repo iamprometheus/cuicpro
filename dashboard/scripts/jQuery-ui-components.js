@@ -1,5 +1,13 @@
 jQuery(function ($) {
-	jQuery("#tabs").tabs();
+	jQuery("#tabs").tabs({
+		activate: function (event, ui) {
+			if (ui.newTab[0].textContent !== "Brackets") {
+				jQuery(".leader-line").addClass("hidden");
+			} else {
+				jQuery(".leader-line").removeClass("hidden");
+			}
+		},
+	});
 
 	let days = [];
 
