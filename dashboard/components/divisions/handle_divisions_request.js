@@ -8,29 +8,49 @@ jQuery(document).on("click", "#add-division-button", function (e) {
 	const divisionCategory = jQuery("#division-category").val();
 
 	if (divisionName === "") {
-		alert("Agregar un nombre a la division");
+		jQuery("#division-result-table")
+			.removeClass("success")
+			.addClass("error")
+			.html("Agregar un nombre a la division");
 		return;
 	}
 
 	if (divisionMinTeams === "") {
-		alert("Agregar un numero minimo de equipos");
+		jQuery("#division-result-table")
+			.removeClass("success")
+			.addClass("error")
+			.html("Agregar un numero minimo de equipos");
 		return;
 	}
 
 	if (parseInt(divisionMinTeams) < 3) {
-		alert("Numero minimo de equipos debe ser 4 o mayor");
+		jQuery("#division-result-table")
+			.removeClass("success")
+			.addClass("error")
+			.html("Numero minimo de equipos debe ser 4 o mayor");
 		return;
 	}
 
 	if (divisionMaxTeams === "") {
-		alert("Agregar un numero maximo de equipos");
+		jQuery("#division-result-table")
+			.removeClass("success")
+			.addClass("error")
+			.html("Agregar un numero maximo de equipos");
 		return;
 	}
 
 	if (parseInt(divisionMaxTeams) < parseInt(divisionMinTeams)) {
-		alert("Numero maximo de equipos debe ser mayor al minimo");
+		jQuery("#division-result-table")
+			.removeClass("success")
+			.addClass("error")
+			.html("Numero maximo de equipos debe ser mayor al minimo");
 		return;
 	}
+
+	const tournamentID = jQuery(".tournament-item[selected]")[0].id.replace(
+		"tournament-",
+		"",
+	);
 
 	jQuery.ajax({
 		type: "POST",
@@ -38,13 +58,13 @@ jQuery(document).on("click", "#add-division-button", function (e) {
 		data: {
 			action: "add_division",
 			division_name: divisionName,
+			tournament_id: tournamentID,
 			division_mode: divisionMode,
 			division_min_teams: divisionMinTeams,
 			division_max_teams: divisionMaxTeams,
 			division_category: divisionCategory,
 		},
 		success: function (response) {
-			console.log(response);
 			if (response.success) {
 				// add division to the table
 				const divisionsData = document.querySelector("#divisions-data");
@@ -78,39 +98,36 @@ jQuery(document).on("click", "#add-division-button", function (e) {
 jQuery(document).on("click", "#delete-division-button", function () {
 	const divisionID = jQuery(this).data("division-id");
 
-	jQuery.ajax({
-		type: "POST",
-		url: cuicpro.ajax_url,
-		data: {
-			action: "delete_division",
-			division_id: divisionID,
-		},
-		success: function (response) {
-			if (response.success) {
-				const parent = document
-					.querySelector(`#division-${divisionID}`)
-					.closest("div");
-				parent.remove();
+	const confirmationBoxText =
+		"¿Estas seguro de eliminar la division? Esta accion podria ser irreversible.";
 
-				// remove option from dropdown
-				const dropdown = document.querySelector("#divisions-dropdown-tv");
-				dropdown.querySelector(`option[value="${divisionID}"]`).remove();
+	const onResponse = function (response) {
+		if (response.success) {
+			jQuery(`#division-${divisionID}`).remove();
 
-				jQuery("#division-result-table")
-					.removeClass("error")
-					.addClass("success")
-					.html(response.data.message);
-			} else {
-				jQuery("#division-result-table")
-					.removeClass("success")
-					.addClass("error")
-					.html(response.data.message);
-			}
-		},
-		error: function (xhr, status, error) {
-			console.error("Error:", error);
-		},
-	});
+			// remove option from dropdown
+			const dropdown = document.querySelector("#divisions-dropdown-tv");
+			dropdown.querySelector(`option[value="${divisionID}"]`).remove();
+
+			jQuery("#division-result-table")
+				.removeClass("error")
+				.addClass("success")
+				.html(response.data.message);
+		} else {
+			jQuery("#division-result-table")
+				.removeClass("success")
+				.addClass("error")
+				.html(response.data.message);
+		}
+	};
+
+	confirmateActionBox(
+		this,
+		confirmationBoxText,
+		"delete_division",
+		{ division_id: divisionID },
+		onResponse,
+	);
 });
 
 jQuery(document).on("click", "#edit-division-button", function () {
@@ -218,6 +235,42 @@ jQuery(document).on("click", "#update-division-button", function (e) {
 				jQuery("#update-division-button").addClass("hidden");
 				jQuery("#cancel-division-button").addClass("hidden");
 
+				jQuery("#division-result-table")
+					.removeClass("error")
+					.addClass("success")
+					.html(response.data.message);
+			} else {
+				jQuery("#division-result-table")
+					.removeClass("success")
+					.addClass("error")
+					.html(response.data.message);
+			}
+		},
+		error: function (xhr, status, error) {
+			console.error("Error:", error);
+		},
+	});
+});
+
+jQuery(document).on("click", "#active-division-button", function () {
+	const divisionID = jQuery(this).data("division-id");
+	const divisionIsActive = jQuery(this).is(":checked") ? 1 : 0;
+
+	jQuery.ajax({
+		type: "POST",
+		url: cuicpro.ajax_url,
+		data: {
+			action: "update_division_active",
+			division_id: divisionID,
+			division_is_active: divisionIsActive,
+		},
+		success: function (response) {
+			if (response.success) {
+				jQuery(`#division-${divisionID}`).html(response.data.html);
+				jQuery(`#active-division-button[data-division-id=${divisionID}]`).prop(
+					"checked",
+					divisionIsActive,
+				);
 				jQuery("#division-result-table")
 					.removeClass("error")
 					.addClass("success")

@@ -1,14 +1,14 @@
 <?php
 
-function generate_brackets_dropdown() {
+function generate_brackets_dropdown(int $tournament_id) {
   $html = "";
-  $active_tournament = TournamentsDatabase::get_active_tournament();
-  if (!$active_tournament) {
-    $html .= "<option value='0'>No hay torneos activos</option>";
+  $brackets = BracketsDatabase::get_brackets_by_tournament($tournament_id);
+  if (empty($brackets)) {
+    $html .= "<option value='0'>No hay brackets</option>";
     return $html;
   }
-  $brackets = BracketsDatabase::get_brackets($active_tournament->tournament_id);
 
+  $html .= "<option value='0'>Selecciona una division</option>";
   foreach ($brackets as $bracket) {
     $division = DivisionsDatabase::get_division_by_id(intval($bracket->division_id));
     $mode = ModesDatabase::get_mode_by_id($division->division_mode);
@@ -20,19 +20,30 @@ function generate_brackets_dropdown() {
 }
 
 function cuicpro_brackets_viewer() {
-  $html = "";
+  $tournaments = TournamentsDatabase::get_active_tournaments();
+  $tournament = null;
+  if (!empty($tournaments)) {
+    $tournament = $tournaments[0];
+  }
+  
+  $html = "<div class='tab-content'>";
+  $html .= create_tournament_list();
   $html .= "
   <div class='brackets-wrapper'>
     <div class='brackets-header'>
       <span class='brackets-title'>Brackets</span>
-      <select id='brackets-dropdown'>
-        <option value='0'>Selecciona una division</option>
-        " . generate_brackets_dropdown() . "
-      </select>
+
+      <div class='brackets-dropdown-container'>
+        <button id='brackets-reload-button'>Recargar Resultados</button>
+        <select id='brackets-dropdown'>
+          " . generate_brackets_dropdown($tournament->tournament_id) . "
+        </select>
+      </div>
     </div>
     <div id='brackets-data' class='brackets-data'>
     </div>
   </div>";
+  $html .= "</div>";
 
   echo $html;
 }

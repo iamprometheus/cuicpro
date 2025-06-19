@@ -36,7 +36,7 @@ Class BracketsDatabase {
       global $wpdb;
       $brackets = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_brackets WHERE tournament_id = $tournament_id" );
       return $brackets;
-  }
+    }
     
     public static function get_bracket_by_division(int $division_id, int $tournament_id) {
         global $wpdb;

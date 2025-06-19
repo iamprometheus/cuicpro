@@ -1,10 +1,16 @@
 jQuery(function ($) {
+	const currentUrl = window.location.href;
+
+	if (currentUrl.split("?")[1] !== "page=cuicpro") return;
+
 	jQuery("#tabs").tabs({
 		activate: function (event, ui) {
 			if (ui.newTab[0].textContent !== "Brackets") {
 				jQuery(".leader-line").addClass("hidden");
+				jQuery("#leader-line-defs").addClass("hidden");
 			} else {
 				jQuery(".leader-line").removeClass("hidden");
+				jQuery("#leader-line-defs").removeClass("hidden");
 			}
 		},
 	});
@@ -21,8 +27,10 @@ jQuery(function ($) {
 				for (let i = 0; i < days.length; i++) {
 					jQuery("#hours-container").append(
 						`<div class='hours-slider'>
-							<label for='hours-range-${i}'>${days[i]}</label>
-							<input type='text' id='hours-range-${i}' readonly style='border:0; color:#f6931f; font-weight:bold;'>
+							<div class='hours-slider-header'>
+								<label for='hours-range-${i}'>${days[i]}</label>
+								<input type='text' id='hours-range-${i}' readonly style='border:0; color:black; font-weight:bold; width: 100%;'>
+							</div>
 							<div id='slider-hours-${i}' class='tournament-slider'></div>
 						</div>`,
 					);
@@ -63,9 +71,38 @@ jQuery(function ($) {
 		dateFormat: "d/m/y",
 	});
 
+	// fix the days of the tournament in the official schedule selector date
+	const availableDays = jQuery("#official-schedule")
+		.val()
+		.replaceAll(" ", "")
+		.split(",");
+
+	const rawDate1 = availableDays[0].split("/").reverse();
+	rawDate1[0] = "2025";
+	rawDate1.join("-");
+	const rawDate2 = availableDays[availableDays.length - 1].split("/").reverse();
+	rawDate2[0] = "2025";
+	rawDate2.join("-");
+
+	const date1 = new Date(rawDate1);
+	const date2 = new Date(rawDate2);
+
 	jQuery("#official-schedule").multiDatesPicker({
-		minDate: 0,
+		minDate: date1,
+		maxDate: date2,
 		dateFormat: "d/m/y",
+		onSelect: function (dateText, inst) {
+			const searchID = `#official-day-${dateText}`.replaceAll("/", "-");
+			const searchID2 = `#hours-selector-${dateText}`.replaceAll("/", "-");
+			const daySelector = jQuery(searchID);
+			const hoursSelector = jQuery(searchID2);
+			if (daySelector.hasClass("hidden")) {
+				daySelector.removeClass("hidden");
+			} else {
+				daySelector.addClass("hidden");
+				hoursSelector.addClass("hidden");
+			}
+		},
 	});
 
 	jQuery("#slider-hours").slider({
@@ -84,7 +121,7 @@ jQuery(function ($) {
 	jQuery("#slider-fields-5v5").slider({
 		range: true,
 		min: 1,
-		max: 12,
+		max: 20,
 		step: 1,
 		values: [1, 8], // Initial values (8 AM to 5 PM)
 		slide: function (event, ui) {
@@ -107,7 +144,7 @@ jQuery(function ($) {
 	jQuery("#slider-fields-7v7").slider({
 		range: true,
 		min: 1,
-		max: 12,
+		max: 20,
 		step: 1,
 		values: [9, 12], // Initial values (8 AM to 5 PM)
 		slide: function (event, ui) {

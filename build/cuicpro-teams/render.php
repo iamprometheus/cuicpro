@@ -19,15 +19,22 @@ if (!function_exists('cuicpro_teams_render_teams')) {
 	function cuicpro_teams_render_teams() {
 
 		global $wpdb;
-		$teams = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}cuicpro_teams");
+		$teams = $wpdb->get_results("SELECT * FROM wp_cuicpro_teams");
 
 		$tddata = "";
+		$base_url = "https://cuic.pro/";
+
 
 		foreach ($teams as $team) {
-			$team_name = $team->team_name;
+			// check if image exists in db
 			$logo = str_replace(" ", "-", $team->logo);
+			// if (!MediaFileAlreadyExists($base_url.$logo)) {
+			// 	$logo = "india";
+			// }
+			
+			$team_name = $team->team_name;
 			$tddata.="<div class='teams-grid-item'>
-								<img src='http://cuic.pro/$logo' width='25' height='25' />
+								<img src='".$base_url.$logo."' width='25' height='25' />
 								<p>"
 									.$team_name
 								."</p>

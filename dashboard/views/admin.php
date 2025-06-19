@@ -1,5 +1,33 @@
 <?php
 
+function create_tournament_entry($selected, $tournament) {
+  $html = "";
+  $html .= "<div class='tournament-item' id='tournament-" . esc_attr($tournament->tournament_id) . "' $selected>";
+  $html .= "<span class='tournament-item-name'>" . esc_html($tournament->tournament_name) . "</span>";
+  $html .= "</div>";
+  return $html;
+}
+
+function create_tournament_list() {
+  $tournaments = TournamentsDatabase::get_active_tournaments();
+  $html = "<div class='tournaments-list-container' id='tournaments-selector'>";
+  if (empty($tournaments)) {
+    $html .= "<div class='tournament-item-header'>";
+    $html .= "<span class='tournament-item-name'>No hay torneos activos</span>";
+    $html .= "</div>";
+  } else {
+    $html .= "<div class='tournament-item-header'>";
+    $html .= "<span class='tournament-item-name'>Torneos Activos:</span>";
+    $html .= "</div>";
+    foreach ($tournaments as $index => $tournament) {
+      $selected = $index === 0 ? "selected" : "";
+      $html .= create_tournament_entry($selected, $tournament);
+    }
+  }
+  $html .= "</div>";
+  return $html;
+}
+
 ?>
 <div>
   <div id='tabs'>
@@ -31,9 +59,7 @@
       <?php cuicpro_brackets_viewer(); ?>
     </div>
     <div id='tabs-7'>
-      <div>
-        <p>Partidos terminados</p>
-      </div>
+      <?php cuicpro_matches_viewer(); ?>
     </div>
   </div>
 </div>

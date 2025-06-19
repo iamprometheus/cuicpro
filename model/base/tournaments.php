@@ -20,12 +20,13 @@ Class TournamentsDatabase {
             tournament_creation_date DATE NOT NULL,
             tournament_start_date DATE NULL,
             tournament_end_date DATE NULL,
-            tournament_is_active BOOLEAN NOT NULL,
             tournament_days VARCHAR(255) NOT NULL,
+            tournament_type TINYINT NULL,
             tournament_fields_5v5_start TINYINT NOT NULL,
             tournament_fields_5v5_end TINYINT NOT NULL,
             tournament_fields_7v7_start TINYINT NOT NULL,
             tournament_fields_7v7_end TINYINT NOT NULL,
+            tournament_is_active BOOLEAN NOT NULL,
             tournament_visible BOOLEAN NOT NULL,
             PRIMARY KEY (tournament_id)
         ) $charset_collate;";
@@ -35,7 +36,13 @@ Class TournamentsDatabase {
     
     public static function get_tournaments() {
         global $wpdb;
-        $tournaments = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_tournaments" );
+        $tournaments = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_tournaments where tournament_visible = 1" );
+        return $tournaments;
+    }
+
+    public static function get_active_tournaments() {
+        global $wpdb;
+        $tournaments = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_tournaments where tournament_is_active = 1 and tournament_visible = 1" );
         return $tournaments;
     }
 
@@ -57,12 +64,13 @@ Class TournamentsDatabase {
         return $tournament;
     }
 
-    public static function start_tournament(int $tournament_id ) {
+    public static function start_tournament(int $tournament_id, int $tournament_type ) {
         global $wpdb;
         $result = $wpdb->update(
             $wpdb->prefix . 'cuicpro_tournaments',
             array(
                 'tournament_start_date' => date('Y-m-d'),
+                'tournament_type' => $tournament_type,
             ),
             array(
                 'tournament_id' => $tournament_id,
@@ -92,9 +100,31 @@ Class TournamentsDatabase {
         return "Tournament not ended or tournament not found";
     }
 
+    public static function reset_tournament(int $tournament_id ) {
+        global $wpdb;
+        $result = $wpdb->update(
+            $wpdb->prefix . 'cuicpro_tournaments',
+            array(
+                'tournament_start_date' => null,
+                'tournament_end_date' => null,
+                'tournament_type' => null,
+            ),
+            array(
+                'tournament_id' => $tournament_id,
+            )
+        );
+        if ( $result ) {
+            return "Tournament reset successfully";
+        }
+        return "Tournament not reset or tournament not found";
+    }
+
     public static function insert_tournament(string $tournament_name, string $tournament_days, int $tournament_fields_5v5_start, int $tournament_fields_5v5_end, int $tournament_fields_7v7_start, int $tournament_fields_7v7_end, string $tournament_creation_date ) {
         if ( self::tournament_exists( $tournament_name ) ) {
-            return false;
+            return [
+                "success" => false,
+                "tournament_id" => null
+            ];
         }
 
         global $wpdb;
@@ -112,10 +142,16 @@ Class TournamentsDatabase {
                 'tournament_visible' => true,
             )
         );
-        if ( $result ) {
-            return true;
+        if ( $result  ) {
+            return [
+                "success" => true,
+                "tournament_id" => $wpdb->insert_id
+            ];
         }
-        return false;
+        return [
+            "success" => false,
+            "tournament_id" => null
+        ];
     }
 
     public static function update_tournament(int $tournament_id, string $tournament_name, string $tournament_days, int $tournament_fields_5v5_start, int $tournament_fields_5v5_end, int $tournament_fields_7v7_start, int $tournament_fields_7v7_end ) {

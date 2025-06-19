@@ -92,6 +92,11 @@ var __webpack_exports__ = {};
 				_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
 				context.isOpen = !context.isOpen;
 			},
+			toggleMatches() {
+				const context = (0,
+				_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
+				context.isOpen = !context.isOpen;
+			},
 		},
 		callbacks: {
 			logIsOpen: () => {
@@ -100,5 +105,3 @@ var __webpack_exports__ = {};
 		},
 	});
 })();
-
-console.log("tttttssss");

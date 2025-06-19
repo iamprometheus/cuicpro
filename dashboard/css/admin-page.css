@@ -1,3 +1,56 @@
+.tab-content {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.tournaments-list-container {
+	display: flex;
+	gap: 20px;
+}
+
+.tournament-item {
+	background: #555555 url("images/ui-bg_glass_20_555555_1x400.png") 50% 50%
+		repeat-x;
+	padding: 10px;
+	border-radius: 15px;
+	border: 1px solid black;
+	color: #fff;
+	cursor: pointer;
+	font-weight: 600;
+}
+
+.tournament-item:hover {
+	background: #90dffc url("images/ui-bg_glass_40_0078a3_1x400.png") 50% 50%;
+}
+
+.tournament-item[selected] {
+	background: #f58400 url("images/ui-bg_inset-soft_30_f58400_1x100.png") 50% 50%
+		repeat-x;
+	color: black;
+	font-weight: 600;
+}
+
+.tournament-item-header {
+	display: flex;
+	align-items: center;
+	font-size: 14px;
+	text-align: center;
+}
+
+.tournament-item-name {
+	font-size: 14px;
+	text-align: center;
+}
+
+.tournaments-container {
+	display: flex;
+	gap: 50px;
+	overflow: auto;
+	padding-right: 20px;
+	padding-bottom: 20px;
+}
+
 .tournament-input-header {
 	display: flex;
 	flex-direction: column;
@@ -12,13 +65,13 @@
 }
 
 .tournament-slider {
-	width: 300px;
+	width: 80%;
+	margin-top: 5px;
 }
 
 .tournament-table-row {
 	display: flex;
 	flex-direction: row;
-	align-items: center;
 }
 
 .tournament-table-cell-header {
@@ -27,7 +80,6 @@
 	justify-content: center;
 	border: 1px solid #696969;
 	width: 100px;
-	height: 70px;
 	font-size: 14px;
 	text-align: center;
 }
@@ -39,7 +91,7 @@
 	justify-content: center;
 	border: 1px solid #696969;
 	width: 200px;
-	height: 70px;
+	min-height: 70px;
 	font-size: 14px;
 }
 
@@ -49,13 +101,13 @@
 	justify-content: space-around;
 	border: 1px solid #696969;
 	width: 180px;
-	height: 70px;
 	font-size: 14px;
-	padding: 0px 10px;
+	padding: 10px 10px;
+	gap: 10px;
 }
 
 .hidden {
-	display: none;
+	display: none !important;
 }
 
 .hours-container {
@@ -66,9 +118,25 @@
 }
 
 .hours-slider {
+	padding: 10px 5px;
 	display: flex;
-	gap: 10px;
+	flex-direction: column;
 	align-items: center;
+}
+
+.hours-slider-header {
+	display: flex;
+	align-items: center;
+}
+
+.hours-slider-header label {
+	text-align: center;
+	flex: 2;
+}
+
+.hours-slider-header input {
+	flex: 3;
+	text-align: right;
 }
 
 #coaches-data,
@@ -86,4 +154,183 @@
 	overflow: auto;
 	padding-right: 40px;
 	padding-top: 2px;
+}
+
+.base-button {
+	border-radius: 10px;
+	font-size: 16px !important;
+}
+
+.base-button:hover {
+	background-color: #696969;
+	color: #fff;
+	cursor: pointer;
+}
+
+.base-button:disabled {
+	background-color: #696969;
+	color: #fff;
+	cursor: not-allowed;
+}
+
+.danger-button {
+	background-color: #ff000070;
+	color: #000;
+}
+
+.pending-button {
+	background-color: #f5ff68;
+	color: #000000;
+}
+
+.hours-selector-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 5px 10px;
+	border: 1px solid #696969;
+	border-radius: 10px;
+	margin: 10px 0;
+}
+
+.hours-selector-container:hover {
+	background-color: #696969;
+	cursor: pointer;
+}
+
+.hours-selector {
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	overflow-y: scroll;
+	max-height: 60vh;
+	gap: 10px;
+	background-color: #fff;
+	border-radius: 10px;
+	border: 1px solid #696969;
+	padding: 10px 15px;
+}
+
+.hours-selector-item {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+}
+
+.hours-viewer {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+	background-color: #fff;
+	border-radius: 10px;
+	border: 1px solid #696969;
+	padding: 10px 15px;
+}
+
+.hours-viewer-item {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+}
+
+.hours-viewer-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 5px 10px;
+	border: 1px solid #696969;
+	border-radius: 10px;
+	margin: 10px 0;
+}
+
+.hours-viewer-container:hover {
+	background-color: #696969;
+	cursor: pointer;
+}
+
+.day-results-container {
+	display: flex;
+	flex-direction: column;
+}
+
+.match-item {
+	display: flex;
+	flex-direction: row;
+	gap: 10px;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.match-results {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.match-team-name {
+	font-size: 16px;
+	color: #414141;
+}
+
+.winner {
+	color: #000;
+	font-weight: bold;
+}
+
+.match-scoreboard {
+	background-color: #4d4d4d;
+	padding: 7px;
+	border-radius: 5px;
+	font-size: 18px;
+	font-weight: 600;
+	color: white;
+}
+
+.day-results-title {
+	font-size: 18px;
+	font-weight: bold;
+	text-align: center;
+	padding: 10px;
+}
+
+.day-separator {
+	border: 1px solid #696969;
+	width: 100%;
+}
+
+.match-separator {
+	border: 1px solid #696969;
+	width: 100%;
+}
+
+#yes-button,
+#no-button {
+	border-radius: 10px;
+	font-size: 16px !important;
+}
+
+#yes-button {
+	background-color: #ff0000;
+	color: #fff;
+	cursor: pointer;
+	margin-left: 10px;
+}
+
+#yes-button:hover {
+	background-color: #610000;
+}
+
+#warning-box {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+	border: 1px solid;
+	padding: 5px;
+	border-radius: 10px;
 }

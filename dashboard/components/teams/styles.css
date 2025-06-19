@@ -28,11 +28,32 @@
 .table-row,
 .table-input-row {
 	display: flex;
-	align-items: center;
 	width: max-content;
 }
+
+@keyframes anim {
+	10% {
+		background-color: transparent;
+	}
+	50% {
+		background-color: #ffea8a;
+	}
+	90% {
+		background-color: transparent;
+	}
+}
+
 .table-row {
-	height: 60px;
+	animation-name: anim;
+	animation-duration: 700ms;
+	animation-iteration-count: 1;
+	animation-timing-function: ease-out;
+	animation-direction: normal;
+	background-color: transparent;
+}
+
+.table-row {
+	min-height: 60px;
 }
 .table-input-row {
 	height: 70px;
@@ -70,6 +91,9 @@
 	width: 150px;
 	height: inherit;
 	text-align: center;
+	/* flex-direction: column;
+	gap: 5px;
+	padding: 10px; */
 }
 
 .table-input-cell input,

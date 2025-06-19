@@ -16,13 +16,15 @@ Class CoachesDatabase {
         $charset_collate = $wpdb->get_charset_collate();
         $sql = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}cuicpro_coaches (
             coach_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+            tournament_id SMALLINT UNSIGNED NOT NULL,
             coach_name VARCHAR(255) NOT NULL,
             coach_contact VARCHAR(255) NOT NULL,
             coach_city VARCHAR(255) NOT NULL,
             coach_state VARCHAR(255) NOT NULL,
             coach_country VARCHAR(255) NOT NULL,
             coach_visible BOOLEAN NOT NULL,
-            PRIMARY KEY (coach_id)
+            PRIMARY KEY (coach_id),
+            FOREIGN KEY (tournament_id) REFERENCES {$wpdb->prefix}cuicpro_tournaments(tournament_id)
         ) $charset_collate;";
         require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
         dbDelta( $sql );
@@ -40,21 +42,38 @@ Class CoachesDatabase {
         return $coach;
     }
 
-    public static function get_coach_by_name(string $coach_name) {
+    public static function get_coach_by_name( int | null $coach_id, string $coach_name) {
         global $wpdb;
-        $coach = $wpdb->get_row( "SELECT * FROM {$wpdb->prefix}cuicpro_coaches WHERE coach_name = '$coach_name' AND coach_visible = true" );
+        if ($coach_id) {
+            $coach = $wpdb->get_row( "SELECT * FROM {$wpdb->prefix}cuicpro_coaches WHERE coach_id != $coach_id AND coach_name = '$coach_name' AND coach_visible = true" );
+        } else {
+            $coach = $wpdb->get_row( "SELECT * FROM {$wpdb->prefix}cuicpro_coaches WHERE coach_name = '$coach_name' AND coach_visible = true" );
+        }
         return $coach;
     }
 
-    public static function insert_coach(string $coach_name, string $coach_contact, string $coach_city, string $coach_state, string $coach_country ) {
-        if ( self::get_coach_by_name( $coach_name ) ) {
-            return false;
+    public static function get_coaches_by_tournament(int $tournament_id) {
+        global $wpdb;
+        $coaches = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_coaches WHERE tournament_id = $tournament_id AND coach_visible = true" );
+        return $coaches;
+    }
+
+    public static function get_coaches_by_tournament_and_name(int $tournament_id, string $coach_name) {
+        global $wpdb;
+        $coaches = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_coaches WHERE tournament_id = $tournament_id AND coach_name = '$coach_name' AND coach_visible = true" );
+        return $coaches;
+    }
+
+    public static function insert_coach(string $coach_name, int $tournament_id, string $coach_contact, string $coach_city, string $coach_state, string $coach_country ) {
+        if ( self::get_coaches_by_tournament_and_name($tournament_id, $coach_name ) ) {
+            return [false, null];
         }
         global $wpdb;
         $result = $wpdb->insert(
             $wpdb->prefix . 'cuicpro_coaches',
             array(
                 'coach_name' => $coach_name,
+                'tournament_id' => $tournament_id,
                 'coach_contact' => $coach_contact,
                 'coach_city' => $coach_city,
                 'coach_state' => $coach_state,
@@ -64,13 +83,13 @@ Class CoachesDatabase {
         );
 
         if ( $result ) {
-            return true;
+            return [true, $wpdb->insert_id];
         }
-        return false;
+        return [false, null];
     }
 
     public static function update_coach(int $coach_id, string $coach_name, string $coach_contact, string $coach_city, string $coach_state, string $coach_country, bool $coach_visible ) {
-        if ( self::get_coach_by_name( $coach_name ) ) {
+        if ( self::get_coach_by_name($coach_id, $coach_name ) ) {
             return "Coach with this name already exists";
         }
         global $wpdb;

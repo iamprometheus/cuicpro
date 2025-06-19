@@ -59,7 +59,7 @@ function create_input_division() {
   return $html;
 }
 
-function cuicpro_divisions() {
+function cuicpro_divisions($tournament_id) {
   $html = "";
 
   $html .= "<div class='table-row'>
@@ -68,43 +68,63 @@ function cuicpro_divisions() {
               <span class='table-cell'>Modalidad: </span>
               <span class='table-cell'>Equipos Minimo: </span>
               <span class='table-cell'>Equipos Maximo: </span>
+              <span class='table-cell'>Activo: </span>
               <span class='table-cell'>Acciones: </span>
             </div>
             ";
 
-  $divisions = DivisionsDatabase::get_divisions();
-
-
-  // add team data to table
-  if ($divisions) {
-    foreach ($divisions as $division) {
-      $division->division_category = ($division->division_category == 1 ? "Varonil" : ($division->division_category == 2 ? "Femenil" : "Mixto"));
-      $division->division_mode = ($division->division_mode == 1 ? "5v5" : ($division->division_mode == 2 ? "7v7" : "Ambos"));
-      $html .= "<div class='table-row' id='division-$division->division_id'>";
-      $html .= "<span class='table-cell'>" . esc_html($division->division_name) . "</span>";
-      $html .= "<span class='table-cell'>" . esc_html($division->division_category) . "</span>";
-      $html .= "<span class='table-cell'>" . esc_html($division->division_mode) . "</span>";
-      $html .= "<span class='table-cell'>" . esc_html($division->division_min_teams) . "</span>";
-      $html .= "<span class='table-cell'>" . esc_html($division->division_max_teams) . "</span>";
-      $html .= "<div class='table-cell'>
-                  <button id='edit-division-button' data-division-id=$division->division_id>Editar</button>
-                  <button id='delete-division-button-lv' data-division-id=$division->division_id>Eliminar</button>
-                </div>";
-      $html .= "</div>";
-    }
-  } else {
+  if (is_null($tournament_id)) {
     $html .= "<div class='table-row cell-hidden' id='division-data'></div>";
+    return $html;
   }
 
-return $html;
+  $divisions = DivisionsDatabase::get_divisions_by_tournament($tournament_id);
+
+  // add team data to table
+  if (empty($divisions)) {
+    $html .= "<div class='table-row cell-hidden' id='division-data'></div>";
+    return $html;
+  }
+
+  foreach ($divisions as $division) {
+    $division->division_category = ($division->division_category == 1 ? "Varonil" : ($division->division_category == 2 ? "Femenil" : "Mixto"));
+    $division->division_mode = ($division->division_mode == 1 ? "5v5" : ($division->division_mode == 2 ? "7v7" : "Ambos"));
+    $is_active = $division->division_is_active ? 'checked' : '';
+    
+    $html .= "<div class='table-row' id='division-$division->division_id'>";
+    $html .= "<span class='table-cell'>" . esc_html($division->division_name) . "</span>";
+    $html .= "<span class='table-cell'>" . esc_html($division->division_category) . "</span>";
+    $html .= "<span class='table-cell'>" . esc_html($division->division_mode) . "</span>";
+    $html .= "<span class='table-cell'>" . esc_html($division->division_min_teams) . "</span>";
+    $html .= "<span class='table-cell'>" . esc_html($division->division_max_teams) . "</span>";
+    $html .= "<div class='table-cell'>
+                <input type='checkbox' id='active-division-button' data-division-id=$division->division_id $is_active></input>
+              </div>";
+    $html .= "<div class='table-cell'>
+                <button id='edit-division-button' data-division-id=$division->division_id>Editar</button>
+                <button id='delete-division-button' data-division-id=$division->division_id>Eliminar</button>
+              </div>";
+    $html .= "</div>";
+  }
+
+  return $html;
 }
 
 function cuicpro_division_viewer() {
+  $tournaments = TournamentsDatabase::get_active_tournaments();
+  $tournament = null;
+  if (!empty($tournaments)) {
+    $tournament = $tournaments[0];
+  }
+
   // create table header
-  $html = "<div class='table-view-container'>";
+  $html = "<div class='tab-content'>";
+  $html .= create_tournament_list();
+  $html .= "<div class='table-view-container'>";
   $html .= create_input_division();
   $html .= "<div id='divisions-data'>";
-  $html .= cuicpro_divisions();
+  $html .= cuicpro_divisions($tournament->tournament_id);
+  $html .= "</div>";
   $html .= "</div>";
   $html .= "</div>";
 

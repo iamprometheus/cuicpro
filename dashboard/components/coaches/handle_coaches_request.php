@@ -28,17 +28,19 @@ function delete_coach() {
 }
 
 function add_coach() {
-  if (!isset($_POST['coach_name']) || !isset($_POST['coach_contact']) || !isset($_POST['coach_city']) || !isset($_POST['coach_state']) || !isset($_POST['coach_country'])) {
+  if (!isset($_POST['coach_name']) || !isset($_POST['tournament_id']) || !isset($_POST['coach_contact']) || !isset($_POST['coach_city']) || !isset($_POST['coach_state']) || !isset($_POST['coach_country'])) {
     wp_send_json_error(['message' => 'Faltan datos']);
   }
   $coach_name = sanitize_text_field($_POST['coach_name']);
+  $tournament_id = intval($_POST['tournament_id']);
   $coach_contact = sanitize_text_field($_POST['coach_contact']);
   $coach_city = sanitize_text_field($_POST['coach_city']);
   $coach_state = sanitize_text_field($_POST['coach_state']);
   $coach_country = sanitize_text_field($_POST['coach_country']);
-  $result = CoachesDatabase::insert_coach($coach_name, $coach_contact, $coach_city, $coach_state, $coach_country);
-  if ($result) {
-    $coach = CoachesDatabase::get_coach_by_name($coach_name);
+
+  $result = CoachesDatabase::insert_coach($coach_name, $tournament_id, $coach_contact, $coach_city, $coach_state, $coach_country);
+  if ($result[0]) {
+    $coach = CoachesDatabase::get_coach_by_id($result[1]);
     $html = on_add_coach($coach);
     $data = [
       'coach_id' => $coach->coach_id,
@@ -63,7 +65,7 @@ function update_coach() {
 
   $result = CoachesDatabase::update_coach($coach_id, $coach_name, $coach_contact, $coach_city, $coach_state, $coach_country, $visible);
   if ($result) {
-    $coach = CoachesDatabase::get_coach_by_name($coach_name);
+    $coach = CoachesDatabase::get_coach_by_id($coach_id);
     wp_send_json_success(['message' => 'Entrenador actualizado correctamente', 'html' => on_add_coach($coach)]);
   }
   wp_send_json_error(['message' => 'Entrenador no actualizado, entrenador ya existe']);

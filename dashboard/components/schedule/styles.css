@@ -1,0 +1,22 @@
+#schedule-container {
+	overflow: auto;
+}
+
+#schedule-container table {
+	font-size: 20px;
+}
+
+#schedule-container table th {
+	font-weight: bold;
+	padding: 10px;
+}
+
+#schedule-container table td {
+	padding: 10px;
+}
+
+#schedule-container table td div {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}

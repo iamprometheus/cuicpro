@@ -27,9 +27,9 @@ Class TournamentHoursDatabase {
         dbDelta( $sql );
     }
     
-    public static function get_tournament_hours() {
+    public static function get_tournament_hours(int $tournament_id) {
         global $wpdb;
-        $tournaments = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_tournament_hours" );
+        $tournaments = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_tournament_hours WHERE tournament_id = {$tournament_id}" );
         return $tournaments;
     }
 
@@ -39,7 +39,7 @@ Class TournamentHoursDatabase {
         return $tournament;
     }
 
-    public static function get_tournament_hours_by_tournament_id(int $tournament_id) {
+    public static function get_tournament_hours_by_tournament(int $tournament_id) {
         global $wpdb;
         $tournament = $wpdb->get_results( $wpdb->prepare("SELECT * FROM {$wpdb->prefix}cuicpro_tournament_hours WHERE tournament_id = %d", $tournament_id) );
         return $tournament;

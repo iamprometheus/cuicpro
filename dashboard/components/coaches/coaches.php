@@ -52,8 +52,8 @@ function create_input_coach() {
   return $html;
 }
 
-function cuicpro_coaches_table() {
-  $coaches = CoachesDatabase::get_coaches();
+function cuicpro_coaches_table(int $tournament_id) {
+  $coaches = CoachesDatabase::get_coaches_by_tournament($tournament_id);
 
   // create table header
   $html = "<div class='table-row'>
@@ -85,10 +85,19 @@ function cuicpro_coaches_table() {
 }
 
 function cuicpro_coach_viewer() {
-  $html = "<div class='table-view-container'>";
+  $tournaments = TournamentsDatabase::get_active_tournaments();
+  $tournament = null;
+  if (!empty($tournaments)) {
+    $tournament = $tournaments[0];
+  }
+  
+  $html = "<div class='tab-content'>";
+  $html .= create_tournament_list();
+  $html .= "<div class='table-view-container'>";
   $html .= create_input_coach();
   $html .= "<div id='coaches-data'>";
-  $html .= cuicpro_coaches_table();
+  $html .= cuicpro_coaches_table($tournament->tournament_id);
+  $html .= "</div>";
   $html .= "</div>";
   $html .= "</div>";
 

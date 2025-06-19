@@ -1,4 +1,5 @@
 
+<?php
 // Example usage:
 // $hours = [ "0" => ["14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"], 
 //             "1" => [ "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00"], 
@@ -288,6 +289,7 @@
 //    "division_mode" => 1,
 //    "bracket_id" => 50
 //   ],
+
 //   ["id" => 4,
 //    "teams" => [307,308,309,310,311,312,313,314,315,316,317,318,319],
 //    "division_mode" => 1,
@@ -404,4 +406,200 @@
 // $result = $scheduler->scheduleMatches();
 // print_r($result);
 
-
+// $brackets = [
+//   [
+//     "id" => "2",
+//     "teams" => [
+//       "293",
+//       "294",
+//       "295",
+//       "296",
+//       "297",
+//       "298",
+//       "299",
+//       "300"
+//     ],
+//     "division_mode" => "1",
+//     "bracket_id" => "564",
+//     "matches_per_round" => [
+//       4,
+//       2,
+//       1
+//     ],
+//     "matches_per_day" => [
+//       0,
+//       0
+//     ],
+//     "bye_teams" => 0,
+//     "matches" => [],
+//     "scheduled_matches" => [
+//       [
+//         [
+//           "tournament_id" => 29,
+//           "division_id" => "2",
+//           "bracket_id" => "564",
+//           "field" => 2,
+//           "team_id_1" => "297",
+//           "team_id_2" => "296",
+//           "day" => 0,
+//           "hour" => 19,
+//           "bracket_match" => 1,
+//           "official" => null,
+//           "bracket_round" => 0
+//         ],
+//         [
+//           "tournament_id" => 29,
+//           "division_id" => "2",
+//           "bracket_id" => "564",
+//           "field" => 1,
+//           "team_id_1" => "299",
+//           "team_id_2" => "298",
+//           "day" => 0,
+//           "hour" => 19,
+//           "bracket_match" => 2,
+//           "official" => null,
+//           "bracket_round" => 0
+//         ],
+//         [
+//           "tournament_id" => 29,
+//           "division_id" => "2",
+//           "bracket_id" => "564",
+//           "field" => 2,
+//           "team_id_1" => "294",
+//           "team_id_2" => "300",
+//           "day" => 0,
+//           "hour" => 20,
+//           "bracket_match" => 3,
+//           "official" => null,
+//           "bracket_round" => 0
+//         ],
+//         [
+//           "tournament_id" => 29,
+//           "division_id" => "2",
+//           "bracket_id" => "564",
+//           "field" => 1,
+//           "team_id_1" => "295",
+//           "team_id_2" => "293",
+//           "day" => 0,
+//           "hour" => 20,
+//           "bracket_match" => 4,
+//           "official" => null,
+//           "bracket_round" => 0
+//         ]
+//       ],
+//       [
+//         [
+//           "tournament_id" => 29,
+//           "division_id" => "2",
+//           "bracket_id" => "564",
+//           "field" => 2,
+//           "team_id_1" => "TBD",
+//           "team_id_2" => "TBD",
+//           "day" => 1,
+//           "hour" => 8,
+//           "bracket_match" => 5,
+//           "official" => null,
+//           "bracket_round" => 1
+//         ],
+//         [
+//           "tournament_id" => 29,
+//           "division_id" => "2",
+//           "bracket_id" => "564",
+//           "field" => 1,
+//           "team_id_1" => "TBD",
+//           "team_id_2" => "TBD",
+//           "day" => 1,
+//           "hour" => 8,
+//           "bracket_match" => 6,
+//           "official" => null,
+//           "bracket_round" => 1
+//         ]
+//       ],
+//       [
+//         [
+//           "tournament_id" => 29,
+//           "division_id" => "2",
+//           "bracket_id" => "564",
+//           "field" => 2,
+//           "team_id_1" => "TBD",
+//           "team_id_2" => "TBD",
+//           "day" => 1,
+//           "hour" => 11,
+//           "bracket_match" => 7,
+//           "official" => null,
+//           "bracket_round" => 2
+//         ]
+//       ]
+//     ]
+//         ],
+//     [
+//     "id" => "3",
+//     "teams" => [
+//       "301",
+//       "302",
+//       "303",
+//       "304",
+//       "305",
+//       "306"
+//     ],
+//     "division_mode" => "1",
+//     "bracket_id" => "565",
+//     "matches_per_round" => [
+//       2,
+//       2,
+//       1
+//     ],
+//     "matches_per_day" => [
+//       0,
+//       0
+//     ],
+//     "bye_teams" => 2,
+//     "matches" => [],
+//     "scheduled_matches" => [
+//       [],
+//       [
+//         [
+//           "tournament_id" => 29,
+//           "division_id" => "3",
+//           "bracket_id" => "565",
+//           "field" => 2,
+//           "team_id_1" => "304",
+//           "team_id_2" => "TBD",
+//           "day" => 1,
+//           "hour" => 9,
+//           "bracket_match" => 1,
+//           "official" => null,
+//           "bracket_round" => 1
+//         ],
+//         [
+//           "tournament_id" => 29,
+//           "division_id" => "3",
+//           "bracket_id" => "565",
+//           "field" => 1,
+//           "team_id_1" => "303",
+//           "team_id_2" => "TBD",
+//           "day" => 1,
+//           "hour" => 9,
+//           "bracket_match" => 2,
+//           "official" => null,
+//           "bracket_round" => 1
+//         ]
+//       ],
+//       [
+//         [
+//           "tournament_id" => 29,
+//           "division_id" => "3",
+//           "bracket_id" => "565",
+//           "field" => 2,
+//           "team_id_1" => "TBD",
+//           "team_id_2" => "TBD",
+//           "day" => 1,
+//           "hour" => 12,
+//           "bracket_match" => 3,
+//           "official" => null,
+//           "bracket_round" => 2
+//         ]
+//       ]
+//     ]
+//   ]
+// ]

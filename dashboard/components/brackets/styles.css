@@ -48,6 +48,14 @@
 	border-radius: 10px;
 	gap: 10px;
 	width: 250px;
+	height: fit-content;
+}
+
+.bracket-match-container hr {
+	background-color: black;
+	height: 1px;
+	width: 100%;
+	margin: 0;
 }
 
 .bracket-match-container-empty {
@@ -58,13 +66,13 @@
 	display: flex;
 	justify-content: space-between;
 	gap: 10px;
-	flex-direction: column;
 	align-items: center;
 }
 
 .bracket-match span {
-	font-size: 20px;
+	font-size: 18px;
 	font-weight: bold;
+	text-wrap: wrap;
 }
 
 .match-data-container {
@@ -80,4 +88,93 @@
 
 .match-data span {
 	font-size: 14px;
+}
+
+.text-right {
+	text-align: right;
+}
+
+.matches-container {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.day-title {
+	font-size: 18px;
+	font-weight: bold;
+	text-align: center;
+}
+
+.day-container {
+	display: flex;
+	gap: 30px;
+	justify-content: center;
+	flex-wrap: wrap;
+}
+
+.matches-container hr {
+	background-color: black;
+	height: 1px;
+	width: 100%;
+}
+
+.match-data-end-data {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	text-align: center;
+}
+
+.leaderboard-container {
+	overflow: auto;
+	min-width: 700px;
+	min-height: inherit;
+}
+
+.leaderboard-table {
+	border-collapse: collapse;
+	min-width: 50%;
+}
+
+.leaderboard-table th {
+	border: 1px solid #000000;
+	padding: 8px;
+	text-align: center;
+	font-size: 14px;
+	font-weight: bold;
+}
+
+.leaderboard-table td {
+	border: 1px solid #000000;
+	padding: 8px;
+	text-align: center;
+}
+
+.leaderboard-table caption {
+	font-size: 20px;
+	font-weight: bold;
+	text-align: center;
+	padding: 10px;
+}
+
+.brackets-dropdown-container {
+	display: flex;
+	gap: 10px;
+	align-items: center;
+}
+
+.winner-select {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.score-select {
+	display: flex;
+	align-items: center;
+}
+
+.score-select input {
+	width: 60px;
 }

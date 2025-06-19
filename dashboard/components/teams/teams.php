@@ -24,14 +24,6 @@ function create_input_team() {
 							</div>
 						</div>";
   $html .= "<div class='table-input-row'>
-							<span class='table-cell'>Division: </span>
-							<div class='table-input-cell'>
-								<select id='team-division-table'>
-									" . create_divisions_dropdown() . "
-								</select>
-							</div>
-						</div>";	
-  $html .= "<div class='table-input-row'>
 							<span class='table-cell'>Modalidad: </span>
 							<div class='table-input-cell'>
 								<select id='team-mode-table'>
@@ -75,13 +67,13 @@ function create_input_team() {
 }
 
 // function to display the dropdown of divisions to show teams
-function cuicpro_teams_by_division() {
+function cuicpro_teams_by_division($tournament_id) {
   $html = "<div class='table-view'>";
 	$html .= "<select id='divisions-dropdown-tv'>\n";
   $html .= "<option value='0'>Selecciona una Division</option>\n";
 	
   // Fetch divisions from database
-  $divisions = DivisionsDatabase::get_divisions();
+  $divisions = DivisionsDatabase::get_divisions_by_tournament($tournament_id);
 
   if ($divisions) {
       foreach ($divisions as $division) {
@@ -101,13 +93,13 @@ function cuicpro_teams_by_division() {
   return $html;
 }
 
-function cuicpro_teams_by_coach() {
+function cuicpro_teams_by_coach($tournament_id) {
 	$html = "<div class='table-view'>";
 	$html .= "<select id='coaches-dropdown-tv'>\n";
 	$html .= "<option value='0'>Selecciona un Entrenador</option>\n";
 
 	// Fetch coaches from database
-	$coaches = CoachesDatabase::get_coaches();
+	$coaches = CoachesDatabase::get_coaches_by_tournament($tournament_id);
 
 	if ($coaches) {
 		foreach ($coaches as $coach) {
@@ -126,11 +118,20 @@ function cuicpro_teams_by_coach() {
 }
 
 function cuicpro_teams_viewer() {
-	$html = "<div class='table-view-container'>";
+	$tournament = TournamentsDatabase::get_active_tournaments();
+	$tournament_id = null;
+	if (!empty($tournament)) {
+		$tournament_id = $tournament[0]->tournament_id;
+	}
+	
+  $html = "<div class='tab-content'>";
+  $html .= create_tournament_list();
+	$html .= "<div class='table-view-container'>";
 	$html .= create_input_team();
 	$html .= "<div id='teams-data'>";
-	$html .= cuicpro_teams_by_coach();
-	$html .= cuicpro_teams_by_division();
+	$html .= cuicpro_teams_by_coach($tournament_id);
+	$html .= cuicpro_teams_by_division($tournament_id);
+	$html .= "</div>";
 	$html .= "</div>";
 	$html .= "</div>";
 	echo $html;

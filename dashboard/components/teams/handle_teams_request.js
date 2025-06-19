@@ -1,5 +1,5 @@
 jQuery(document).ready(function ($) {
-	$("#divisions-dropdown-tv").change(function () {
+	$(document).on("change", "#divisions-dropdown-tv", function () {
 		const divisionID = $(this).val();
 
 		if (divisionID !== "0") {
@@ -36,7 +36,7 @@ jQuery(document).ready(function ($) {
 		}
 	});
 
-	$("#coaches-dropdown-tv").change(function () {
+	$(document).on("change", "#coaches-dropdown-tv", function () {
 		const coachID = $(this).val();
 
 		if (coachID !== "0") {
@@ -73,7 +73,7 @@ jQuery(document).ready(function ($) {
 		}
 	});
 
-	$("#add-team-button").click(function (e) {
+	$(document).on("click", "#add-team-button", function (e) {
 		e.preventDefault();
 
 		const divisionID = $("#team-division-table").val();
@@ -83,6 +83,10 @@ jQuery(document).ready(function ($) {
 		const coachID = $("#coaches-dropdown-tv").val();
 		const rawLogo = $("#team-logo-input");
 		const logo = rawLogo[0].files[0];
+		const tournamentID = jQuery(".tournament-item[selected]")[0].id.replace(
+			"tournament-",
+			"",
+		);
 
 		if (coachID === "0") {
 			$("#team-result-table").removeClass("success").addClass("error");
@@ -109,6 +113,7 @@ jQuery(document).ready(function ($) {
 		form.append("team_mode", teamMode);
 		form.append("coach_id", coachID);
 		form.append("logo", logo);
+		form.append("tournament_id", tournamentID);
 
 		$.ajax({
 			type: "POST",
@@ -153,30 +158,37 @@ jQuery(document).ready(function ($) {
 		const teamName = $("#team-name-table").val();
 		const teamCategory = $("#team-category-table").val();
 		const teamMode = $("#team-mode-table").val();
-		const logo = $("#team-logo-table").val();
+		const rawLogo = $("#team-logo-input");
+		let logo = "";
 
-		if (teamName === "" || logo === "") {
-			alert(
-				"Agregar todos los datos del equipo, faltantes: " +
-					(teamName === "" ? "Nombre, " : "") +
-					(logo === "" ? "Logo" : ""),
-			);
+		if (rawLogo[0].files.length > 0) {
+			logo = rawLogo[0].files[0];
+		}
+
+		if (teamName === "") {
+			$("#team-result-table")
+				.removeClass("success")
+				.addClass("error")
+				.html("Agregar todos los datos del equipo, faltantes: Nombre");
 			return;
 		}
+
+		const form = new FormData();
+		form.append("action", "update_team");
+		form.append("team_id", teamID);
+		form.append("division_id", divisionID);
+		form.append("team_name", teamName);
+		form.append("team_category", teamCategory);
+		form.append("team_mode", teamMode);
+		form.append("coach_id", coachID);
+		form.append("logo", logo);
 
 		$.ajax({
 			type: "POST",
 			url: cuicpro.ajax_url,
-			data: {
-				action: "update_team",
-				team_id: teamID,
-				division_id: divisionID,
-				team_name: teamName,
-				team_category: teamCategory,
-				team_mode: teamMode,
-				coach_id: coachID,
-				logo: logo,
-			},
+			data: form,
+			processData: false,
+			contentType: false,
 			success: function (response) {
 				if (response.success) {
 					$("#coaches-dropdown-tv").val(response.data.coachID);
@@ -184,7 +196,7 @@ jQuery(document).ready(function ($) {
 					$("#coach-data").html(response.data.coachData);
 
 					$("#team-name-table").val("");
-					$("#team-logo-table").val("");
+					$("#team-logo-input").val(null);
 
 					$("#update-team-button").data("team-id", 0);
 					$("#update-team-button").data("team-coach-id", 0);
@@ -216,32 +228,32 @@ jQuery(document).ready(function ($) {
 	$(document).on("click", "#delete-team-button", function () {
 		const teamID = $(this).attr("data-team-id");
 
-		$.ajax({
-			type: "POST",
-			url: cuicpro.ajax_url,
-			data: {
-				action: "delete_team",
-				team_id: teamID,
-			},
-			success: function (response) {
-				if (response.success) {
-					$(`#team-${teamID}`).remove();
+		const confirmationBoxText =
+			"¿Estas seguro de eliminar el equipo? Esta accion podria ser irreversible.";
 
-					$("#team-result-table")
-						.removeClass("error")
-						.addClass("success")
-						.html(response.data.message);
-				} else {
-					$("#team-result-table")
-						.removeClass("success")
-						.addClass("error")
-						.html(response.data.message);
-				}
-			},
-			error: function (xhr, status, error) {
-				console.error("Error:", error);
-			},
-		});
+		const onResponse = function (response) {
+			if (response.success) {
+				$(`#team-${teamID}`).remove();
+
+				$("#team-result-table")
+					.removeClass("error")
+					.addClass("success")
+					.html(response.data.message);
+			} else {
+				$("#team-result-table")
+					.removeClass("success")
+					.addClass("error")
+					.html(response.data.message);
+			}
+		};
+
+		confirmateActionBox(
+			this,
+			confirmationBoxText,
+			"delete_team",
+			{ team_id: teamID },
+			onResponse,
+		);
 	});
 
 	$(document).on("click", "#edit-team-button", function (e) {
@@ -257,15 +269,10 @@ jQuery(document).ready(function ($) {
 			},
 			success: function (response) {
 				if (response.success) {
-					$("#team-division-table").html(response.data.dropdown);
-
 					$("#team-name-table").val(response.data.team.team_name);
 					$("#team-logo-table").val(response.data.team.logo);
 					$("#team-category-table").val(response.data.team.team_category);
 					$("#team-mode-table").val(response.data.team.team_mode);
-
-					$("#team-division-table").prop("disabled", true);
-					$("#team-division-dropdown").prop("disabled", true);
 
 					$("#add-team-button").addClass("hidden");
 					$("#update-team-button").removeClass("hidden");
@@ -318,23 +325,59 @@ jQuery(document).ready(function ($) {
 			.addClass("success")
 			.html("Edicion cancelada.");
 	});
+
+	$(document).on("change", "#team-division-dropdown", function (e) {
+		e.preventDefault();
+		const teamID = $(this).data("team-id");
+		const divisionID = $(this).val();
+
+		jQuery.ajax({
+			type: "POST",
+			url: cuicpro.ajax_url,
+			data: {
+				action: "update_team_division",
+				team_id: teamID,
+				division_id: divisionID,
+			},
+			success: function (response) {
+				if (response.success) {
+					jQuery("#team-result-table")
+						.removeClass("error")
+						.addClass("success")
+						.html(response.data.message);
+				} else {
+					jQuery("#team-result-table")
+						.removeClass("success")
+						.addClass("error")
+						.html(response.data.message);
+				}
+			},
+			error: function (xhr, status, error) {
+				console.error("Error:", error);
+			},
+		});
+	});
 });
 
-function updateTeamDivision(teamID) {
-	const divisionID = jQuery(
-		`#team-division-dropdown[data-team-id=${teamID}]`,
-	).val();
+jQuery(document).on("click", "#enrolled-team-button", function () {
+	const teamID = jQuery(this).data("team-id");
+	const teamIsEnrolled = jQuery(this).is(":checked") ? 1 : 0;
 
 	jQuery.ajax({
 		type: "POST",
 		url: cuicpro.ajax_url,
 		data: {
-			action: "update_team_division",
+			action: "update_team_enrolled",
 			team_id: teamID,
-			division_id: divisionID,
+			team_is_enrolled: teamIsEnrolled,
 		},
 		success: function (response) {
 			if (response.success) {
+				jQuery(`#enrolled-team-button[data-team-id=${teamID}]`).prop(
+					"checked",
+					teamIsEnrolled,
+				);
+
 				jQuery("#team-result-table")
 					.removeClass("error")
 					.addClass("success")
@@ -350,4 +393,52 @@ function updateTeamDivision(teamID) {
 			console.error("Error:", error);
 		},
 	});
-}
+});
+
+// function updateTeamDivision(teamID) {
+// 	const divisionDropdown = jQuery("[id='team-division-dropdown']");
+
+// 	const divisionID = jQuery(
+// 		`#team-division-dropdown[data-team-id=${teamID}]`,
+// 	).val();
+
+// 	const selectedDivisions = {};
+// 	let duplicatedDivisions = false;
+
+// 	for (let dropdown of divisionDropdown) {
+// 		if (!selectedDivisions[dropdown.value]) {
+// 			selectedDivisions[dropdown.value] = true;
+// 		} else {
+// 			duplicatedDivisions = true;
+// 		}
+// 	}
+
+// 	console.log(teamID, divisionID);
+
+// 	return;
+// 	jQuery.ajax({
+// 		type: "POST",
+// 		url: cuicpro.ajax_url,
+// 		data: {
+// 			action: "update_team_division",
+// 			team_id: teamID,
+// 			division_id: divisionID,
+// 		},
+// 		success: function (response) {
+// 			if (response.success) {
+// 				jQuery("#team-result-table")
+// 					.removeClass("error")
+// 					.addClass("success")
+// 					.html(response.data.message);
+// 			} else {
+// 				jQuery("#team-result-table")
+// 					.removeClass("success")
+// 					.addClass("error")
+// 					.html(response.data.message);
+// 			}
+// 		},
+// 		error: function (xhr, status, error) {
+// 			console.error("Error:", error);
+// 		},
+// 	});
+// }

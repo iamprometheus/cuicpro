@@ -27,13 +27,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 function cuicpro_init() {
 	$blocks = array(
 		array( 'name' => 'cuicpro-leagues' ),
-		array( 'name' => 'cuicpro-teams' )
+		array( 'name' => 'cuicpro-teams' ),
+		array( 'name' => 'cuicpro-brackets' )
 	);
 
 	foreach ( $blocks as $block ) {
 		register_block_type_from_metadata(
 			__DIR__ . '/build/' . $block['name']
 		);
+		register_block_type(__DIR__ . '/build/' . $block['name']);
 	}
 }
 
@@ -45,6 +47,7 @@ add_action( 'init', 'cuicpro_init' );
 require_once __DIR__ . '/model/base/teams.php';
 require_once __DIR__ . '/model/base/coaches.php';
 require_once __DIR__ . '/model/base/officials.php';
+require_once __DIR__ . '/model/base/officials_hours.php';
 require_once __DIR__ . '/model/base/divisions.php';
 require_once __DIR__ . '/model/base/tournaments.php';
 require_once __DIR__ . '/model/base/modes.php';
@@ -62,7 +65,8 @@ require_once __DIR__ . '/dashboard/components/coaches/coaches.php';
 require_once __DIR__ . '/dashboard/components/officials/officials.php';
 require_once __DIR__ . '/dashboard/components/tournaments/tournaments.php';
 require_once __DIR__ . '/dashboard/components/brackets/brackets.php';
-
+require_once __DIR__ . '/dashboard/components/matches/matches.php';
+require_once __DIR__ . '/dashboard/components/schedule/schedule.php';
 
 // Initialize database tables if they don't exist
 function cuicpro_databases() {
@@ -73,6 +77,7 @@ function cuicpro_databases() {
 	TournamentHoursDatabase::init();
 	TeamsDatabase::init();
 	OfficialsDatabase::init();
+	OfficialsHoursDatabase::init();
 	DivisionsDatabase::init();
 	MatchesDatabase::init();
 	BracketsDatabase::init();	
@@ -124,11 +129,11 @@ function cuicpro_menu_page() {
 
 	add_submenu_page(
 		'cuicpro',
-		'Arbitros',
-		'Arbitros',
+		'Horarios',
+		'Horarios',
 		'manage_options',
-		'cuicpro-officials',
-		'cuicpro_handle_officials_page'
+		'cuicpro-schedule',
+		'cuicpro_handle_schedule_page'
 	);
 }
 
@@ -138,6 +143,8 @@ function cuicpro_handle_admin_page() {
 	echo ob_get_clean();
 }
 
-function cuicpro_handle_officials_page() {
-	echo "<h1>Officials</h1>";
+function cuicpro_handle_schedule_page() {
+	ob_start();
+	include_once __DIR__ . '/dashboard/views/schedule.php';
+	echo ob_get_clean();
 }

@@ -6,6 +6,10 @@ jQuery(document).on("click", "#add-coach-button", function (e) {
 	const coachCity = jQuery("#coach-city").val();
 	const coachState = jQuery("#coach-state").val();
 	const coachCountry = jQuery("#coach-country").val();
+	const tournamentID = jQuery(".tournament-item[selected]")[0].id.replace(
+		"tournament-",
+		"",
+	);
 
 	if (coachName === "") {
 		alert("Agregar un nombre al entrenador");
@@ -27,9 +31,9 @@ jQuery(document).on("click", "#add-coach-button", function (e) {
 			coach_city: coachCity,
 			coach_state: coachState,
 			coach_country: coachCountry,
+			tournament_id: tournamentID,
 		},
 		success: function (response) {
-			console.log(response);
 			if (response.success) {
 				// add coach to the table
 
@@ -62,39 +66,38 @@ jQuery(document).on("click", "#add-coach-button", function (e) {
 jQuery(document).on("click", "#delete-coach-button", function () {
 	const coachID = jQuery(this).data("coach-id");
 
-	jQuery.ajax({
-		type: "POST",
-		url: cuicpro.ajax_url,
-		data: {
-			action: "delete_coach",
-			coach_id: coachID,
-		},
-		success: function (response) {
-			console.log(response);
-			if (response.success) {
-				const parent = jQuery(`#coach-${coachID}`).closest("div");
-				parent.remove();
+	const confirmationBoxText =
+		"¿Estas seguro de eliminar el coach? Esta accion podria ser irreversible.";
 
-				// remove option from teams by coach viewer dropdown
-				jQuery("#coaches-dropdown-tv")
-					.find(`option[value="${coachID}"]`)
-					.remove();
+	const onResponse = function (response) {
+		if (response.success) {
+			const parent = jQuery(`#coach-${coachID}`).closest("div");
+			parent.remove();
 
-				jQuery("#coach-result-table")
-					.removeClass("error")
-					.addClass("success")
-					.html(response.data.message);
-			} else {
-				jQuery("#coach-result-table")
-					.removeClass("success")
-					.addClass("error")
-					.html(response.data.message);
-			}
-		},
-		error: function (xhr, status, error) {
-			console.error("Error:", error);
-		},
-	});
+			// remove option from teams by coach viewer dropdown
+			jQuery("#coaches-dropdown-tv")
+				.find(`option[value="${coachID}"]`)
+				.remove();
+
+			jQuery("#coach-result-table")
+				.removeClass("error")
+				.addClass("success")
+				.html(response.data.message);
+		} else {
+			jQuery("#coach-result-table")
+				.removeClass("success")
+				.addClass("error")
+				.html(response.data.message);
+		}
+	};
+
+	confirmateActionBox(
+		this,
+		confirmationBoxText,
+		"delete_coach",
+		{ coach_id: coachID },
+		onResponse,
+	);
 });
 
 jQuery(document).on("click", "#edit-coach-button", function (e) {

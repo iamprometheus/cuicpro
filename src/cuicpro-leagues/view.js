@@ -15,6 +15,10 @@ const { state } = store("cuicpro", {
 			const context = getContext();
 			context.isOpen = !context.isOpen;
 		},
+		toggleMatches() {
+			const context = getContext();
+			context.isOpen = !context.isOpen;
+		},
 	},
 	callbacks: {
 		logIsOpen: () => {
