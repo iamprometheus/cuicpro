@@ -161,17 +161,13 @@ function delete_team() {
 }
 
 function update_team() {
-  if (!isset($_POST['team_id']) || !isset($_POST['division_id']) || !isset($_POST['team_name']) || !isset($_POST['team_category']) || !isset($_POST['team_mode']) || !isset($_POST['coach_id']) || !isset($_POST['logo'])) {
+  if (!isset($_POST['team_id']) || !isset($_POST['team_name']) || !isset($_POST['team_category']) || !isset($_POST['team_mode']) || !isset($_POST['coach_id']) || !isset($_POST['logo'])) {
     wp_send_json_error(['message' => 'Faltan datos']);
   }
 
   $team_id = intval($_POST['team_id']);
   $team_name = sanitize_text_field($_POST['team_name']);
   $coach_id = intval($_POST['coach_id']);
-  $division_id = intval($_POST['division_id']);
-  if ($division_id == 0) {
-    $division_id = null;
-  }
   $team_category = intval($_POST['team_category']);
   $team_mode = intval($_POST['team_mode']);
   $logo = sanitize_text_field($_POST['logo']);
@@ -181,9 +177,12 @@ function update_team() {
   }
   $visible = true;
 
-  $result = TeamsDatabase::update_team($team_id, $team_name, $division_id, $team_category, $team_mode, $coach_id, $logo, $visible);
+  $result = TeamsDatabase::update_team($team_id, $team_name, $team_category, $team_mode, $coach_id, $logo, $visible);
   if ($result) {
     $team = TeamsDatabase::get_team_by_id($team_id);
+    if ($team->team_mode != $team_mode || $team->team_category != $team_category) {
+      TeamsDatabase::update_team_division($team_id, null);
+    }
     wp_send_json_success(['message' => 'Equipo actualizado correctamente', 'coachData' => create_coach_data($team->coach_id), 'coachID' => $team->coach_id]);
   }
   wp_send_json_error(['message' => 'Equipo no actualizado, equipo ya existe']);
@@ -201,15 +200,7 @@ function update_team_division() {
     $division_id = null;
   }
 
-  $team = TeamsDatabase::get_team_by_id($team_id);
-  $team->division_id = $division_id;
-  $team->team_category = intval($team->team_category);
-  $team->team_mode = intval($team->team_mode);
-  $team->coach_id = intval($team->coach_id);
-  $team->logo = sanitize_text_field($team->logo);
-  $team->visible = true;
-
-  $result = TeamsDatabase::update_team($team_id, $team->team_name, $division_id, $team->team_category, $team->team_mode, $team->coach_id, $team->logo, $team->visible);
+  $result = TeamsDatabase::update_team_division($team_id, $division_id);
   if ($result) {
     wp_send_json_success(['message' => 'Division actualizada correctamente.']);
   }

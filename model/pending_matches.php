@@ -217,6 +217,23 @@ Class PendingMatchesDatabase {
         return "Match team 2 not updated";
     }
 
+    public static function update_match_official(int $match_id, int $official_id) {
+        global $wpdb;
+        $result = $wpdb->update(
+            $wpdb->prefix . 'cuicpro_pending_matches',
+            array(
+                'official_id' => $official_id,
+            ),
+            array(
+                'match_id' => $match_id,
+            )
+        );
+        if ( $result ) {
+            return "Match official updated successfully";
+        }
+        return "Match official not updated";
+    }
+
     public static function end_match(int $match_id ) {
         global $wpdb;
         $result = $wpdb->update(

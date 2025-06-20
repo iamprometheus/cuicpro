@@ -123,8 +123,8 @@ jQuery(document).on("click", "#edit-coach-button", function (e) {
 				jQuery("#update-coach-button").removeClass("hidden");
 				jQuery("#cancel-coach-button").removeClass("hidden");
 
-				jQuery("#update-coach-button").attr(
-					"data-coach-id",
+				jQuery("#update-coach-button").data(
+					"coach-id",
 					response.data.coach.coach_id,
 				);
 

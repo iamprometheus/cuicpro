@@ -159,7 +159,7 @@ jQuery(document).on("click", "#edit-division-button", function () {
 				jQuery("#update-division-button").removeClass("hidden");
 				jQuery("#cancel-division-button").removeClass("hidden");
 
-				jQuery("#update-division-button").attr("data-division-id", divisionID);
+				jQuery("#update-division-button").data("division-id", divisionID);
 
 				jQuery("#division-result-table")
 					.removeClass("error")

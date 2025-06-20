@@ -61,7 +61,12 @@ function create_tournament_hours($tournament_id) {
   return $html;
 }
 
-function create_tournament_table($tournament, $disabled, $disabled_2, $tournament_days) {
+function create_tournament_table($tournament, $has_matches, $has_officials, $tournament_days) {
+  $add_officials_disabled = $has_matches && $has_officials ? 'disabled' : '';
+  $unassign_officials_disabled = $has_matches && !$has_officials ? 'disabled' : '';
+  $select_bracket_type_disabled = $has_matches ? 'disabled' : '';
+  $delete_matches_disabled = !$has_matches ? 'disabled' : '';
+
   $html = "<div class='tournament-data' id='tournament-" . esc_attr($tournament->tournament_id) . "'>
   <div class='tournament-table-row'>
     <span class='tournament-table-cell-header'>Torneo:</span>
@@ -91,11 +96,13 @@ function create_tournament_table($tournament, $disabled, $disabled_2, $tournamen
     <span class='tournament-table-cell-header'>Acciones:</span>
     <div class='tournament-table-cell-column'>
       <span style='text-align: center;'>Tipo de torneo:</span>
-      <button class='base-button pending-button' id='create-brackets-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $disabled>Eliminacion directa</button>
-      <button class='base-button pending-button' id='create-round-robin-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $disabled>Liguilla</button>
+      <button class='base-button pending-button' id='create-brackets-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "'$select_bracket_type_disabled>Eliminacion directa</button>
+      <button class='base-button pending-button' id='create-round-robin-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "'$select_bracket_type_disabled>Liguilla</button>
       <hr style='background-color: black; height: 1px; width: 100%; margin: 0;'/>
-      <button class='base-button pending-button' id='assign-officials-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $disabled_2>Asignar Arbitros</button>
-      <button class='base-button danger-button' id='delete-matches-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $disabled_2>Eliminar Partidos</button>
+      <button class='base-button pending-button' id='assign-officials-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $add_officials_disabled>Asignar Arbitros</button>
+      <button class='base-button danger-button' id='unassign-officials-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $unassign_officials_disabled>Desasignar Arbitros</button>
+      <hr style='background-color: black; height: 1px; width: 100%; margin: 0;'/>
+      <button class='base-button danger-button' id='delete-matches-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $delete_matches_disabled>Eliminar Partidos</button>
       <button class='base-button danger-button' id='finish-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' disabled>Finalizar Torneo</button>
       <button class='base-button danger-button' id='delete-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' >Eliminar Torneo</button>
     </div>
@@ -120,11 +127,11 @@ function cuicpro_tournament_viewer() {
   foreach ($tournaments as $tournament) {
     
     $brackets = BracketsDatabase::get_brackets_by_tournament($tournament->tournament_id);
-    $disabled = $brackets ? 'disabled' : '';
-    $disabled_2 = $brackets ? '' : 'disabled';
+    $has_matches = $brackets ? true : false;
+    $has_officials = $tournament->tournament_has_officials == 1 ? true : false;
 
     $tournament_days = str_replace(',', ', ', $tournament->tournament_days);
-    $html .= create_tournament_table($tournament, $disabled, $disabled_2, $tournament_days);
+    $html .= create_tournament_table($tournament, $has_matches, $has_officials, $tournament_days);
   }
 
   

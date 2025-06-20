@@ -11,12 +11,15 @@ function on_add_official($official) {
     $team = TeamsDatabase::get_team_by_id($official->official_team_id)->team_name;
   }
 
+  $official_mode = $official->official_mode === "1" ? "5v5" : ($official->official_mode === "2" ? "7v7" : "Ambos");
+  $official_schedule = str_replace(",", ", ", $official->official_schedule);
+
   $location = $official->official_city . ", " . $official->official_state . ", " . $official->official_country;
   $html .= "<div class='table-row' id='official-$official->official_id'>";
   $html .= "<span class='table-cell'>" . esc_html($official->official_name) . "</span>";
-  $html .= "<span class='table-cell'>" . esc_html($official->official_schedule) . "</span>";
+  $html .= "<span class='table-cell'>" . esc_html($official_schedule) . "</span>";
   $html .= "<span class='table-cell'>" . create_hours_viewer($official->official_id) . "</span>";
-  $html .= "<span class='table-cell'>" . esc_html($official->official_mode) . "</span>";
+  $html .= "<span class='table-cell'>" . esc_html($official_mode) . "</span>";
   $html .= "<span class='table-cell'>" . esc_html($team) . "</span>";
   $html .= "<span class='table-cell'>" . esc_html($location) . "</span>";
   $html .= "<div class='table-cell'>
@@ -110,11 +113,43 @@ function update_official() {
   
   if ($result) {
     $official = OfficialsDatabase::get_official_by_id($official_id);
+    $official_registered_hours = OfficialsHoursDatabase::get_official_hours($official_id);
 
-    OfficialsHoursDatabase::delete_official_hours($official_id);
-    foreach ($official_hours as $day => $hours) {
-      $hours_str = implode(",", $hours);
-      OfficialsHoursDatabase::insert_official_hours($official->official_id, $day, $hours_str);
+    // delete days that are not in the new schedule
+    $official_eliminated_days = array_filter($official_registered_hours, function($hour) use ($official_schedule) {
+      return !str_contains($official_schedule, $hour->official_day);
+    });
+    
+    $official_old_days = array_filter($official_registered_hours, function($hour) use ($official_schedule) {
+      return str_contains($official_schedule, $hour->official_day);
+    });
+
+    foreach ($official_eliminated_days as $hour) {
+      OfficialsHoursDatabase::delete_official_hours_by_id($hour->official_hours_id);
+    }
+
+    foreach ($official_hours as $day => $new_hours) {
+      $hours_this_day = array_find($official_old_days, function($hour) use ($day) {
+        return $hour->official_day === $day;
+      });
+
+      // check if the day is in the old schedule
+      if (!$hours_this_day) {
+        OfficialsHoursDatabase::insert_official_hours($official_id, $day, implode(",", $new_hours));
+        continue;
+      }
+      
+      // get the difference between the old hours and the new hours
+      $hours_difference = array_diff(explode(",", $hours_this_day->official_hours), $new_hours);
+      
+      // merge old available hours with the new hours difference
+      $new_available_hours = array_merge(explode(",", $hours_this_day->official_available_hours), $hours_difference);
+      
+      // convert arrays to strings
+      $new_hours_str = implode(",", $new_hours);
+      $new_available_hours_str = implode(",", $new_available_hours);
+      
+      OfficialsHoursDatabase::update_officials_hours($hours_this_day->official_hours_id, $new_hours_str, $new_available_hours_str);
     }
     $tournament = TournamentsDatabase::get_tournament_by_id($official->tournament_id);
     wp_send_json_success(['message' => 'Arbitro actualizado correctamente', 'html' => on_add_official($official), 'tournament_days' => $tournament->tournament_days]);

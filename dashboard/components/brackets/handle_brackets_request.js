@@ -273,3 +273,28 @@ jQuery(document).on("click", "#save-match-single-elimination", function () {
 		onResponse,
 	);
 });
+
+jQuery(document).on("change", "#match-official-select", function () {
+	const matchID = jQuery(this).data("match-id");
+	const officialID = jQuery(this).val();
+
+	jQuery.ajax({
+		type: "POST",
+		url: cuicpro.ajax_url,
+		data: {
+			action: "switch_assigned_official",
+			match_id: matchID,
+			official_id: officialID,
+		},
+		success: function (response) {
+			if (response.success) {
+				alert(response.data.message);
+			} else {
+				alert(response.data.message);
+			}
+		},
+		error: function (xhr, status, error) {
+			console.error("Error:", error);
+		},
+	});
+});

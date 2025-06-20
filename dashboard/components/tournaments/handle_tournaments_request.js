@@ -288,6 +288,7 @@ jQuery(document).on("click", "#create-round-robin-button", function (e) {
 jQuery(document).on("click", "#assign-officials-button", function (e) {
 	e.preventDefault();
 	const tournamentID = jQuery(this).data("tournament-id");
+	const buttonsContainer = jQuery(this).parent();
 
 	jQuery.ajax({
 		type: "POST",
@@ -297,8 +298,14 @@ jQuery(document).on("click", "#assign-officials-button", function (e) {
 			tournament_id: tournamentID,
 		},
 		success: function (response) {
+			console.log(response.data);
 			if (response.success) {
-				jQuery(this).attr("disabled", true);
+				buttonsContainer
+					.find(`#assign-officials-button`)
+					.attr("disabled", true);
+				buttonsContainer
+					.find(`#unassign-officials-button`)
+					.attr("disabled", false);
 				jQuery(`#tournament-result-table-${tournamentID}`)
 					.removeClass("error")
 					.addClass("success")
@@ -314,6 +321,42 @@ jQuery(document).on("click", "#assign-officials-button", function (e) {
 			console.error("Error:", error);
 		},
 	});
+});
+
+jQuery(document).on("click", "#unassign-officials-button", function (e) {
+	e.preventDefault();
+	const tournamentID = jQuery(this).data("tournament-id");
+	const buttonsContainer = jQuery(this).parent();
+
+	const confirmationBoxText =
+		"¿Estas seguro de desasignar los arbitros? Esta acción es irreversible. Aunque la asignación de los arbitros se perderá, podrá reasignarlos en cualquier momento.";
+
+	const onResponse = function (response) {
+		if (response.success) {
+			buttonsContainer
+				.find(`#unassign-officials-button`)
+				.attr("disabled", true);
+			buttonsContainer.find(`#assign-officials-button`).attr("disabled", false);
+
+			jQuery(`#tournament-result-table-${tournamentID}`)
+				.removeClass("error")
+				.addClass("success")
+				.html(response.data.message);
+		} else {
+			jQuery(`#tournament-result-table-${tournamentID}`)
+				.removeClass("success")
+				.addClass("error")
+				.html(response.data.message);
+		}
+	};
+
+	confirmateActionBox(
+		this,
+		confirmationBoxText,
+		"unassign_officials",
+		{ tournament_id: tournamentID },
+		onResponse,
+	);
 });
 
 jQuery(document).on("click", "#delete-matches-button", function (e) {
@@ -401,6 +444,7 @@ function toggleButtonsWhenDeletingMatchesOfTournament(element) {
 	element.find("#create-round-robin-button").attr("disabled", false);
 	element.find("#create-brackets-button").attr("disabled", false);
 	element.find("#assign-officials-button").attr("disabled", true);
+	element.find("#unassign-officials-button").attr("disabled", true);
 	element.find("#delete-matches-button").attr("disabled", true);
 }
 

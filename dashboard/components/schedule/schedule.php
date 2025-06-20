@@ -39,19 +39,20 @@ function generate_time_rows($tournament) {
       if ($i >= intval($hours_this_day->tournament_hours_start) && $i <= intval($hours_this_day->tournament_hours_end)) {
         $matches = count(PendingMatchesDatabase::get_matches_by_date($i, $day, $tournament->tournament_id));
         $officials_this_day = array_filter($officials, function($official) use ($i,$day) {
-          return stristr($official->official_schedule, $day) && stristr($official->official_hours[$day], strval($i));
+          return str_contains($official->official_schedule, $day) && str_contains($official->official_hours[$day], strval($i));
         });
 
-        $officials_names = array_map(function($official) {
-          return $official->official_name;
+        $officials_this_hour = array_map(function($official) {
+          return ['name' => $official->official_name, 'id' => $official->official_id];
         }, $officials_this_day);
 
-        $officials_count = count($officials_names);
-
+        $officials_count = count($officials_this_hour);
 
         $officials_html = "";
-        foreach ($officials_names as $official_name) {
-          $officials_html .= "<span style='text-align: center;'>" . esc_html($official_name) . "</span>";
+        foreach ($officials_this_hour as $official) {
+          $official_hours = OfficialsHoursDatabase::get_official_hours_by_day($official['id'], $day)->official_available_hours;
+          $is_drafted = !str_contains($official_hours, strval($i));
+          $officials_html .= "<span style='text-align: center;'>" . esc_html($official['name']) . " " . ($is_drafted ? "&check;" : "&times;") . "</span>";
         }
 
         $color = "lightgreen";

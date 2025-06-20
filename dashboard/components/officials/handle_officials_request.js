@@ -282,7 +282,7 @@ jQuery(document).on("click", "#edit-official-button", function () {
 				jQuery("#update-official-button").removeClass("hidden");
 				jQuery("#cancel-official-button").removeClass("hidden");
 
-				jQuery("#update-official-button").attr("data-official-id", officialID);
+				jQuery("#update-official-button").data("official-id", officialID);
 
 				jQuery("#official-result-table")
 					.removeClass("error")
@@ -412,6 +412,10 @@ jQuery(document).on("click", "#update-official-button", function (e) {
 				jQuery(`#official-${officialID}`).html(response.data.html);
 				clearOfficialInputs(response.data.tournament_days);
 
+				jQuery("#add-official-button").removeClass("hidden");
+				jQuery("#update-official-button").addClass("hidden");
+				jQuery("#cancel-official-button").addClass("hidden");
+
 				jQuery("#official-result-table")
 					.removeClass("error")
 					.addClass("success")
@@ -452,6 +456,8 @@ function clearOfficialInputs(tournamentDays) {
 
 	// get active tournament days
 	const active_tournament = jQuery(`.tournament-item[selected]`)[0].id;
+
+	jQuery(".hours-selector-container").removeClass("hidden");
 
 	const tournamentsContainer = jQuery(".tournaments-container");
 	const active_tournament_data = tournamentsContainer.find(

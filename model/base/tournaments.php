@@ -28,6 +28,7 @@ Class TournamentsDatabase {
             tournament_fields_7v7_end TINYINT NOT NULL,
             tournament_is_active BOOLEAN NOT NULL,
             tournament_visible BOOLEAN NOT NULL,
+            tournament_has_officials BOOLEAN NOT NULL,
             PRIMARY KEY (tournament_id)
         ) $charset_collate;";
         require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
@@ -140,6 +141,7 @@ Class TournamentsDatabase {
                 'tournament_creation_date' => $tournament_creation_date,
                 'tournament_is_active' => true,
                 'tournament_visible' => true,
+                'tournament_has_officials' => false,
             )
         );
         if ( $result  ) {
@@ -177,6 +179,23 @@ Class TournamentsDatabase {
             return "Tournament updated successfully";
         }
         return "Tournament not updated or tournament not found";
+    }
+
+    public static function update_tournament_has_officials(int $tournament_id, bool $tournament_has_officials ) {
+        global $wpdb;
+        $result = $wpdb->update(
+            $wpdb->prefix . 'cuicpro_tournaments',
+            array(
+                'tournament_has_officials' => $tournament_has_officials,
+            ),
+            array(
+                'tournament_id' => $tournament_id,
+            )
+        );
+        if ( $result ) {
+            return true;
+        }
+        return false;
     }
 
     public static function delete_tournament(int $tournament_id ) {

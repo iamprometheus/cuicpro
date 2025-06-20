@@ -1,5 +1,35 @@
 <?php
 
+function render_available_officials($match) {
+  $officials = OfficialsDatabase::get_officials_by_tournament($match->tournament_id);
+
+  $html = "";
+  $html .= "<select id='match-official-select' data-match-id='" . $match->match_id . "'>";
+
+  if ($match->official_id) {
+    $html .= "<option value='" . $match->official_id . "'>" . OfficialsDatabase::get_official_by_id($match->official_id)->official_name . "</option>";
+  } else {
+    $html .= "<option value='0'>Arbitro no asignado aun</option>";
+  }
+
+  foreach ($officials as $official) {
+    $official_hours = OfficialsHoursDatabase::get_official_hours_by_day($official->official_id, $match->match_date)->official_available_hours;
+
+    if (!$official_hours) {
+      continue;
+    }
+
+    $is_available = str_contains($official_hours, $match->match_time);
+    if (!$is_available) {
+      continue;
+    }
+    
+    $html .= "<option value='" . $official->official_id . "'>" . $official->official_name . "</option>";
+  }
+  $html .= "</select>";
+  return $html;
+}
+
 function create_bracket_match($match) {
   $team_1_name = "TBD";
   $team_2_name = "TBD";
@@ -11,9 +41,6 @@ function create_bracket_match($match) {
   if ($match->team_id_2) {
     $team_2_name = TeamsDatabase::get_team_by_id($match->team_id_2)->team_name;
   }
-
-  $official = OfficialsDatabase::get_official_by_id($match->official_id);
-  $official_name = $official ? $official->official_name : "Asignacion Pendiente";
 
   $match_time = $match->match_time . ":00";
 
@@ -53,7 +80,7 @@ function create_bracket_match($match) {
   $html .= "<span>Hora: " . $match_time . "</span>";
   $html .= "</div>";
   $html .= "<div class='match-data text-right'>";
-  $html .= "<span>Arbitro: " . $official_name . "</span>";
+  $html .= "<span>Arbitro: " . render_available_officials($match) . "</span>";
   $html .= "<span>Campo: " . $match->field_number . "</span>";
   $html .= "</div>";
   $html .= "</div>";
@@ -141,9 +168,6 @@ function render_round_robin_match($match) {
   $team_1_name = TeamsDatabase::get_team_by_id($match->team_id_1)->team_name;
   $team_2_name = TeamsDatabase::get_team_by_id($match->team_id_2)->team_name;
 
-  $official = OfficialsDatabase::get_official_by_id($match->official_id);
-  $official_name = $official ? $official->official_name : "Asignacion Pendiente";
-
   $match_time = $match->match_time . ":00";
 
   $html = "<div class='bracket-match'>";
@@ -157,7 +181,7 @@ function render_round_robin_match($match) {
   $html .= "<span>Hora: " . $match_time . "</span>";
   $html .= "</div>";
   $html .= "<div class='match-data text-right'>";
-  $html .= "<span>Arbitro: " . $official_name . "</span>";
+  $html .= "<span>Arbitro: " . render_available_officials($match) . "</span>";
   $html .= "<span>Campo: " . $match->field_number . "</span>";
   $html .= "</div>";
   $html .= "</div>";
@@ -407,6 +431,64 @@ function update_match_winner_round_robin() {
   wp_send_json_error(['message' => 'Error al actualizar el ganador']);
 }
 
+function handle_switch_assigned_official($match_id, $new_official_id) {
+  $match = PendingMatchesDatabase::get_match_by_id($match_id);
+  if (strval($match->official_id) == strval($new_official_id)) {
+    return true;
+  }
+
+  // if match has no official assigned
+  if (!$match->official_id) {
+    PendingMatchesDatabase::update_match_official($match_id, $new_official_id);
+    return true;
+  }
+
+  // if match has official assigned add and remove corresponding hour to officials available hours
+  // get officials
+  $official = OfficialsDatabase::get_official_by_id($match->official_id);
+  $new_official = OfficialsDatabase::get_official_by_id($new_official_id);
+  
+  // update match official
+  PendingMatchesDatabase::update_match_official($match_id, $new_official_id);
+  
+  // get official and new official hours for the day of the match
+  $official_hours = OfficialsHoursDatabase::get_official_hours_by_day($official->official_id, $match->match_date);
+  $new_official_hours = OfficialsHoursDatabase::get_official_hours_by_day($new_official->official_id, $match->match_date);
+
+  // add match hour to official available hours
+  $official_new_hours = explode(",", $official_hours->official_available_hours);
+  $official_new_hours[] = $match->match_time;
+  $official_new_hours = implode(",", $official_new_hours);
+  OfficialsHoursDatabase::update_official_available_hours($official_hours->official_hours_id, $official_new_hours);
+
+  // remove match hour from new official available hours
+  $new_official_new_hours = explode(",", $new_official_hours->official_available_hours);
+  $new_official_new_hours = array_diff($new_official_new_hours, [$match->match_time]);
+  $new_official_new_hours = implode(",", $new_official_new_hours);
+  OfficialsHoursDatabase::update_official_available_hours($new_official_hours->official_hours_id, $new_official_new_hours);
+
+  return true;
+}
+
+function switch_assigned_official() {
+  if (!isset($_POST['match_id']) || !isset($_POST['official_id'])) {
+    wp_send_json_error(['message' => 'Faltan datos']);
+  }
+
+  $match_id = intval($_POST['match_id']);
+  $official_id = intval($_POST['official_id']);
+
+  $result = handle_switch_assigned_official($match_id, $official_id);
+
+  if ($result) {
+    wp_send_json_success(['message' => 'Arbitro actualizado correctamente']);
+  }
+
+  wp_send_json_error(['message' => 'Error al actualizar el arbitro']);
+}
+
+add_action('wp_ajax_switch_assigned_official', 'switch_assigned_official');
+add_action('wp_ajax_nopriv_switch_assigned_official', 'switch_assigned_official');
 add_action('wp_ajax_update_match_winner_round_robin', 'update_match_winner_round_robin');
 add_action('wp_ajax_nopriv_update_match_winner_round_robin', 'update_match_winner_round_robin');
 add_action('wp_ajax_update_match_winner_single_elimination', 'update_match_winner_single_elimination');

@@ -227,7 +227,6 @@ function create_hours_schedule($tournament_id, $tournament_days){
 
   // clean whitespaces from days
   $days = array_map('trim', $days);
-  $days_index = array_flip($days);
   
   $scheduleHours = [];
   foreach ($days as $index => $day) {
@@ -275,9 +274,11 @@ function delete_brackets() {
   $matches = MatchesDatabase::delete_matches_by_tournament($tournament_id);
   $pending_matches = PendingMatchesDatabase::delete_pending_matches_by_tournament($tournament_id);
   $result = BracketsDatabase::delete_brackets_by_tournament($tournament_id);
+  $has_officials = unset_officials_from_matches($tournament_id);
+
   TournamentsDatabase::reset_tournament($tournament_id);
 
-  if ($result && $pending_matches && $matches) {
+  if ($result && $pending_matches && $matches && $has_officials) {
     wp_send_json_success(['message' => 'Brackets eliminados correctamente']); 
   }
   wp_send_json_error(['message' => 'No se pudo eliminar el torneo']);
@@ -411,6 +412,146 @@ function get_tournament_days() {
   wp_send_json_success(['days' => $active_tournament->tournament_days]);
 }
 
+function set_officials_to_matches($tournament_id){
+  $matches = PendingMatchesDatabase::get_matches_by_tournament($tournament_id);
+  $officials = OfficialsDatabase::get_officials_by_tournament($tournament_id);
+
+  $certified_officials = array_filter($officials, function($official) {
+    return $official->official_is_certified;
+  });
+
+  $uncertified_officials = array_filter($officials, function($official) {
+    return !$official->official_is_certified;
+  });
+  
+  shuffle($certified_officials);
+  shuffle($uncertified_officials);
+
+  foreach ($matches as $match) {
+    $mode = DivisionsDatabase::get_division_by_id($match->division_id)->division_mode;
+    // If official is already assigned, skip
+    if ($match->official_id) continue;
+    
+    $is_assigned = false;
+    
+    foreach ($certified_officials as $official) {
+      // if tournament mode is not the same as official mode, skip
+      if ($official->official_mode != $mode && $official->official_mode != 3) {
+        continue; 
+      }
+      
+      $match_time = $match->match_time;
+      $match_date = $match->match_date;
+      $official_hours = OfficialsHoursDatabase::get_official_hours_by_day($official->official_id, $match_date);
+
+      // if not available this day, skip
+      if (!$official_hours) {
+        continue;
+      }
+      // check if official is available at match time
+      if ( !str_contains($official_hours->official_available_hours, $match_time) ) {
+        continue;
+      }
+
+      
+      $new_official_hours = explode(',', $official_hours->official_available_hours);
+      $new_official_hours = array_filter($new_official_hours, function($hour) use ($match_time) {
+        return $hour != $match_time;
+      });
+      $new_official_hours = implode(',', $new_official_hours);
+      
+      PendingMatchesDatabase::update_match_official($match->match_id, $official->official_id);
+      OfficialsHoursDatabase::update_official_available_hours($official_hours->official_hours_id, $new_official_hours);
+      $is_assigned = true;
+      break;
+    }
+
+    if (!$is_assigned) {
+      foreach ($uncertified_officials as $official) {
+        // if tournament mode is not the same as official mode, skip
+        if ($official->official_mode != $mode && $official->official_mode != 3) {
+          continue; 
+        }
+        
+        $match_time = $match->match_time;
+        $match_date = $match->match_date;
+        $official_hours = OfficialsHoursDatabase::get_official_hours_by_day($official->official_id, $match_date);
+
+        // if not available this day, skip
+        if (!$official_hours) {
+          continue;
+        }
+        // check if official is available at match time
+        if ( !str_contains($official_hours->official_available_hours, $match_time) ) {
+          continue;
+        }
+
+        $new_official_hours = explode(',', $official_hours->official_available_hours);
+        $new_official_hours = array_filter($new_official_hours, function($hour) use ($match_time) {
+          return $hour != $match_time;
+        });
+        $new_official_hours = implode(',', $new_official_hours);
+        
+        PendingMatchesDatabase::update_match_official($match->match_id, $official->official_id);
+        OfficialsHoursDatabase::update_official_available_hours($official_hours->official_hours_id, $new_official_hours);
+        break;
+      }
+    }
+  }
+}
+
+function unset_officials_from_matches(int $tournament_id) {
+  $officials = OfficialsDatabase::get_officials_by_tournament($tournament_id);
+  foreach ($officials as $official) {
+    $official_hours = OfficialsHoursDatabase::get_official_hours($official->official_id);
+    if (!$official_hours) {
+      continue;
+    }
+    foreach ($official_hours as $official_hour) {
+      OfficialsHoursDatabase::reset_official_available_hours($official_hour->official_hours_id, $official_hour->official_hours);
+    }
+  }
+
+  return true;
+}
+
+function assign_officials() {
+  if (!isset($_POST['tournament_id'])) {
+    wp_send_json_error(['message' => 'No se pudo iniciar el torneo']);
+  }
+  $tournament_id = intval($_POST['tournament_id']);
+  $tournament = TournamentsDatabase::get_tournament_by_id($tournament_id);
+  if (!$tournament) {
+    wp_send_json_error(['message' => 'No se pudo encontrar el torneo seleccionado.']);
+  }
+
+  set_officials_to_matches($tournament_id);
+
+  TournamentsDatabase::update_tournament_has_officials($tournament_id, true);
+
+  wp_send_json_success(['message' => 'Arbitros asignados correctamente']);
+}
+
+function unassign_officials() {
+  if (!isset($_POST['tournament_id'])) {
+    wp_send_json_error(['message' => 'No se pudo iniciar el torneo']);
+  }
+  $tournament_id = intval($_POST['tournament_id']);
+  $tournament = TournamentsDatabase::get_tournament_by_id($tournament_id);
+  if (!$tournament) {
+    wp_send_json_error(['message' => 'No se pudo encontrar el torneo seleccionado.']);
+  }
+
+  $result = unset_officials_from_matches($tournament_id);
+  TournamentsDatabase::update_tournament_has_officials($tournament_id, false);
+
+  wp_send_json_success(['message' => 'Arbitros desasignados correctamente', 'result' => $result]);
+}
+
+add_action('wp_ajax_unassign_officials', 'unassign_officials');
+add_action('wp_ajax_nopriv_unassign_officials', 'unassign_officials');
+add_action('wp_ajax_assign_officials', 'assign_officials');
+add_action('wp_ajax_nopriv_assign_officials', 'assign_officials');
 add_action('wp_ajax_create_round_robin', 'create_round_robin');
 add_action('wp_ajax_nopriv_create_round_robin', 'create_round_robin');
 add_action('wp_ajax_switch_selected_tournament', 'switch_selected_tournament');

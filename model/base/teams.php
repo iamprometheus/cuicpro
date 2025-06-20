@@ -110,13 +110,12 @@ Class TeamsDatabase {
         return [false, null];
     }
 
-    public static function update_team(int $team_id, string $team_name, int | null $division_id, int $team_category, int $team_mode, int $coach_id, string $logo, bool $visible ) {
+    public static function update_team(int $team_id, string $team_name, int $team_category, int $team_mode, int $coach_id, string $logo, bool $visible ) {
         global $wpdb;
         $result = $wpdb->update(
             $wpdb->prefix . 'cuicpro_teams',
             array(
                 'team_name' => $team_name,
-                'division_id' => $division_id,
                 'team_category' => $team_category,
                 'team_mode' => $team_mode,
                 'coach_id' => $coach_id,
@@ -131,6 +130,23 @@ Class TeamsDatabase {
             return "Team updated successfully";
         }
         return "Team not updated";
+    }
+
+    public static function update_team_division(int $team_id, int | null $division_id ) {
+        global $wpdb;
+        $result = $wpdb->update(
+            $wpdb->prefix . 'cuicpro_teams',
+            array(
+                'division_id' => $division_id,
+            ),
+            array(
+                'team_id' => $team_id,
+            )
+        );
+        if ( $result ) {
+            return "Team division updated successfully";
+        }
+        return "Team division not updated or team not found";
     }
 
     public static function update_team_enrolled(int $team_id, bool $is_enrolled ) {

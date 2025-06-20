@@ -154,7 +154,6 @@ jQuery(document).ready(function ($) {
 
 		const teamID = $(this).data("team-id");
 		const coachID = $(this).data("team-coach-id");
-		const divisionID = $("#team-division-table").val();
 		const teamName = $("#team-name-table").val();
 		const teamCategory = $("#team-category-table").val();
 		const teamMode = $("#team-mode-table").val();
@@ -176,12 +175,13 @@ jQuery(document).ready(function ($) {
 		const form = new FormData();
 		form.append("action", "update_team");
 		form.append("team_id", teamID);
-		form.append("division_id", divisionID);
 		form.append("team_name", teamName);
 		form.append("team_category", teamCategory);
 		form.append("team_mode", teamMode);
 		form.append("coach_id", coachID);
 		form.append("logo", logo);
+
+		console.log(form);
 
 		$.ajax({
 			type: "POST",
@@ -278,12 +278,9 @@ jQuery(document).ready(function ($) {
 					$("#update-team-button").removeClass("hidden");
 					$("#cancel-team-button").removeClass("hidden");
 
-					$("#update-team-button").attr(
-						"data-team-id",
-						response.data.team.team_id,
-					);
-					$("#update-team-button").attr(
-						"data-team-coach-id",
+					$("#update-team-button").data("team-id", teamID);
+					$("#update-team-button").data(
+						"team-coach-id",
 						response.data.team.coach_id,
 					);
 
