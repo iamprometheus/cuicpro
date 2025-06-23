@@ -15,7 +15,7 @@ Class BracketsDatabase {
         
         $charset_collate = $wpdb->get_charset_collate();
         $sql = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}cuicpro_brackets (
-            bracket_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+            bracket_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
             tournament_id SMALLINT UNSIGNED NOT NULL,
             division_id SMALLINT UNSIGNED NULL,
             PRIMARY KEY (bracket_id),
@@ -41,6 +41,12 @@ Class BracketsDatabase {
     public static function get_bracket_by_division(int $division_id, int $tournament_id) {
         global $wpdb;
         $brackets = $wpdb->get_row( "SELECT * FROM {$wpdb->prefix}cuicpro_brackets WHERE division_id = $division_id AND tournament_id = $tournament_id" );
+        return $brackets;
+    }
+    
+    public static function get_bracket_by_division_id(int $division_id) {
+        global $wpdb;
+        $brackets = $wpdb->get_row( "SELECT * FROM {$wpdb->prefix}cuicpro_brackets WHERE division_id = $division_id" );
         return $brackets;
     }
 

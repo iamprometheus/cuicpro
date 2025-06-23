@@ -15,7 +15,7 @@ Class OfficialsHoursDatabase {
         
         $charset_collate = $wpdb->get_charset_collate();
         $sql = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}cuicpro_officials_hours (
-            official_hours_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+            official_hours_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
             official_id SMALLINT UNSIGNED NOT NULL,
             official_day VARCHAR(255) NOT NULL,
             official_hours VARCHAR(255) NOT NULL,

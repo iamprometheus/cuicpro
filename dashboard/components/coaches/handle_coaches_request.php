@@ -38,7 +38,7 @@ function add_coach() {
   $coach_state = sanitize_text_field($_POST['coach_state']);
   $coach_country = sanitize_text_field($_POST['coach_country']);
 
-  $result = CoachesDatabase::insert_coach($coach_name, $tournament_id, $coach_contact, $coach_city, $coach_state, $coach_country);
+  $result = CoachesDatabase::insert_coach($tournament_id, $coach_name, $coach_contact, $coach_city, $coach_state, $coach_country);
   if ($result[0]) {
     $coach = CoachesDatabase::get_coach_by_id($result[1]);
     $html = on_add_coach($coach);

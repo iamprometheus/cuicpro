@@ -4,17 +4,14 @@ class TournamentScheduler {
   private $scheduleHours;
   private $hours;
   private $brackets;
-  //private $officials;
   private $tournament_id;
   private $tournament_days;
 
-  public function __construct($hours, $fields5v5, $fields7v7, $officials, $tournament_id, $tournament_days) {
+  public function __construct($hours, $fields5v5, $fields7v7, $tournament_id, $tournament_days) {
     $this->tournament_id = $tournament_id;
     $this->hours = $hours;
     $this->scheduleHours = $this->createScheduleHours($hours, $fields5v5, $fields7v7);
-    //$this->officials = $this->createOfficialSchedule($officials);
     $this->tournament_days = $tournament_days;
-    //$this->scheduleMatches();
   }
 
   private function createScheduleHours($hours, $fields5v5, $fields7v7) {
@@ -28,16 +25,6 @@ class TournamentScheduler {
       }
     }
     return $scheduleHours;
-  }
-
-  private function createOfficialSchedule($officials) {
-    foreach ($officials as &$official) { 
-      foreach ($official['days'] as $day) {
-        $official['scheduleHours'][$day] = $official['hours'];
-        $official['occupiedHours'][$day] = [];
-      }
-    }
-    return $officials;
   }
 
   private function generate_bracket_rounds(int $total_teams) {
@@ -460,20 +447,6 @@ class TournamentScheduler {
     }
     return null;
   }
-
-  // private function assignOfficial($day, $hour, $mode) {
-  //     foreach ($this->officials as &$official) {
-  //       if (array_key_exists($day, $official['scheduleHours']) 
-  //           && !array_key_exists($hour, $official['occupiedHours'][$day]) 
-  //           && intval($official['scheduleHours'][$day]) > 0 
-  //           && ($official['mode'] === '3' || $official['mode'] === $mode)) {
-  //         $official['scheduleHours'][$day] = intval($official['scheduleHours'][$day]) - 1;
-  //         $official['occupiedHours'][$day][$hour] = true;
-  //         return $official['id'];
-  //       }
-  //     }
-  //     return null;
-  // }
   
   public function getBrackets() {
       return $this->brackets;

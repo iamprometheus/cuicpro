@@ -44,30 +44,6 @@ function create_bracket_match($match) {
 
   $match_time = $match->match_time . ":00";
 
-  // if ($match->match_link_1) {
-  //   $previous_match_info = PendingMatchesDatabase::get_match_by_bracket_match($match->match_link_1, $match->bracket_id);
-  //   $selected_1 = $match->team_id_1 != null && $match->team_id_1 == $previous_match_info->team_id_1 ? "selected" : "";
-  //   $selected_2 = $match->team_id_1 != null && $match->team_id_1 == $previous_match_info->team_id_2 ? "selected" : "";
-
-  //   $team_1_name = "<select id='team-winner' data-match-id='" . $match->match_id . "' data-prev-match='" . $previous_match_info->match_id . "' data-team-number='1' >";
-  //   $team_1_name .= "<option value='0'>Seleccionar Ganador</option>";
-  //   $team_1_name .= "<option value='" . $previous_match_info->team_id_1 . "' $selected_1>" . TeamsDatabase::get_team_by_id($previous_match_info->team_id_1)->team_name . "</option>";
-  //   $team_1_name .= "<option value='" . $previous_match_info->team_id_2 . "' $selected_2>" . TeamsDatabase::get_team_by_id($previous_match_info->team_id_2)->team_name . "</option>";
-  //   $team_1_name .= "</select>";
-  // } 
-
-  // if ($match->match_link_2) {
-  //   $previous_match_info = PendingMatchesDatabase::get_match_by_bracket_match($match->match_link_2, $match->bracket_id);
-  //   $selected_1 = $match->team_id_2 != null && $match->team_id_2 == $previous_match_info->team_id_1 ? "selected" : "";
-  //   $selected_2 = $match->team_id_2 != null && $match->team_id_2 == $previous_match_info->team_id_2 ? "selected" : "";
-
-  //   $team_2_name = "<select id='team-winner' data-match-id='" . $match->match_id . "' data-prev-match='" . $previous_match_info->match_id . "' data-team-number='2' >";
-  //   $team_2_name .= "<option value='0'>Seleccionar Ganador</option>";
-  //   $team_2_name .= "<option value='" . $previous_match_info->team_id_1 . "' $selected_1>" . TeamsDatabase::get_team_by_id($previous_match_info->team_id_1)->team_name . "</option>";
-  //   $team_2_name .= "<option value='" . $previous_match_info->team_id_2 . "' $selected_2>" . TeamsDatabase::get_team_by_id($previous_match_info->team_id_2)->team_name . "</option>";
-  //   $team_2_name .= "</select>";
-  // }
-
   $html = "<div class='bracket-match'>";
   $html .= "<span>" . $team_1_name . "</span>";
   $html .= "<span>VS</span>";
@@ -331,7 +307,7 @@ function fetch_bracket_data() {
 
   $bracket_id = intval($_POST['bracket_id']);
 
-  wp_send_json_success(['message' => 'Bracket recuperado correctamente', 'html' => on_fetch_bracket_data($bracket_id)['html'], 'elements' => on_fetch_bracket_data($bracket_id)['elements'], 'matches' => on_fetch_bracket_data($bracket_id)['matches']]);
+  wp_send_json_success(['message' => 'Bracket recuperado correctamente', 'html' => on_fetch_bracket_data($bracket_id)['html'], 'elements' => on_fetch_bracket_data($bracket_id)['elements']]);
 }
 
 function update_match_winner_single_elimination() {

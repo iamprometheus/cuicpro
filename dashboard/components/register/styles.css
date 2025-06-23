@@ -1,0 +1,36 @@
+#register-container table,
+#registered-container table {
+	font-size: 20px;
+}
+
+#register-container table caption,
+#registered-container table caption {
+	font-size: 24px;
+	font-weight: bold;
+	margin-bottom: 10px;
+	min-width: 500px;
+}
+
+#register-container table th,
+#registered-container table th {
+	font-weight: bold;
+	padding: 10px;
+}
+
+#register-container table td,
+#registered-container table td {
+	padding: 10px;
+}
+
+#register-container table td img,
+#registered-container table td img {
+	width: 100px;
+	height: 100px;
+}
+
+#register-container table td div,
+#registered-container table td div {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}

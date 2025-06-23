@@ -25,18 +25,16 @@ function create_tournament_fields() {
             </div>";
 
   $html .= "<div class='tournament-table-row'>
-              <span class='tournament-table-cell-header'>Campos 5v5:</span>
+              <span class='tournament-table-cell-header'># Campos 5v5:</span>
               <div class='tournament-table-cell'>
-                <input type='text' id='fields-5v5-range' readonly style='border:0; color:black; font-weight:bold;'>
-                <div id='slider-fields-5v5' class='tournament-slider'></div>
+                <input type='number' id='fields-5v5' min='0' value='1' style='border:0; color:black; font-weight:bold; width: 60px;'>
               </div>
             </div>";
 
   $html .= "<div class='tournament-table-row'>
-              <span class='tournament-table-cell-header'>Campos 7v7:</span>
+              <span class='tournament-table-cell-header'># Campos 7v7:</span>
               <div class='tournament-table-cell'>
-                <input type='text' id='fields-7v7-range' readonly style='border:0; color:black; font-weight:bold;'>
-                <div id='slider-fields-7v7' class='tournament-slider'></div>
+                <input type='number' id='fields-7v7' min='0' value='0' style='border:0; color:black; font-weight:bold; width: 60px;'>
               </div>
             </div>";
 
@@ -44,10 +42,15 @@ function create_tournament_fields() {
               <span class='tournament-table-cell-header'>Acciones:</span>
               <div class='tournament-table-cell'>
                 <button id='add-tournament-button'>Crear</button>
+								<button id='update-tournament-button' data-tournament-id='0' class='hidden'>Actualizar</button>
+								<button id='cancel-tournament-button' class='hidden'>Cancelar</button>
               </div>
             </div>";
+  $html .= "<div class='tournament-table-row'>
+              <span class='tournament-table-cell-header'>Resultado:</span>
+              <span class='tournament-table-cell' id='tournament-result-table'>Resultado de la accion.</span>
+            </div>";
   $html .= "</div>"; 
-
   return $html;
 }
 
@@ -61,11 +64,12 @@ function create_tournament_hours($tournament_id) {
   return $html;
 }
 
-function create_tournament_table($tournament, $has_matches, $has_officials, $tournament_days) {
+function create_tournament_table($tournament, $has_matches, $has_officials, $has_pending_matches, $tournament_days) {
   $add_officials_disabled = $has_matches && $has_officials ? 'disabled' : '';
-  $unassign_officials_disabled = $has_matches && !$has_officials ? 'disabled' : '';
+  $unassign_officials_disabled = !$has_matches && !$has_officials ? 'disabled' : '';
   $select_bracket_type_disabled = $has_matches ? 'disabled' : '';
   $delete_matches_disabled = !$has_matches ? 'disabled' : '';
+  $finish_tournament_disabled = !$has_matches || $has_pending_matches ? 'disabled' : '';
 
   $html = "<div class='tournament-data' id='tournament-" . esc_attr($tournament->tournament_id) . "'>
   <div class='tournament-table-row'>
@@ -85,16 +89,18 @@ function create_tournament_table($tournament, $has_matches, $has_officials, $tou
     </div>
   </div>
   <div class='tournament-table-row'>
-    <span class='tournament-table-cell-header'>Campos 5v5:</span>
-    <span class='tournament-table-cell'>" . esc_html($tournament->tournament_fields_5v5_start) . " - " . esc_html($tournament->tournament_fields_5v5_end) . "</span>
+    <span class='tournament-table-cell-header'># Campos 5v5:</span>
+    <span class='tournament-table-cell'>" . esc_html($tournament->tournament_fields_5v5) . "</span>
   </div>
   <div class='tournament-table-row'>
-    <span class='tournament-table-cell-header'>Campos 7v7:</span>
-    <span class='tournament-table-cell'>" . esc_html($tournament->tournament_fields_7v7_start) . " - " . esc_html($tournament->tournament_fields_7v7_end) . "</span>
+    <span class='tournament-table-cell-header'># Campos 7v7:</span>
+    <span class='tournament-table-cell'>" . esc_html($tournament->tournament_fields_7v7) . "</span>
   </div>
   <div class='tournament-table-row'>
     <span class='tournament-table-cell-header'>Acciones:</span>
     <div class='tournament-table-cell-column'>
+      <button class='base-button pending-button' id='edit-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "'>Editar torneo</button>
+      <hr style='background-color: black; height: 1px; width: 100%; margin: 0;'/>
       <span style='text-align: center;'>Tipo de torneo:</span>
       <button class='base-button pending-button' id='create-brackets-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "'$select_bracket_type_disabled>Eliminacion directa</button>
       <button class='base-button pending-button' id='create-round-robin-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "'$select_bracket_type_disabled>Liguilla</button>
@@ -103,7 +109,7 @@ function create_tournament_table($tournament, $has_matches, $has_officials, $tou
       <button class='base-button danger-button' id='unassign-officials-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $unassign_officials_disabled>Desasignar Arbitros</button>
       <hr style='background-color: black; height: 1px; width: 100%; margin: 0;'/>
       <button class='base-button danger-button' id='delete-matches-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $delete_matches_disabled>Eliminar Partidos</button>
-      <button class='base-button danger-button' id='finish-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' disabled>Finalizar Torneo</button>
+      <button class='base-button danger-button' id='finish-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $finish_tournament_disabled>Finalizar Torneo</button>
       <button class='base-button danger-button' id='delete-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' >Eliminar Torneo</button>
     </div>
   </div>
@@ -111,9 +117,9 @@ function create_tournament_table($tournament, $has_matches, $has_officials, $tou
     <span class='tournament-table-cell-header'>Resultado:</span>
     <span class='tournament-table-cell' id='tournament-result-table-" . esc_attr($tournament->tournament_id) . "'>Resultado de la accion.</span>
   </div>
-</div>";
+  </div>";
 
-return $html;
+  return $html;
 }
 
 function cuicpro_tournament_viewer() {
@@ -127,11 +133,13 @@ function cuicpro_tournament_viewer() {
   foreach ($tournaments as $tournament) {
     
     $brackets = BracketsDatabase::get_brackets_by_tournament($tournament->tournament_id);
+    $pending_matches = PendingMatchesDatabase::get_pending_matches_by_tournament($tournament->tournament_id);
     $has_matches = $brackets ? true : false;
     $has_officials = $tournament->tournament_has_officials == 1 ? true : false;
+    $has_pending_matches = $pending_matches ? true : false;
 
     $tournament_days = str_replace(',', ', ', $tournament->tournament_days);
-    $html .= create_tournament_table($tournament, $has_matches, $has_officials, $tournament_days);
+    $html .= create_tournament_table($tournament, $has_matches, $has_officials, $has_pending_matches, $tournament_days);
   }
 
   

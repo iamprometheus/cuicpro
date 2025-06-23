@@ -22,9 +22,14 @@ if (!function_exists('render_brackets_fe')) {
 			$html .= "<h3>No hay brackets para mostrar</h3>";
 			return $html;
 		}
-		$brackets = BracketsDatabase::get_brackets($active_tournament->tournament_id);
+		$brackets = BracketsDatabase::get_brackets_by_tournament($active_tournament->tournament_id);
 
 		$html .= "<div class='brackets-list-container'>";
+		if (empty($brackets)) {
+			$html .= "<h3>No hay brackets para mostrar</h3>";
+			$html .= "</div>";
+			return $html;
+		}
 		foreach ($brackets as $bracket) {
 			$division = DivisionsDatabase::get_division_by_id(intval($bracket->division_id));
 			$mode = ModesDatabase::get_mode_by_id($division->division_mode);
@@ -36,88 +41,88 @@ if (!function_exists('render_brackets_fe')) {
 			</div>";
 		}
 		$html .= "</div>";
-		echo $html;
+		return $html;
 	}
 }
 
 if (!function_exists('render_brackets_diagram_fe')) {
 	function render_brackets_diagram_fe($active_tournament) {
-		$brackets = BracketsDatabase::get_brackets_by_tournament($active_tournament->tournament_id);
-		$hardcoded_match_positions =[
-			2 => [2, 1],
-			4 => [4,2,3,1],
-			8 => [8,4,6,2,7,3,5,1],
-			16 => [16,8,12,4,14,6,10,2,15,7,11,3,13,5,9,1],
-			32 => [32,16,24,8,28,12,20,4,31,15,23,7,27,13,19,5,30,14,22,6,26,10,25,3,29,9,11,1,33,17,21,18],
-		];
-		$html = "<div id='brackets-data' class='brackets-diagrams-container'>";
-		foreach ($brackets as $bracket) {
-			$bracket_id = $bracket->bracket_id;
-			$matches = PendingMatchesDatabase::get_matches_by_bracket($bracket_id);
+		// $brackets = BracketsDatabase::get_brackets_by_tournament($active_tournament->tournament_id);
+		// $hardcoded_match_positions =[
+		// 	2 => [2, 1],
+		// 	4 => [4,2,3,1],
+		// 	8 => [8,4,6,2,7,3,5,1],
+		// 	16 => [16,8,12,4,14,6,10,2,15,7,11,3,13,5,9,1],
+		// 	32 => [32,16,24,8,28,12,20,4,31,15,23,7,27,13,19,5,30,14,22,6,26,10,25,3,29,9,11,1,33,17,21,18],
+		// ];
+		// $html = "<div id='brackets-data' class='brackets-diagrams-container'>";
+		// foreach ($brackets as $bracket) {
+		// 	$bracket_id = $bracket->bracket_id;
+		// 	$matches = PendingMatchesDatabase::get_matches_by_bracket($bracket_id);
 
-			$bracket_rounds = array_unique(array_map(function($match) {
-				return $match->bracket_round;
-			}, $matches));
+		// 	$bracket_rounds = array_unique(array_map(function($match) {
+		// 		return $match->bracket_round;
+		// 	}, $matches));
 
-			$html .= "<div class='bracket-container' 
-											data-wp-bind--hidden='!context.bracketsState.bracketId_" . $bracket_id . "' id='bracket_" . $bracket_id . "'
-											data-wp-run='callbacks.drawLines'
-											" . wp_interactivity_data_wp_context(array('bracketId' => $bracket_id)) .
-											">";
-			$total_rounds = count($bracket_rounds);
-			foreach ($bracket_rounds as $round) {
-				$html .= "<div id='round_" . $round . "' class='bracket-round'>";
+		// 	$html .= "<div class='bracket-container' 
+		// 									data-wp-bind--hidden='!context.bracketsState.bracketId_" . $bracket_id . "' id='bracket_" . $bracket_id . "'
+		// 									data-wp-run='callbacks.drawLines'
+		// 									" . wp_interactivity_data_wp_context(array('bracketId' => $bracket_id)) .
+		// 									">";
+		// 	$total_rounds = count($bracket_rounds);
+		// 	foreach ($bracket_rounds as $round) {
+		// 		$html .= "<div id='round_" . $round . "' class='bracket-round'>";
 
-				if ($round != 0) {
-					foreach ($matches as $match) {
-						if ($match->bracket_round == $round) {
-							$line_required_up = !$match->team_id_1 ? "line-required-up" : "" ;
-							$line_required_down = !$match->team_id_2 ? "line-required-down" : "" ;
+		// 		if ($round != 0) {
+		// 			foreach ($matches as $match) {
+		// 				if ($match->bracket_round == $round) {
+		// 					$line_required_up = !$match->team_id_1 ? "line-required-up" : "" ;
+		// 					$line_required_down = !$match->team_id_2 ? "line-required-down" : "" ;
 
-							$html .= "<div id='match_" . $match->match_id . "' class='bracket-match-container $line_required_up $line_required_down'>";
-							$html .= create_bracket_match_fe($match);
-							$html .= "</div>";
-						}
-					}
-				} else {
-					$matches_this_round = [];
-					$maximum_matches_this_round = pow(2, $total_rounds - $round - 1);
+		// 					$html .= "<div id='match_" . $match->match_id . "' class='bracket-match-container $line_required_up $line_required_down'>";
+		// 					$html .= create_bracket_match_fe($match);
+		// 					$html .= "</div>";
+		// 				}
+		// 			}
+		// 		} else {
+		// 			$matches_this_round = [];
+		// 			$maximum_matches_this_round = pow(2, $total_rounds - $round - 1);
 
-					$temp_matches = [];
+		// 			$temp_matches = [];
 
-					foreach ($matches as $match) {
-						if ($match->bracket_round == $round) {
-							$matches_this_round[] = $match;
-						}
-					}
+		// 			foreach ($matches as $match) {
+		// 				if ($match->bracket_round == $round) {
+		// 					$matches_this_round[] = $match;
+		// 				}
+		// 			}
 
-					if ($maximum_matches_this_round == count($matches_this_round)) {
-						foreach ($matches_this_round as $match) {
-							$html .= "<div id='match_" . $match->match_id . "' class='bracket-match-container'>";
-							$html .= create_bracket_match_fe($match);
-							$html .= "</div>";
-						}
-					} else {
-						for ($i = 0; $i < $maximum_matches_this_round-1; $i++) {
-							$temp_matches[] = "<div id='match_null' class='bracket-match-container-empty'></div>";
-						}
+		// 			if ($maximum_matches_this_round == count($matches_this_round)) {
+		// 				foreach ($matches_this_round as $match) {
+		// 					$html .= "<div id='match_" . $match->match_id . "' class='bracket-match-container'>";
+		// 					$html .= create_bracket_match_fe($match);
+		// 					$html .= "</div>";
+		// 				}
+		// 			} else {
+		// 				for ($i = 0; $i < $maximum_matches_this_round-1; $i++) {
+		// 					$temp_matches[] = "<div id='match_null' class='bracket-match-container-empty'></div>";
+		// 				}
 
-						$match_index = 0; 
-						for ($index = count($matches_this_round)-1; $index >= 0; $index--) {
-							$temp_matches[$hardcoded_match_positions[$maximum_matches_this_round][$index]-1] =  "<div id='match_" . $matches_this_round[$match_index]->match_id . "' class='bracket-match-container'>" . create_bracket_match_fe($matches_this_round[$match_index]) . "</div>";
-							$match_index++;
-						}
+		// 				$match_index = 0; 
+		// 				for ($index = count($matches_this_round)-1; $index >= 0; $index--) {
+		// 					$temp_matches[$hardcoded_match_positions[$maximum_matches_this_round][$index]-1] =  "<div id='match_" . $matches_this_round[$match_index]->match_id . "' class='bracket-match-container'>" . create_bracket_match_fe($matches_this_round[$match_index]) . "</div>";
+		// 					$match_index++;
+		// 				}
 
-						$html .= implode("", $temp_matches);
-					}
-				}
-				$html .= "</div>";
-			}
+		// 				$html .= implode("", $temp_matches);
+		// 			}
+		// 		}
+		// 		$html .= "</div>";
+		// 	}
 
-			$html .= "</div>";
-		}
-		$html .= "</div>";
-		echo $html;
+		// 	$html .= "</div>";
+		// }
+		// $html .= "</div>";
+		// echo $html;
 	}
 }
 
@@ -160,12 +165,14 @@ if (!function_exists('create_bracket_match_fe')) {
 		return $html;
 	}
 }
-$active_tournament = TournamentsDatabase::get_active_tournament();
+$active_tournaments = TournamentsDatabase::get_active_tournaments();
 $brackets_state = [];
-if (!$active_tournament) {
+$active_tournament = null;
+if (empty($active_tournaments)) {
 	$brackets_state = ["bracketId" => false];
 }
 else {
+	$active_tournament = $active_tournaments[0];
 	$brackets = BracketsDatabase::get_brackets($active_tournament->tournament_id);
 
 	foreach ($brackets as $bracket) {
@@ -173,10 +180,29 @@ else {
 	}
 }
 
+if (!function_exists('render_active_tournaments')) {
+	function render_active_tournaments() {
+		$tournaments = TournamentsDatabase::get_active_tournaments();
+		$html = "<div class='tournaments-list-container' id='tournaments-selector'>";
+		if (empty($tournaments)) {
+			$html .= "<div class='tournament-item-header'>";
+			$html .= "<span class='tournament-item-name'>No hay torneos activos</span>";
+			$html .= "</div>";
+		} else {
+			foreach ($tournaments as $index => $tournament) {
+				$selected = $index === 0 ? "selected" : "";
+				$html .= "<div class='tournament-item' id='tournament-" . esc_attr($tournament->tournament_id) . "' $selected>";
+				$html .= "<span class='tournament-item-name'>" . esc_html($tournament->tournament_name) . "</span>";
+				$html .= "</div>";
+			}
+		}
+		$html .= "</div>";
+		echo $html;
+	}
+}
 
 add_action('wp_enqueue_scripts', function() {
 	wp_enqueue_script('jquery');
-	wp_enqueue_script('leader-lines', plugins_url('/cuicpro-brackets/leader-line.min.js', __DIR__));
 });
 
 ?>
@@ -187,8 +213,15 @@ add_action('wp_enqueue_scripts', function() {
 	data-wp-interactive="cuicpro-brackets"
 	<?php echo wp_interactivity_data_wp_context(array("bracketsState" => $brackets_state)); ?>
 	>
-	<div class="brackets-wrapper" >
-		<?php render_brackets_fe($active_tournament); ?>
-		<?php render_brackets_diagram_fe($active_tournament); ?>
+	
+	<div>
+		<h2 style="text-align: center; margin-bottom: 10px; margin-top: 0px;">Torneos</h2>
+		<?php
+			render_active_tournaments();
+		?>
+	</div>	
+	<div class="brackets-list" >
+		<?php echo render_brackets_fe($active_tournament); ?>
 	</div>
+	<div id="bracket-container" class="bracket-container"></div>
 </div>

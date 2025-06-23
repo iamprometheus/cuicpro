@@ -9,33 +9,15 @@ jQuery(document).on("click", "#add-tournament-button", function (e) {
 	jQuery("#hours-container")
 		.children()
 		.each(function (index) {
-			const tournamentHoursStart = jQuery(`#slider-hours-${index}`).slider(
+			const dayHours = jQuery(`#slider-hours-${index}`).slider(
+				"option",
 				"values",
-				0,
 			);
-			const tournamentHoursEnd = jQuery(`#slider-hours-${index}`).slider(
-				"values",
-				1,
-			);
-			tournamentHours.push([tournamentHoursStart, tournamentHoursEnd]);
+			tournamentHours.push(dayHours);
 		});
 
-	const tournamentFields5v5Start = jQuery("#slider-fields-5v5").slider(
-		"values",
-		0,
-	);
-	const tournamentFields5v5End = jQuery("#slider-fields-5v5").slider(
-		"values",
-		1,
-	);
-	const tournamentFields7v7Start = jQuery("#slider-fields-7v7").slider(
-		"values",
-		0,
-	);
-	const tournamentFields7v7End = jQuery("#slider-fields-7v7").slider(
-		"values",
-		1,
-	);
+	const tournamentFields5v5 = jQuery("#fields-5v5").val();
+	const tournamentFields7v7 = jQuery("#fields-7v7").val();
 
 	if (tournamentName === "") {
 		jQuery("#tournament-result-table")
@@ -53,6 +35,14 @@ jQuery(document).on("click", "#add-tournament-button", function (e) {
 		return;
 	}
 
+	if (tournamentFields5v5.length === 0 && tournamentFields7v7.length === 0) {
+		jQuery("#tournament-result-table")
+			.removeClass("success")
+			.addClass("error")
+			.html("Agregar almenos un campo.");
+		return;
+	}
+
 	jQuery.ajax({
 		type: "POST",
 		url: cuicpro.ajax_url,
@@ -61,10 +51,8 @@ jQuery(document).on("click", "#add-tournament-button", function (e) {
 			tournament_name: tournamentName,
 			tournament_days: tournamentDays.join(","),
 			tournament_hours: tournamentHours,
-			tournament_fields_5v5_start: tournamentFields5v5Start,
-			tournament_fields_5v5_end: tournamentFields5v5End,
-			tournament_fields_7v7_start: tournamentFields7v7Start,
-			tournament_fields_7v7_end: tournamentFields7v7End,
+			tournament_fields_5v5: tournamentFields5v5,
+			tournament_fields_7v7: tournamentFields7v7,
 		},
 		success: function (response) {
 			if (response.success) {
@@ -86,9 +74,8 @@ jQuery(document).on("click", "#add-tournament-button", function (e) {
 				jQuery("#tournament-name").val("");
 				jQuery("#tournament-days").multiDatesPicker("resetDates");
 				jQuery("#hours-container").html("");
-				jQuery("#slider-fields-5v5").slider("values", [1, 8]);
-
-				jQuery("#slider-fields-7v7").slider("values", [9, 12]);
+				jQuery("#fields-5v5").val("");
+				jQuery("#fields-7v7").val("");
 
 				jQuery("#tournament-result-table")
 					.removeClass("error")
@@ -100,6 +87,205 @@ jQuery(document).on("click", "#add-tournament-button", function (e) {
 			console.error("Error:", error);
 		},
 	});
+});
+
+jQuery(document).on("click", "#edit-tournament-button", function (e) {
+	e.preventDefault();
+	const tournamentID = jQuery(this).data("tournament-id");
+
+	jQuery.ajax({
+		type: "POST",
+		url: cuicpro.ajax_url,
+		data: {
+			action: "edit_tournament",
+			tournament_id: tournamentID,
+		},
+		success: function (response) {
+			if (response.success) {
+				jQuery("#tournament-name").val(
+					response.data.tournament.tournament_name,
+				);
+				jQuery("#fields-5v5").val(
+					response.data.tournament.tournament_fields_5v5,
+				);
+				jQuery("#fields-7v7").val(
+					response.data.tournament.tournament_fields_7v7,
+				);
+
+				jQuery("#tournament-days").multiDatesPicker("resetDates");
+				jQuery("#hours-container").html("");
+
+				const days = response.data.tournament.tournament_days.split(",");
+				for (let i = 0; i < days.length; i++) {
+					jQuery("#tournament-days").multiDatesPicker("addDates", days[i]);
+
+					jQuery("#hours-container").append(
+						`<div class='hours-slider'>
+							<div class='hours-slider-header'>
+								<label for='hours-range-${i}'>${days[i]}</label>
+								<input type='text' id='hours-range-${i}' readonly style='border:0; color:black; font-weight:bold; width: 100%;'>
+							</div>
+							<div id='slider-hours-${i}' class='tournament-slider'></div>
+						</div>`,
+					);
+
+					const hours = response.data.tournament_hours[i];
+					jQuery(`#hours-range-${i}`).val(
+						hours.tournament_hours_start +
+							":00 - " +
+							hours.tournament_hours_end +
+							":00",
+					);
+
+					jQuery(`#slider-hours-${i}`).slider({
+						range: true,
+						min: 7,
+						max: 23,
+						step: 1,
+						values: [hours.tournament_hours_start, hours.tournament_hours_end],
+						slide: function (event, ui) {
+							const startHour = (ui.values[0] < 10 ? "0" : "") + ui.values[0];
+							const endHour = (ui.values[1] < 10 ? "0" : "") + ui.values[1];
+							jQuery(`#hours-range-${i}`).val(
+								startHour + ":00 - " + endHour + ":00",
+							);
+						},
+					});
+				}
+
+				jQuery("#add-tournament-button").addClass("hidden");
+				jQuery("#update-tournament-button").removeClass("hidden");
+				jQuery("#cancel-tournament-button").removeClass("hidden");
+
+				jQuery("#update-tournament-button").data("tournament-id", tournamentID);
+
+				jQuery("#tournament-result-table")
+					.removeClass("error")
+					.addClass("success")
+					.html(response.data.message);
+			} else {
+				jQuery("#tournament-result-table")
+					.removeClass("success")
+					.addClass("error")
+					.html(response.data.message);
+			}
+		},
+		error: function (xhr, status, error) {
+			console.error("Error:", error);
+		},
+	});
+});
+
+jQuery(document).on("click", "#update-tournament-button", function (e) {
+	e.preventDefault();
+	const tournamentID = jQuery(this).data("tournament-id");
+	const tournamentName = jQuery("#tournament-name").val();
+	const tournamentDays =
+		jQuery("#tournament-days").multiDatesPicker("getDates");
+
+	const tournamentHours = [];
+	jQuery("#hours-container")
+		.children()
+		.each(function (index) {
+			const dayHours = jQuery(`#slider-hours-${index}`).slider(
+				"option",
+				"values",
+			);
+			tournamentHours.push(dayHours);
+		});
+
+	const tournamentFields5v5 = jQuery("#fields-5v5").val();
+	const tournamentFields7v7 = jQuery("#fields-7v7").val();
+
+	if (tournamentName === "") {
+		jQuery("#tournament-result-table")
+			.removeClass("success")
+			.addClass("error")
+			.html("Agregar Nombre");
+		return;
+	}
+
+	if (tournamentDays.length === 0) {
+		jQuery("#tournament-result-table")
+			.removeClass("success")
+			.addClass("error")
+			.html("Agregar Dias");
+		return;
+	}
+
+	if (tournamentFields5v5.length === 0 && tournamentFields7v7.length === 0) {
+		jQuery("#tournament-result-table")
+			.removeClass("success")
+			.addClass("error")
+			.html("Agregar almenos un campo.");
+		return;
+	}
+
+	jQuery.ajax({
+		type: "POST",
+		url: cuicpro.ajax_url,
+		data: {
+			action: "update_tournament",
+			tournament_id: tournamentID,
+			tournament_name: tournamentName,
+			tournament_days: tournamentDays.join(","),
+			tournament_hours: tournamentHours,
+			tournament_fields_5v5: tournamentFields5v5,
+			tournament_fields_7v7: tournamentFields7v7,
+		},
+		success: function (response) {
+			if (response.success) {
+				jQuery("#tournament-" + tournamentID).replaceWith(response.data.html);
+
+				jQuery(`[id='tournament-${tournamentID}']`).each((index, item) => {
+					if (item.classList.contains("tournament-item")) {
+						item.children[0].innerHTML = tournamentName;
+					}
+				});
+
+				jQuery("#tournament-name").val("");
+				jQuery("#tournament-days").multiDatesPicker("resetDates");
+				jQuery("#fields-5v5").val(1);
+				jQuery("#fields-7v7").val(0);
+				jQuery("#hours-container").html("");
+
+				jQuery("#add-tournament-button").removeClass("hidden");
+				jQuery("#update-tournament-button").addClass("hidden");
+				jQuery("#cancel-tournament-button").addClass("hidden");
+
+				jQuery("#tournament-result-table")
+					.removeClass("error")
+					.addClass("success")
+					.html("Torneo actualizado");
+			} else {
+				jQuery("#tournament-result-table")
+					.removeClass("success")
+					.addClass("error")
+					.html(response.data.message);
+			}
+		},
+		error: function (xhr, status, error) {
+			console.error("Error:", error);
+		},
+	});
+});
+
+jQuery(document).on("click", "#cancel-tournament-button", function (e) {
+	e.preventDefault();
+	jQuery("#tournament-name").val("");
+	jQuery("#tournament-days").multiDatesPicker("resetDates");
+	jQuery("#fields-5v5").val("1");
+	jQuery("#fields-7v7").val("0");
+	jQuery("#hours-container").html("");
+
+	jQuery("#add-tournament-button").removeClass("hidden");
+	jQuery("#update-tournament-button").addClass("hidden");
+	jQuery("#cancel-tournament-button").addClass("hidden");
+
+	jQuery("#tournament-result-table")
+		.removeClass("error")
+		.addClass("success")
+		.html("Modificacion cancelada");
 });
 
 jQuery(document).on(

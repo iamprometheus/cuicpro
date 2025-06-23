@@ -18,15 +18,6 @@ wp_interactivity_state(
 	'cuicpro'
 );
 
-if (!function_exists('MediaFileAlreadyExists')) {
-	function MediaFileAlreadyExists($filename){
-		global $wpdb;
-		$filename = strtolower($filename);
-		$query = "SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_title = '$filename'";
-		return ($wpdb->get_var($query)  > 0) ;
-	}
-}
-
 if (!function_exists('base_url')) {
 	function base_url($atRoot=FALSE, $atCore=FALSE, $parse=FALSE){
 			if (isset($_SERVER['HTTP_HOST'])) {
@@ -53,43 +44,54 @@ if (!function_exists('base_url')) {
 }
 
 if (!function_exists('render_divisions')) {
-	function render_divisions() {
-			$divisions = DivisionsDatabase::get_divisions();
-			$active_tournament = TournamentsDatabase::get_active_tournament();
-
+	function render_divisions($active_tournament) {
+			if ($active_tournament == null) {
+				return;
+			}
+			$divisions = DivisionsDatabase::get_divisions_by_tournament($active_tournament->tournament_id);
+			if (empty($divisions)) {
+				return;
+			}
+			
+			$html = "";
 			foreach ($divisions as $division) {
 					$division_name = $division->division_name;
 					$division_id = $division->division_id;
 					$division_category = $division->division_category == 1 ? "Varonil" : ($division->division_category == 2 ? "Femenil" : "Mixto");
 					$division_mode = $division->division_mode == 1 ? "5v5" : "7v7";
-					echo "<div class='division-container' ".wp_interactivity_data_wp_context(array('isOpen' => false)).">
-									<div data-wp-on--click='actions.toggleOpen' class='division-title'>
+					$html .= "<div class='division-container' >
+									<div id='division-name' class='division-title'>
 										<span>".$division_name." ".$division_category." ".$division_mode."</span>
 									</div>
-									<div data-wp-bind--hidden='!context.isOpen' class='teams-container'>"
+									<div hidden class='teams-container'>"
 											.render_teams_for_division($division_id)
 									."</div>"
-									.render_matches($division_id, $active_tournament) 
+									.render_matches($division_id) 
 								."</div>";
 			}
+			return $html;
 	}
 }
 
 if (!function_exists('render_teams_for_division')) {
 	function render_teams_for_division($division_id) {
 		$teams = TeamsDatabase::get_teams_by_division($division_id);
+		if (empty($teams)) {
+			return "<span>No hay equipos registrados en esta division</span>";
+		}
 
 		$tddata = "";
 		foreach ($teams as $team) {
 			// check if image exists in db
-			$logo = str_replace(" ", "-", $team->logo);
-			if (!MediaFileAlreadyExists($logo)) {
-				$logo = "india";
+			$logo = $team->logo;
+			$logo_url = wp_get_attachment_image_url($logo, 'full');
+			if (!$logo_url) {
+				$logo_url = base_url()."default_team_logo.png";
 			}
 			
 			$team_name = $team->team_name;
 			$tddata.="<div class='team-container'>
-								<img src='".base_url()."$logo' width='50' height='50' />
+								<img src='$logo_url' width='50' height='50' />
 								<p>"
 									.$team_name
 								."</p>
@@ -100,27 +102,23 @@ if (!function_exists('render_teams_for_division')) {
 }
 
 if (!function_exists('render_matches')) {
-	function render_matches($division_id, $active_tournament) {
-		// check if tournament is active
-		if ($active_tournament == null) {
-			return "";
-		}
+	function render_matches($division_id) {
 		// check if bracket exists
-		$bracket = BracketsDatabase::get_bracket_by_division($division_id, $active_tournament->tournament_id); 
+		$bracket = BracketsDatabase::get_bracket_by_division_id($division_id); 
 		if ($bracket == null) {
 			return "";
 		}
 		// check if there's matches for this bracket
-		$matches = PendingMatchesDatabase::get_matches_by_division($division_id, $active_tournament->tournament_id);
+		$matches = PendingMatchesDatabase::get_matches_by_bracket($bracket->bracket_id);
 		if ($matches == null) {
 			return "";
 		}
 
-		$matchcontainer = "<div class='division-matches' ".wp_interactivity_data_wp_context(array('isOpen' => false)).">
-										<div data-wp-on--click='actions.toggleOpen' class='division-matches-title'>
+		$matchcontainer = "<div class='division-matches' id='division-matches'>
+										<div class='division-matches-title'>
 											<span>Proximos partidos</span>
 										</div>
-										<div class='matches-container' data-wp-bind--hidden='!context.isOpen'>";
+										<div class='matches-container' id='matches-container' hidden>";
 										
 		foreach ($matches as $match) {
 			$matchcontainer .= "<div class='match-container'>
@@ -174,18 +172,55 @@ if (!function_exists('render_match')) {
 	}
 }
 
+if (!function_exists('render_active_tournaments')) {
+	function render_active_tournaments() {
+		$tournaments = TournamentsDatabase::get_active_tournaments();
+		$html = "<div class='tournaments-list-container' id='tournaments-selector'>";
+		if (empty($tournaments)) {
+			$html .= "<div class='tournament-item-header'>";
+			$html .= "<span class='tournament-item-name'>No hay torneos activos</span>";
+			$html .= "</div>";
+		} else {
+			foreach ($tournaments as $index => $tournament) {
+				$selected = $index === 0 ? "selected" : "";
+				$html .= "<div class='tournament-item' id='tournament-" . esc_attr($tournament->tournament_id) . "' $selected>";
+				$html .= "<span class='tournament-item-name'>" . esc_html($tournament->tournament_name) . "</span>";
+				$html .= "</div>";
+			}
+		}
+		$html .= "</div>";
+		echo $html;
+	}
+}
+
+
+$active_tournaments = TournamentsDatabase::get_active_tournaments();
+$active_tournament = null;
+if (!empty($active_tournaments)) {
+	$active_tournament = $active_tournaments[0];
+}
+
+
+add_action('wp_enqueue_scripts', function() {
+	wp_enqueue_script('jquery');
+});
 
 ?>
-
 
 <div
 	<?php echo get_block_wrapper_attributes(); ?>
 	data-wp-interactive="cuicpro"
 	>
+	<div>
+		<h2 style="text-align: center; margin-bottom: 20px;">Torneos</h2>
+		<?php
+			render_active_tournaments();
+		?>
+	</div>	
 	<div class="divisions-container"
 	>
 		<?php
-			render_divisions();
+			echo render_divisions($active_tournament);
 		?>
 	</div>
 	

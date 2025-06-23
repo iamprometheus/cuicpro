@@ -64,7 +64,7 @@ Class CoachesDatabase {
         return $coaches;
     }
 
-    public static function insert_coach(string $coach_name, int $tournament_id, string $coach_contact, string $coach_city, string $coach_state, string $coach_country ) {
+    public static function insert_coach( int $tournament_id, string $coach_name, string $coach_contact, string $coach_city, string $coach_state, string $coach_country ) {
         if ( self::get_coaches_by_tournament_and_name($tournament_id, $coach_name ) ) {
             return [false, null];
         }

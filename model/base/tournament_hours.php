@@ -15,7 +15,7 @@ Class TournamentHoursDatabase {
         
         $charset_collate = $wpdb->get_charset_collate();
         $sql = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}cuicpro_tournament_hours (
-            tournament_hours_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+            tournament_hours_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
             tournament_id SMALLINT UNSIGNED NOT NULL,
             tournament_day VARCHAR(255) NOT NULL,
             tournament_hours_start TINYINT NOT NULL,

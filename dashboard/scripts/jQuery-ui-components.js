@@ -23,6 +23,12 @@ jQuery(function ($) {
 			dateFormat: "d/m/y",
 			onSelect: function (dateText, inst) {
 				days = inst.input.val().split(",");
+
+				const values = {};
+				for (let i = 0; i < days.length; i++) {
+					const day = jQuery(`#hours-range-${i}`).siblings("label").text();
+					values[day] = jQuery(`#slider-hours-${i}`).slider("option", "values");
+				}
 				jQuery("#hours-container").empty();
 				for (let i = 0; i < days.length; i++) {
 					jQuery("#hours-container").append(
@@ -34,36 +40,38 @@ jQuery(function ($) {
 							<div id='slider-hours-${i}' class='tournament-slider'></div>
 						</div>`,
 					);
+
+					const values_this_day = values[days[i].trim()];
+
+					jQuery(`#slider-hours-${i}`).slider({
+						range: true,
+						min: 7,
+						max: 23,
+						step: 1,
+						values: values_this_day ? values_this_day : [10, 18],
+						slide: function (event, ui) {
+							const startHour = (ui.values[0] < 10 ? "0" : "") + ui.values[0];
+							const endHour = (ui.values[1] < 10 ? "0" : "") + ui.values[1];
+							jQuery(`#hours-range-${i}`).val(
+								startHour + ":00 - " + endHour + ":00",
+							);
+						},
+					});
+
+					const initialStartHour =
+						(jQuery(`#slider-hours-${i}`).slider("values", 0) < 10 ? "0" : "") +
+						jQuery(`#slider-hours-${i}`).slider("values", 0);
+					const initialEndHour =
+						(jQuery(`#slider-hours-${i}`).slider("values", 1) < 10 ? "0" : "") +
+						jQuery(`#slider-hours-${i}`).slider("values", 1);
+					jQuery(`#hours-range-${i}`).val(
+						initialStartHour + ":00 - " + initialEndHour + ":00",
+					);
 				}
 			},
 		})
 		.blur(function () {
-			for (let i = 0; i < days.length; i++) {
-				jQuery(`#slider-hours-${i}`).slider({
-					range: true,
-					min: 7,
-					max: 23,
-					step: 1,
-					values: [8, 20], // Initial values (8 AM to 5 PM)
-					slide: function (event, ui) {
-						const startHour = (ui.values[0] < 10 ? "0" : "") + ui.values[0];
-						const endHour = (ui.values[1] < 10 ? "0" : "") + ui.values[1];
-						jQuery(`#hours-range-${i}`).val(
-							startHour + ":00 - " + endHour + ":00",
-						);
-					},
-				});
-
-				const initialStartHour =
-					(jQuery(`#slider-hours-${i}`).slider("values", 0) < 10 ? "0" : "") +
-					jQuery(`#slider-hours-${i}`).slider("values", 0);
-				const initialEndHour =
-					(jQuery(`#slider-hours-${i}`).slider("values", 1) < 10 ? "0" : "") +
-					jQuery(`#slider-hours-${i}`).slider("values", 1);
-				jQuery(`#hours-range-${i}`).val(
-					initialStartHour + ":00 - " + initialEndHour + ":00",
-				);
-			}
+			for (let i = 0; i < days.length; i++) {}
 		});
 
 	jQuery("#tournament-selected-days").multiDatesPicker({
@@ -117,50 +125,4 @@ jQuery(function ($) {
 			jQuery("#hours-range").val(startHour + ":00 - " + endHour + ":00");
 		},
 	});
-
-	jQuery("#slider-fields-5v5").slider({
-		range: true,
-		min: 1,
-		max: 20,
-		step: 1,
-		values: [1, 8], // Initial values (8 AM to 5 PM)
-		slide: function (event, ui) {
-			const startField = (ui.values[0] < 10 ? "0" : "") + ui.values[0];
-			const endField = (ui.values[1] < 10 ? "0" : "") + ui.values[1];
-			jQuery("#fields-5v5-range").val(startField + " - " + endField);
-		},
-	});
-
-	const initialStartField5v5 =
-		(jQuery("#slider-fields-5v5").slider("values", 0) < 10 ? "0" : "") +
-		jQuery("#slider-fields-5v5").slider("values", 0);
-	const initialEndField5v5 =
-		(jQuery("#slider-fields-5v5").slider("values", 1) < 10 ? "0" : "") +
-		jQuery("#slider-fields-5v5").slider("values", 1);
-	jQuery("#fields-5v5-range").val(
-		initialStartField5v5 + " - " + initialEndField5v5,
-	);
-
-	jQuery("#slider-fields-7v7").slider({
-		range: true,
-		min: 1,
-		max: 20,
-		step: 1,
-		values: [9, 12], // Initial values (8 AM to 5 PM)
-		slide: function (event, ui) {
-			const startField = (ui.values[0] < 10 ? "0" : "") + ui.values[0];
-			const endField = (ui.values[1] < 10 ? "0" : "") + ui.values[1];
-			jQuery("#fields-7v7-range").val(startField + " - " + endField);
-		},
-	});
-
-	const initialStartField7v7 =
-		(jQuery("#slider-fields-7v7").slider("values", 0) < 10 ? "0" : "") +
-		jQuery("#slider-fields-7v7").slider("values", 0);
-	const initialEndField7v7 =
-		(jQuery("#slider-fields-7v7").slider("values", 1) < 10 ? "0" : "") +
-		jQuery("#slider-fields-7v7").slider("values", 1);
-	jQuery("#fields-7v7-range").val(
-		initialStartField7v7 + " - " + initialEndField7v7,
-	);
 });

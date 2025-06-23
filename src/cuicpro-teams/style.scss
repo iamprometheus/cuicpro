@@ -7,11 +7,51 @@
 
 .wp-block-cuicpro-cuicpro-teams {
 	background-color: #ffffff;
-	color: #fff;
-	padding: 2px;
+	padding: 20px;
 	border-radius: 1px;
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 	min-height: 700px;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+
+	.tournaments-list-container {
+		display: flex;
+		gap: 20px;
+	}
+
+	.tournament-item {
+		display: flex;
+		background: #555555;
+		padding: 10px;
+		border-radius: 15px;
+		border: 1px solid black;
+		color: #fff;
+		cursor: pointer;
+		font-weight: 600;
+	}
+
+	.tournament-item:hover {
+		background: #90dffc;
+	}
+
+	.tournament-item[selected] {
+		background: #f58400;
+		color: black;
+		font-weight: 600;
+	}
+
+	.tournament-item-header {
+		display: flex;
+		align-items: center;
+		font-size: 14px;
+		text-align: center;
+	}
+
+	.tournament-item-name {
+		font-size: 14px;
+		text-align: center;
+	}
 }
 
 .wp-block-cuicpro-cuicpro-teams .teams-grid-container p {

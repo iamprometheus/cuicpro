@@ -93,7 +93,7 @@ function create_team_entry($team) {
               <input type='checkbox' id='enrolled-team-button' data-team-id=$team->team_id $checked_enrolled>
             </div>";
   $html .= "<div class='table-cell'>
-              <img src='http://cuic.pro/$team->logo'>
+              <img src='" . wp_get_attachment_image_url($team->logo, 'full') . "'>
             </div>";
   $html .= "<div class='table-cell'>
               <button id='edit-team-button' data-team-id=$team->team_id>Editar</button>
@@ -254,7 +254,7 @@ function add_team() {
   $attachment_id = null;
   addImageToWordPressMediaLibrary($logo['tmp_name'], $logo['name'], $logo['name'], $attachment_id);
   
-  $result = TeamsDatabase::insert_team($team_name, $tournament_id, $division_id, $team_category, $team_mode, $coach_id, strval($attachment_id));
+  $result = TeamsDatabase::insert_team($tournament_id, $team_name, $division_id, $team_category, $team_mode, $coach_id, strval($attachment_id));
   if ($result[0]) {
     $team = TeamsDatabase::get_team_by_id($result[1]);
     $team->division_id = $division_id;

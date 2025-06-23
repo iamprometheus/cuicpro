@@ -104,7 +104,6 @@ const { state } = store("cuicpro-brackets", {
 			}
 
 			const container = jQuery("#brackets-data");
-
 			const lines = jQuery(".leader-line");
 			jQuery("#bracket_" + bracketId).on("scroll", function () {
 				lines.each(function (line) {

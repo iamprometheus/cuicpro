@@ -22,10 +22,8 @@ Class TournamentsDatabase {
             tournament_end_date DATE NULL,
             tournament_days VARCHAR(255) NOT NULL,
             tournament_type TINYINT NULL,
-            tournament_fields_5v5_start TINYINT NOT NULL,
-            tournament_fields_5v5_end TINYINT NOT NULL,
-            tournament_fields_7v7_start TINYINT NOT NULL,
-            tournament_fields_7v7_end TINYINT NOT NULL,
+            tournament_fields_5v5 TINYINT NOT NULL,
+            tournament_fields_7v7 TINYINT NOT NULL,
             tournament_is_active BOOLEAN NOT NULL,
             tournament_visible BOOLEAN NOT NULL,
             tournament_has_officials BOOLEAN NOT NULL,
@@ -44,6 +42,12 @@ Class TournamentsDatabase {
     public static function get_active_tournaments() {
         global $wpdb;
         $tournaments = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_tournaments where tournament_is_active = 1 and tournament_visible = 1" );
+        return $tournaments;
+    }
+
+    public static function get_active_tournaments_not_started() {
+        global $wpdb;
+        $tournaments = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_tournaments where tournament_is_active = 1 and tournament_visible = 1 and tournament_start_date is null" );
         return $tournaments;
     }
 
@@ -120,8 +124,8 @@ Class TournamentsDatabase {
         return "Tournament not reset or tournament not found";
     }
 
-    public static function insert_tournament(string $tournament_name, string $tournament_days, int $tournament_fields_5v5_start, int $tournament_fields_5v5_end, int $tournament_fields_7v7_start, int $tournament_fields_7v7_end, string $tournament_creation_date ) {
-        if ( self::tournament_exists( $tournament_name ) ) {
+    public static function insert_tournament(string $tournament_name, string $tournament_days, int $tournament_fields_5v5, int $tournament_fields_7v7, string $tournament_creation_date ) {
+        if ( self::tournament_exists( $tournament_name, null ) ) {
             return [
                 "success" => false,
                 "tournament_id" => null
@@ -134,10 +138,8 @@ Class TournamentsDatabase {
             array(
                 'tournament_name' => $tournament_name,  
                 'tournament_days' => $tournament_days,
-                'tournament_fields_5v5_start' => $tournament_fields_5v5_start,
-                'tournament_fields_5v5_end' => $tournament_fields_5v5_end,
-                'tournament_fields_7v7_start' => $tournament_fields_7v7_start,
-                'tournament_fields_7v7_end' => $tournament_fields_7v7_end,
+                'tournament_fields_5v5' => $tournament_fields_5v5,
+                'tournament_fields_7v7' => $tournament_fields_7v7,
                 'tournament_creation_date' => $tournament_creation_date,
                 'tournament_is_active' => true,
                 'tournament_visible' => true,
@@ -156,9 +158,12 @@ Class TournamentsDatabase {
         ];
     }
 
-    public static function update_tournament(int $tournament_id, string $tournament_name, string $tournament_days, int $tournament_fields_5v5_start, int $tournament_fields_5v5_end, int $tournament_fields_7v7_start, int $tournament_fields_7v7_end ) {
-        if ( self::tournament_exists( $tournament_name ) ) {
-            return "Tournament with this name already exists";
+    public static function update_tournament(int $tournament_id, string $tournament_name, string $tournament_days, int $tournament_fields_5v5, int $tournament_fields_7v7 ) {
+        if ( self::tournament_exists( $tournament_name, $tournament_id ) ) {
+            return [
+                "success" => false,
+                "tournament_id" => $tournament_id
+            ];
         }
         global $wpdb;
         $result = $wpdb->update(
@@ -166,19 +171,23 @@ Class TournamentsDatabase {
             array(
                 'tournament_name' => $tournament_name,
                 'tournament_days' => $tournament_days,
-                'tournament_fields_5v5_start' => $tournament_fields_5v5_start,
-                'tournament_fields_5v5_end' => $tournament_fields_5v5_end,
-                'tournament_fields_7v7_start' => $tournament_fields_7v7_start,
-                'tournament_fields_7v7_end' => $tournament_fields_7v7_end
+                'tournament_fields_5v5' => $tournament_fields_5v5,
+                'tournament_fields_7v7' => $tournament_fields_7v7,
             ),
             array(
                 'tournament_id' => $tournament_id,
             )
         );
         if ( $result ) {
-            return "Tournament updated successfully";
+            return [
+                "success" => true,
+                "tournament_id" => $tournament_id
+            ];
         }
-        return "Tournament not updated or tournament not found";
+        return [
+            "success" => true,
+            "tournament_id" => null
+        ];
     }
 
     public static function update_tournament_has_officials(int $tournament_id, bool $tournament_has_officials ) {
@@ -218,9 +227,14 @@ Class TournamentsDatabase {
         return "Tournament not deleted or tournament not found";
     }
 
-    public static function tournament_exists(string $tournament_name ) {
+    public static function tournament_exists(string $tournament_name, int | null $tournament_id ) {
         global $wpdb;
-        $sql = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}cuicpro_tournaments WHERE tournament_name = %s", $tournament_name);
+        $sql = "";
+        if ( $tournament_id ) {
+            $sql = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}cuicpro_tournaments WHERE tournament_name = %s and tournament_id != %d", $tournament_name, $tournament_id);
+        } else {
+            $sql = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}cuicpro_tournaments WHERE tournament_name = %s", $tournament_name);
+        }
         $tournament = $wpdb->get_row( $sql );
         return $tournament;
     }

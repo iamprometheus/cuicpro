@@ -45,6 +45,28 @@ return array(
 		'render' => 'file:./render.php',
 		'viewScript' => 'file:./view.js'
 	),
+	'cuicpro-register' => array(
+		'$schema' => 'https://schemas.wp.org/trunk/block.json',
+		'apiVersion' => 3,
+		'name' => 'cuicpro/cuicpro-register',
+		'version' => '0.1.0',
+		'title' => 'Cuicpro Register',
+		'category' => 'widgets',
+		'icon' => 'smiley',
+		'description' => 'Cuicpro Register Block',
+		'example' => array(
+			
+		),
+		'supports' => array(
+			'interactivity' => true
+		),
+		'textdomain' => 'cuicpro-register',
+		'editorScript' => 'file:./index.js',
+		'editorStyle' => 'file:./index.css',
+		'style' => 'file:./style-index.css',
+		'render' => 'file:./render.php',
+		'viewScript' => 'file:./view.js'
+	),
 	'cuicpro-teams' => array(
 		'$schema' => 'https://schemas.wp.org/trunk/block.json',
 		'apiVersion' => 3,

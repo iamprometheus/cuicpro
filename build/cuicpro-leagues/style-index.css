@@ -9,6 +9,41 @@
  */
 .wp-block-cuicpro-cuicpro-leagues {
   font-size: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.wp-block-cuicpro-cuicpro-leagues .tournaments-list-container {
+  display: flex;
+  gap: 20px;
+}
+.wp-block-cuicpro-cuicpro-leagues .tournament-item {
+  display: flex;
+  background: #555555;
+  padding: 10px;
+  border-radius: 15px;
+  border: 1px solid black;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
+.wp-block-cuicpro-cuicpro-leagues .tournament-item:hover {
+  background: #90dffc;
+}
+.wp-block-cuicpro-cuicpro-leagues .tournament-item[selected] {
+  background: #f58400;
+  color: black;
+  font-weight: 600;
+}
+.wp-block-cuicpro-cuicpro-leagues .tournament-item-header {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  text-align: center;
+}
+.wp-block-cuicpro-cuicpro-leagues .tournament-item-name {
+  font-size: 14px;
+  text-align: center;
 }
 .wp-block-cuicpro-cuicpro-leagues .divisions-container {
   display: flex;

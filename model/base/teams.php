@@ -49,6 +49,12 @@ Class TeamsDatabase {
         return $teams;
     }
 
+    public static function get_enrolled_teams_by_tournament(int $tournament_id) {
+        global $wpdb;
+        $teams = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_teams WHERE tournament_id = $tournament_id AND is_enrolled = true AND team_visible = true" );
+        return $teams;
+    }
+
     public static function get_enrolled_teams_by_division(int $division_id) {
         global $wpdb;
         $teams = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_teams WHERE division_id = $division_id AND is_enrolled = true AND team_visible = true" );
@@ -87,7 +93,7 @@ Class TeamsDatabase {
         return $team;
     }
 
-    public static function insert_team(string $team_name, int $tournament_id, int | null $division_id, int $team_category, int $team_mode, int $coach_id, string $logo ) {
+    public static function insert_team(int $tournament_id, string $team_name,  int | null $division_id, int $team_category, int $team_mode, int $coach_id, string $logo ) {
         global $wpdb;
         $result = $wpdb->insert(
             $wpdb->prefix . 'cuicpro_teams',

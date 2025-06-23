@@ -15,10 +15,10 @@ Class PendingMatchesDatabase {
         
         $charset_collate = $wpdb->get_charset_collate();
         $sql = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}cuicpro_pending_matches (
-            match_id MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT,
+            match_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
             tournament_id SMALLINT UNSIGNED NOT NULL,
             division_id SMALLINT UNSIGNED NOT NULL,
-            bracket_id SMALLINT UNSIGNED NOT NULL,
+            bracket_id INT UNSIGNED NOT NULL,
             bracket_round SMALLINT UNSIGNED NOT NULL,
             bracket_match SMALLINT UNSIGNED NOT NULL,
             team_id_1 SMALLINT UNSIGNED NULL,
@@ -27,8 +27,8 @@ Class PendingMatchesDatabase {
             official_id SMALLINT UNSIGNED NULL,
             match_date VARCHAR(10) NOT NULL,
             match_time TINYINT UNSIGNED NOT NULL,
-            goals_team_1 INT UNSIGNED NULL,
-            goals_team_2 INT UNSIGNED NULL,
+            goals_team_1 TINYINT UNSIGNED NULL,
+            goals_team_2 TINYINT UNSIGNED NULL,
             match_link_1 MEDIUMINT UNSIGNED NULL,
             match_link_2 MEDIUMINT UNSIGNED NULL,
             match_pending BOOLEAN NOT NULL,
@@ -76,6 +76,12 @@ Class PendingMatchesDatabase {
     public static function get_pending_matches_by_bracket(int $bracket_id) {
         global $wpdb;
         $matches = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_pending_matches WHERE bracket_id = $bracket_id AND match_pending = true"  );
+        return $matches;
+    }
+
+    public static function get_pending_matches_by_tournament(int $tournament_id) {
+        global $wpdb;
+        $matches = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_pending_matches WHERE tournament_id = $tournament_id AND match_pending = true" );
         return $matches;
     }
 

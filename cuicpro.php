@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       CUICPRO
  * Description:       CUICPRO Extension for data management
- * Version:           0.8.0
+ * Version:           1.0.0
  * Requires at least: 6.7
  * Requires PHP:      8.2
  * Author:            Aly Castro
@@ -28,7 +28,8 @@ function cuicpro_init() {
 	$blocks = array(
 		array( 'name' => 'cuicpro-leagues' ),
 		array( 'name' => 'cuicpro-teams' ),
-		array( 'name' => 'cuicpro-brackets' )
+		array( 'name' => 'cuicpro-brackets' ),
+		array( 'name' => 'cuicpro-register' )
 	);
 
 	foreach ( $blocks as $block ) {
@@ -42,9 +43,9 @@ function cuicpro_init() {
 // hooks up your code to initialize and register the blocks
 add_action( 'init', 'cuicpro_init' ); 
 
-
-
+// Models
 require_once __DIR__ . '/model/base/teams.php';
+require_once __DIR__ . '/model/base/players.php';
 require_once __DIR__ . '/model/base/coaches.php';
 require_once __DIR__ . '/model/base/officials.php';
 require_once __DIR__ . '/model/base/officials_hours.php';
@@ -53,12 +54,14 @@ require_once __DIR__ . '/model/base/tournaments.php';
 require_once __DIR__ . '/model/base/modes.php';
 require_once __DIR__ . '/model/base/categories.php';
 require_once __DIR__ . '/model/base/tournament_hours.php';
+require_once __DIR__ . '/model/base/team_register_queue.php';
+require_once __DIR__ . '/model/base/pending_players.php';
 require_once __DIR__ . '/model/matches.php';
 require_once __DIR__ . '/model/brackets.php';
 require_once __DIR__ . '/model/pending_matches.php';
 require_once __DIR__ . '/model/tournament_scheduler.php';
 
-
+// Dashboard components
 require_once __DIR__ . '/dashboard/components/divisions/divisions.php';
 require_once __DIR__ . '/dashboard/components/teams/teams.php';
 require_once __DIR__ . '/dashboard/components/coaches/coaches.php';
@@ -67,6 +70,13 @@ require_once __DIR__ . '/dashboard/components/tournaments/tournaments.php';
 require_once __DIR__ . '/dashboard/components/brackets/brackets.php';
 require_once __DIR__ . '/dashboard/components/matches/matches.php';
 require_once __DIR__ . '/dashboard/components/schedule/schedule.php';
+require_once __DIR__ . '/dashboard/components/register/register.php';
+
+// Frontend components
+require_once __DIR__ . '/frontend/register_form/register_form.php';
+require_once __DIR__ . '/frontend/tournaments/tournaments_frontend.php';
+require_once __DIR__ . '/frontend/teams/teams_frontend.php';
+require_once __DIR__ . '/frontend/brackets/brackets_frontend.php';
 
 // Initialize database tables if they don't exist
 function cuicpro_databases() {
@@ -76,12 +86,15 @@ function cuicpro_databases() {
 	TournamentsDatabase::init();
 	TournamentHoursDatabase::init();
 	TeamsDatabase::init();
+	PlayersDatabase::init();
 	OfficialsDatabase::init();
 	OfficialsHoursDatabase::init();
 	DivisionsDatabase::init();
 	MatchesDatabase::init();
 	BracketsDatabase::init();	
 	PendingMatchesDatabase::init();
+	TeamRegisterQueueDatabase::init();
+	PendingPlayersDatabase::init();
 }
 
 add_action('admin_menu', 'cuicpro_databases');
@@ -135,6 +148,15 @@ function cuicpro_menu_page() {
 		'cuicpro-schedule',
 		'cuicpro_handle_schedule_page'
 	);
+
+	add_submenu_page(
+		'cuicpro',
+		'Registro de equipos',
+		'Registro de equipos',
+		'manage_options',
+		'cuicpro-register',
+		'cuicpro_handle_register_page'
+	);
 }
 
 function cuicpro_handle_admin_page() {
@@ -146,5 +168,11 @@ function cuicpro_handle_admin_page() {
 function cuicpro_handle_schedule_page() {
 	ob_start();
 	include_once __DIR__ . '/dashboard/views/schedule.php';
+	echo ob_get_clean();
+}
+
+function cuicpro_handle_register_page() {
+	ob_start();
+	include_once __DIR__ . '/dashboard/views/register.php';
 	echo ob_get_clean();
 }
