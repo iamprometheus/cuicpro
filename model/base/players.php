@@ -44,6 +44,12 @@ Class PlayersDatabase {
         return $player;
     }
 
+    public static function get_players_by_team(int $team_id) {
+        global $wpdb;
+        $players = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_players WHERE team_id = $team_id AND player_visible = true" );
+        return $players;
+    }
+
     public static function get_players_by_coach(int $coach_id) {
         global $wpdb;
         $players = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_players WHERE coach_id = $coach_id AND player_visible = true" );

@@ -6,18 +6,33 @@ jQuery(document).on("click", "#add-coach-button", function (e) {
 	const coachCity = jQuery("#coach-city").val();
 	const coachState = jQuery("#coach-state").val();
 	const coachCountry = jQuery("#coach-country").val();
-	const tournamentID = jQuery(".tournament-item[selected]")[0].id.replace(
-		"tournament-",
-		"",
-	);
+
+	const tournaments = jQuery(".tournament-item[selected]");
+	if (tournaments.length === 0) {
+		jQuery("#coach-result-table")
+			.removeClass("success")
+			.addClass("error")
+			.html(
+				"No hay torneos disponibles, agrega un torneo para agregar coaches.",
+			);
+		return;
+	}
+
+	const tournamentID = tournaments[0].id.replace("tournament-", "");
 
 	if (coachName === "") {
-		alert("Agregar un nombre al entrenador");
+		jQuery("#coach-result-table")
+			.removeClass("success")
+			.addClass("error")
+			.html("Agregar un nombre al entrenador");
 		return;
 	}
 
 	if (coachContact === "") {
-		alert("Agregar el contacto al entrenador");
+		jQuery("#coach-result-table")
+			.removeClass("success")
+			.addClass("error")
+			.html("Agregar el contacto al entrenador");
 		return;
 	}
 

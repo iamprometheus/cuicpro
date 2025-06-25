@@ -56,7 +56,7 @@
 	min-height: 60px;
 }
 .table-input-row {
-	height: 70px;
+	height: 80px;
 }
 
 /* 
@@ -120,5 +120,5 @@
 }
 
 .error {
-	background-color: red;
+	background-color: rgb(255, 95, 95);
 }

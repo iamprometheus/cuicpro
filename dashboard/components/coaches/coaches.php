@@ -4,6 +4,9 @@ function create_input_coach() {
 	$html = "";
   // dynamic input fields for adding teams
   $html .= "<div class='table-input'>";
+  $html .= "<div id='tournament-input-container' style='margin-bottom: 15px; font-size: 20px;'>
+							<span style='font-weight: bold; '>Registro de entrenadores</span>
+						</div>";
   $html .= "<div class='table-input-row'>
 							<span class='table-cell'>Nombre: </span>
 							<div class='table-input-cell'>
@@ -52,20 +55,26 @@ function create_input_coach() {
   return $html;
 }
 
-function cuicpro_coaches_table(int $tournament_id) {
-  $coaches = CoachesDatabase::get_coaches_by_tournament($tournament_id);
-
+function cuicpro_coaches_table($tournament) {
   // create table header
-  $html = "<div class='table-row'>
-              <span class='table-cell'>Nombre: </span>
-              <span class='table-cell'>Contacto: </span>
-              <span class='table-cell'>Ciudad: </span>
-              <span class='table-cell'>Estado: </span>
-              <span class='table-cell'>Pais: </span>
-              <span class='table-cell'>Acciones: </span>
-            </div>
-            ";
-
+  $html = "<div style='margin-bottom: 15px; font-size: 20px;'>
+            <span style='font-weight: bold; '>Coaches registrados en torneo seleccionado</span>
+          </div>";
+  $html .= "<div class='table-row'>
+  <span class='table-cell'>Nombre: </span>
+  <span class='table-cell'>Contacto: </span>
+  <span class='table-cell'>Ciudad: </span>
+  <span class='table-cell'>Estado: </span>
+  <span class='table-cell'>Pais: </span>
+  <span class='table-cell'>Acciones: </span>
+  </div>
+  ";
+  
+  if (is_null($tournament)) {
+    return $html;
+  }
+  
+  $coaches = CoachesDatabase::get_coaches_by_tournament($tournament->tournament_id);
   // add team data to table
   foreach ($coaches as $coach) {
     $html .= "<div class='table-row' id='coach-$coach->coach_id'>";
@@ -96,7 +105,7 @@ function cuicpro_coach_viewer() {
   $html .= "<div class='table-view-container'>";
   $html .= create_input_coach();
   $html .= "<div id='coaches-data'>";
-  $html .= cuicpro_coaches_table($tournament->tournament_id);
+  $html .= cuicpro_coaches_table($tournament);
   $html .= "</div>";
   $html .= "</div>";
   $html .= "</div>";

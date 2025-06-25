@@ -8,13 +8,21 @@
 .wp-block-cuicpro-cuicpro-register {
 	font-size: 1em;
 
+	.register-team-container {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+	}
+
 	.register-container {
-		width: 100%;
+		width: fit-content;
 		display: flex;
 		flex-direction: column;
 		padding: 10px;
 		border-radius: 10px;
 		border: 1px solid #444444;
+		max-width: 80%;
 	}
 
 	.register-form {
@@ -120,6 +128,7 @@
 		width: 80%;
 		display: flex;
 		gap: 10px;
+		flex-wrap: wrap;
 	}
 
 	.form-input-2 {

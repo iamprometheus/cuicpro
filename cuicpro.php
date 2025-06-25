@@ -103,6 +103,11 @@ if(!defined('WPINC')) {
 	return;
 }
 
+add_action('admin_head', 'add_custom_admin_script');
+function add_custom_admin_script() {
+    echo '<script src="https://unpkg.com/@sjmc11/tourguidejs/dist/tour.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>';
+}
+
 add_action('admin_enqueue_scripts', 'load_jquery');
 // load jQuery
 function load_jquery() {
@@ -111,6 +116,7 @@ function load_jquery() {
 	wp_enqueue_style('jquery-ui-multidatespicker', plugin_dir_url(__FILE__) . 'dashboard/css/mdp.css');
 	wp_enqueue_style('prettify', plugin_dir_url(__FILE__) . 'dashboard/css/prettify.css');
 	wp_enqueue_style('admin-page', plugin_dir_url(__FILE__) . 'dashboard/css/admin-page.css');
+	wp_enqueue_style('tour-css', plugin_dir_url(__FILE__) . 'dashboard/css/tour.min.css');
 
 	wp_enqueue_script('jquery');
 	wp_enqueue_script('jquery-ui');
@@ -125,6 +131,12 @@ function load_jquery() {
 		'ajax_url' => admin_url('admin-ajax.php')
 	));
 }
+
+// Guided tour
+function cuicpro_guided_tour() {
+	wp_enqueue_script('guidedtour', plugin_dir_url(__FILE__) . 'dashboard/scripts/guidedtour.js');
+}
+add_action('admin_enqueue_scripts', 'cuicpro_guided_tour', 20);
 
 // Add plugin to menu Page
 add_action('admin_menu', 'cuicpro_menu_page');

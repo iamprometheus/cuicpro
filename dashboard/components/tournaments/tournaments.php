@@ -3,6 +3,9 @@
 // function to display the dropdown of leagues to show teams
 function create_tournament_fields() {
   $html = "<div class='tournament-inputs'>
+            <div style='text-align: center; margin-bottom: 15px; font-size: 20px;'>
+              <span style='font-weight: bold; '>Registro de torneos</span>
+            </div>
             <div class='tournament-table-row'>
               <span class='tournament-table-cell-header'>Nombre:</span>
               <div class='tournament-table-cell'>
@@ -49,6 +52,16 @@ function create_tournament_fields() {
   $html .= "<div class='tournament-table-row'>
               <span class='tournament-table-cell-header'>Resultado:</span>
               <span class='tournament-table-cell' id='tournament-result-table'>Resultado de la accion.</span>
+            </div>";
+
+            
+  $html .= "<div class='tournament-table-row'>
+              <span class='tournament-table-cell-header'>Ayuda</span>
+								<button id='create-tournament-help-button'>Creacion de torneos</button>
+
+								<button id='update-tournament-help-button'>Actualizacion de torneos</button>
+
+								<button id='delete-tournament-help-button'>Eliminacion de torneos</button>
             </div>";
   $html .= "</div>"; 
   return $html;
@@ -128,8 +141,15 @@ function cuicpro_tournament_viewer() {
   
   $html .= create_tournament_fields();
 
+  $html .= "<div style='display: flex; flex-direction: column;'>"; 
+  $html .= "<div id='tournament-input-container' style='margin-bottom: 15px; font-size: 20px;'>
+              <span style='font-weight: bold; '>Torneos Activos:</span>
+            </div>";
+
   $tournaments = TournamentsDatabase::get_active_tournaments();
   
+  
+  $html .= "<div class='tournaments-container'>";
   foreach ($tournaments as $tournament) {
     
     $brackets = BracketsDatabase::get_brackets_by_tournament($tournament->tournament_id);
@@ -142,12 +162,12 @@ function cuicpro_tournament_viewer() {
     $html .= create_tournament_table($tournament, $has_matches, $has_officials, $has_pending_matches, $tournament_days);
   }
 
-  
+  $html .= "</div>";
 
+  $html .= "</div>";
   $html .= "</div>";
   echo $html;
 }
-
 
 // enqueue scripts related to this file
 function enqueue_tournaments_scripts() {

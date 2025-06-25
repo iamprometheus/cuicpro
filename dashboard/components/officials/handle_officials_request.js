@@ -8,10 +8,18 @@ jQuery(document).on("click", "#add-official-button", function (e) {
 	const officialCity = jQuery("#official-city").val();
 	const officialState = jQuery("#official-state").val();
 	const officialCountry = jQuery("#official-country").val();
-	const tournamentID = jQuery(".tournament-item[selected]")[0].id.replace(
-		"tournament-",
-		"",
-	);
+	const tournaments = jQuery(".tournament-item[selected]");
+	if (tournaments.length === 0) {
+		jQuery("#official-result-table")
+			.removeClass("success")
+			.addClass("error")
+			.html(
+				"No hay torneos disponibles, agrega un torneo para agregar arbitros.",
+			);
+		return;
+	}
+
+	const tournamentID = tournaments[0].id.replace("tournament-", "");
 
 	const officialDays = officialSchedule.replaceAll(" ", "").split(",");
 

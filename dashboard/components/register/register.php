@@ -13,11 +13,11 @@ function create_division_list_selector($divisions) {
   $html = "<div class='tournaments-list-container' id='divisions-selector-register'>";
   if (empty($divisions)) {
     $html .= "<div class='tournament-item-header'>";
-    $html .= "<span class='tournament-item-name'>No hay divisiones activas</span>";
+    $html .= "<span class='tournament-item-name'>No hay divisiones activas para el torneo seleccionado</span>";
     $html .= "</div>";
   } else {
     $html .= "<div class='tournament-item-header'>";
-    $html .= "<span class='tournament-item-name'>Divisiones Activas:</span>";
+    $html .= "<span class='tournament-item-name'>Divisiones:</span>";
     $html .= "</div>";
     foreach ($divisions as $index => $division) {
       $selected = $index === 0 ? "selected" : "";

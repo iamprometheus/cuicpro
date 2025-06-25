@@ -74,8 +74,8 @@ jQuery(document).on("click", "#add-tournament-button", function (e) {
 				jQuery("#tournament-name").val("");
 				jQuery("#tournament-days").multiDatesPicker("resetDates");
 				jQuery("#hours-container").html("");
-				jQuery("#fields-5v5").val("");
-				jQuery("#fields-7v7").val("");
+				jQuery("#fields-5v5").val(1);
+				jQuery("#fields-7v7").val(0);
 
 				jQuery("#tournament-result-table")
 					.removeClass("error")
@@ -334,6 +334,9 @@ jQuery(document).on(
 
 					// assign teams data for selected tournament
 					jQuery("#teams-data").html(response.data.teams);
+					jQuery("#teams-data-by-division").html(
+						response.data.teams_by_division,
+					);
 
 					// assign hours data for for officials in selected tournament
 					jQuery("#official-hours").html(response.data.official_hours);

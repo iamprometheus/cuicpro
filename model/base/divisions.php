@@ -150,10 +150,10 @@ Class DivisionsDatabase {
 
     public static function division_exists(int | null $division_id, string $division_name, int $division_mode, int $division_category ) {
         global $wpdb;
-        if ($division_id) {
-            $sql = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}cuicpro_divisions WHERE division_id != %d AND division_name = %s AND division_mode = %d AND division_category = %d AND division_visible = true", $division_id, $division_name, $division_mode, $division_category);
-        } else {
+        if (is_null($division_id)) {
             $sql = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}cuicpro_divisions WHERE division_name = %s AND division_mode = %d AND division_category = %d AND division_visible = true", $division_name, $division_mode, $division_category);
+        } else {
+            $sql = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}cuicpro_divisions WHERE division_id != %d AND division_name = %s AND division_mode = %d AND division_category = %d AND division_visible = true", $division_id, $division_name, $division_mode, $division_category);
         }
         $division = $wpdb->get_row( $sql );
         return $division;

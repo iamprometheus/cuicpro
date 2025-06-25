@@ -52,7 +52,10 @@ Class CoachesDatabase {
         return $coach;
     }
 
-    public static function get_coaches_by_tournament(int $tournament_id) {
+    public static function get_coaches_by_tournament(int | null $tournament_id) {
+        if (is_null($tournament_id)) {
+            return [];
+        }
         global $wpdb;
         $coaches = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_coaches WHERE tournament_id = $tournament_id AND coach_visible = true" );
         return $coaches;

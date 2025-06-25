@@ -49,8 +49,11 @@ jQuery(document).ready(function ($) {
 				},
 				success: function (response) {
 					if (response.success) {
-						const newElement = document.querySelector("#coach-data");
-						newElement.innerHTML = response.data.html;
+						$("#coach-data").html(response.data.html);
+						$("#players-data").html(response.data.players);
+						$("#team-players-dropdown").html(
+							response.data.team_players_dropdown,
+						);
 
 						$("#team-result-table")
 							.removeClass("error")
@@ -68,8 +71,11 @@ jQuery(document).ready(function ($) {
 				},
 			});
 		} else {
-			const element = document.querySelector("#coach-data");
-			element.innerHTML = "";
+			$("#coach-data").html("");
+			$("#players-data").html("");
+			$("#team-players-dropdown").html(
+				"<option value='0'>Seleccione un Equipo</option>",
+			);
 		}
 	});
 
@@ -83,10 +89,18 @@ jQuery(document).ready(function ($) {
 		const coachID = $("#coaches-dropdown-tv").val();
 		const rawLogo = $("#team-logo-input");
 		const logo = rawLogo[0].files[0];
-		const tournamentID = jQuery(".tournament-item[selected]")[0].id.replace(
-			"tournament-",
-			"",
-		);
+		const tournaments = jQuery(".tournament-item[selected]");
+		if (tournaments.length === 0) {
+			jQuery("#team-result-table")
+				.removeClass("success")
+				.addClass("error")
+				.html(
+					"No hay torneos disponibles, agrega un torneo para agregar equipos.",
+				);
+			return;
+		}
+
+		const tournamentID = tournaments[0].id.replace("tournament-", "");
 
 		if (coachID === "0") {
 			$("#team-result-table").removeClass("success").addClass("error");
@@ -338,6 +352,38 @@ jQuery(document).ready(function ($) {
 			},
 			success: function (response) {
 				if (response.success) {
+					jQuery("#team-result-table")
+						.removeClass("error")
+						.addClass("success")
+						.html(response.data.message);
+				} else {
+					jQuery("#team-result-table")
+						.removeClass("success")
+						.addClass("error")
+						.html(response.data.message);
+				}
+			},
+			error: function (xhr, status, error) {
+				console.error("Error:", error);
+			},
+		});
+	});
+
+	$(document).on("change", "#team-players-dropdown", function (e) {
+		e.preventDefault();
+		const teamID = $(this).val();
+
+		jQuery.ajax({
+			type: "POST",
+			url: cuicpro.ajax_url,
+			data: {
+				action: "fetch_team_players_data",
+				team_id: teamID,
+			},
+			success: function (response) {
+				if (response.success) {
+					jQuery("#players-data").html(response.data.html);
+
 					jQuery("#team-result-table")
 						.removeClass("error")
 						.addClass("success")

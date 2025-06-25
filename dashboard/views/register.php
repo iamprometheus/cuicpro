@@ -17,7 +17,7 @@ function create_tournament_list_selector() {
     $html .= "</div>";
   } else {
     $html .= "<div class='tournament-item-header'>";
-    $html .= "<span class='tournament-item-name'>Torneos Activos:</span>";
+    $html .= "<span class='tournament-item-name'>Torneos:</span>";
     $html .= "</div>";
     foreach ($tournaments as $index => $tournament) {
       $selected = $index === 0 ? "selected" : "";

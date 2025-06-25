@@ -7,6 +7,19 @@ jQuery(document).on("click", "#add-division-button", function (e) {
 	const divisionMaxTeams = jQuery("#division-max-teams").val();
 	const divisionCategory = jQuery("#division-category").val();
 
+	const tournaments = jQuery(".tournament-item[selected]");
+	if (tournaments.length === 0) {
+		jQuery("#division-result-table")
+			.removeClass("success")
+			.addClass("error")
+			.html(
+				"No hay torneos disponibles, agrega un torneo para agregar divisiones.",
+			);
+		return;
+	}
+
+	const tournamentID = tournaments[0].id.replace("tournament-", "");
+
 	if (divisionName === "") {
 		jQuery("#division-result-table")
 			.removeClass("success")
@@ -46,11 +59,6 @@ jQuery(document).on("click", "#add-division-button", function (e) {
 			.html("Numero maximo de equipos debe ser mayor al minimo");
 		return;
 	}
-
-	const tournamentID = jQuery(".tournament-item[selected]")[0].id.replace(
-		"tournament-",
-		"",
-	);
 
 	jQuery.ajax({
 		type: "POST",

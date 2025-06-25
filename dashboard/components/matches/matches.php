@@ -1,13 +1,25 @@
 <?php
 
-function cuicpro_matches($tournament_id) {
+function cuicpro_matches($tournament) {
   $html = "";
+  if (is_null($tournament)) {
+    return "<span>No hay partidos para mostrar</span>";
+  }
 
-  $matches = MatchesDatabase::get_matches_by_tournament($tournament_id);
+  $matches = MatchesDatabase::get_matches_by_tournament($tournament->tournament_id);
+
+  if (empty($matches)) {
+    return "<span>No hay partidos para mostrar para el torneo seleccionado</span>";
+  }
 
   $days = array_unique(array_map(function($match) {
     return $match->match_date;
   }, $matches));
+
+  
+	$html .= "<div style='margin-bottom: 15px; font-size: 20px;'>
+              <span style='font-weight: bold; '>Partidos registrados en torneo seleccionado</span>
+            </div>";
 
   foreach ($days as $day) {
     $html .= "<hr class='day-separator' />";
@@ -93,7 +105,8 @@ function cuicpro_matches_viewer() {
   $html .= create_tournament_list();
   $html .= "<div class='table-view-container'>";
   $html .= "<div id='matches-data' style='width: 100%;'>";
-  $html .= cuicpro_matches($tournament->tournament_id);
+  
+  $html .= cuicpro_matches($tournament);
   $html .= "</div>";
   $html .= "</div>";
   $html .= "</div>";

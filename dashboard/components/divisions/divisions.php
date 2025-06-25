@@ -4,6 +4,9 @@ function create_input_division() {
 	$html = "";
   // dynamic input fields for adding teams
   $html .= "<div class='table-input'>";
+  $html .= "<div id='tournament-input-container' style='margin-bottom: 15px; font-size: 20px;'>
+							<span style='font-weight: bold; '>Registro de divisiones</span>
+						</div>";
   $html .= "<div class='table-input-row'>
 							<span class='table-cell'>Nombre: </span>
 							<div class='table-input-cell'>
@@ -59,9 +62,10 @@ function create_input_division() {
   return $html;
 }
 
-function cuicpro_divisions($tournament_id) {
-  $html = "";
-
+function cuicpro_divisions($tournament) {
+	$html = "<div style='margin-bottom: 15px; font-size: 20px;'>
+            <span style='font-weight: bold; '>Divisiones en torneo seleccionado</span>
+          </div>";
   $html .= "<div class='table-row'>
               <span class='table-cell'>Nombre: </span>
               <span class='table-cell'>Categoria: </span>
@@ -73,12 +77,12 @@ function cuicpro_divisions($tournament_id) {
             </div>
             ";
 
-  if (is_null($tournament_id)) {
+  if (is_null($tournament)) {
     $html .= "<div class='table-row cell-hidden' id='division-data'></div>";
     return $html;
   }
 
-  $divisions = DivisionsDatabase::get_divisions_by_tournament($tournament_id);
+  $divisions = DivisionsDatabase::get_divisions_by_tournament($tournament->tournament_id);
 
   // add team data to table
   if (empty($divisions)) {
@@ -123,7 +127,7 @@ function cuicpro_division_viewer() {
   $html .= "<div class='table-view-container'>";
   $html .= create_input_division();
   $html .= "<div id='divisions-data'>";
-  $html .= cuicpro_divisions($tournament->tournament_id);
+  $html .= cuicpro_divisions($tournament);
   $html .= "</div>";
   $html .= "</div>";
   $html .= "</div>";

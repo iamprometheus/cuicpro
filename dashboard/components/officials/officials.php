@@ -58,7 +58,13 @@ function create_hours_viewer($official_id) {
 
 function create_input_official() {
   $tournament = TournamentsDatabase::get_active_tournaments();
-  $tournament_hours = TournamentHoursDatabase::get_tournament_hours_by_tournament($tournament[0]->tournament_id);
+
+  $tournament_hours = [];
+  if (empty($tournament)) {
+    $tournament_hours = [];
+  } else {
+    $tournament_hours = TournamentHoursDatabase::get_tournament_hours_by_tournament($tournament[0]->tournament_id);
+  }
 
   $tournament_days =  "";
   if (empty($tournament)) {
@@ -70,6 +76,9 @@ function create_input_official() {
   $html = "";
   // dynamic input fields for adding teams
   $html .= "<div class='tournament-inputs' id='dynamic-input-official'>";
+  $html .= "<div id='tournament-input-container' style='text-align: center; margin-bottom: 15px; font-size: 20px;'>
+              <span style='font-weight: bold; '>Registro de arbitros</span>
+            </div>";
   $html .= "<div class='tournament-table-row'>
               <span class='tournament-table-cell-header'>Nombre: </span>
               <div class='tournament-table-cell'>
@@ -148,11 +157,12 @@ function create_input_official() {
   return $html;
 }
 
-function render_officials($tournament_id) {
-
-  $officials = OfficialsDatabase::get_officials_by_tournament($tournament_id);
-
-  $html = "<div class='table-row'>
+function render_officials($tournament) {
+  
+	$html = "<div  style='margin-bottom: 15px; font-size: 20px;'>
+            <span style='font-weight: bold; '>Oficiales registrados en torneo seleccionado:</span>
+          </div>";
+  $html .= "<div class='table-row'>
             <span class='table-cell'>Nombre: </span>
             <span class='table-cell'>Horas: </span>
             <span class='table-cell'>Dias: </span>
@@ -162,10 +172,14 @@ function render_officials($tournament_id) {
             <span class='table-cell'>¿Esta certificado?</span>
             <span class='table-cell'>¿Esta activo?</span>
             <span class='table-cell'>Acciones: </span>
-          </div>
-          ";
-
-
+            </div>
+            ";
+  
+  if (is_null($tournament)) {
+    return $html;
+  }
+            
+  $officials = OfficialsDatabase::get_officials_by_tournament($tournament->tournament_id);
   // add team data to table
   foreach ($officials as $official) {
     $checked_active = $official->official_is_active ? 'checked' : '';
@@ -217,7 +231,7 @@ function cuicpro_official_viewer() {
   // create table header
 
   $html .= "<div id='officials-data'>";
-  $html .= render_officials($tournament->tournament_id);
+  $html .= render_officials($tournament);
   $html .= "</div>";
   $html .= "</div>";
   $html .= "</div>";

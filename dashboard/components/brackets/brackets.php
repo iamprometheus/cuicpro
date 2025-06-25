@@ -1,8 +1,13 @@
 <?php
 
-function generate_brackets_dropdown(int $tournament_id) {
+function generate_brackets_dropdown($tournament) {
   $html = "";
-  $brackets = BracketsDatabase::get_brackets_by_tournament($tournament_id);
+
+  if (is_null($tournament)) {
+    return $html;
+  }
+
+  $brackets = BracketsDatabase::get_brackets_by_tournament($tournament->tournament_id);
   if (empty($brackets)) {
     $html .= "<option value='0'>No hay brackets</option>";
     return $html;
@@ -30,13 +35,15 @@ function cuicpro_brackets_viewer() {
   $html .= create_tournament_list();
   $html .= "
   <div class='brackets-wrapper'>
+    <div id='tournament-input-container' style='text-align: right; font-size: 20px;'>
+      <span style='font-weight: bold; '>Brackets en torneo seleccionado</span>
+    </div>
     <div class='brackets-header'>
       <span class='brackets-title'>Brackets</span>
-
       <div class='brackets-dropdown-container'>
         <button id='brackets-reload-button'>Recargar Resultados</button>
         <select id='brackets-dropdown'>
-          " . generate_brackets_dropdown($tournament->tournament_id) . "
+          " . generate_brackets_dropdown($tournament) . "
         </select>
       </div>
     </div>

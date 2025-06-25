@@ -10,7 +10,6 @@ function generate_day_columns($tournament) {
 }
 
 function generate_time_rows($tournament) {
-
   $tournament_hours = TournamentHoursDatabase::get_tournament_hours_by_tournament($tournament->tournament_id);
   $html = "";
   $hours = $tournament_hours;
@@ -71,6 +70,9 @@ function generate_time_rows($tournament) {
 }
 
 function create_table_for_schedule($tournament) {
+  if (is_null($tournament)) {
+    return "<h3>No hay torneos activos</h3>";
+  }
   $html = "<table id='schedule-table' border='1' align='center'>";
   $html .= "<thead>";
   $html .= "<th>Horas:</th>";

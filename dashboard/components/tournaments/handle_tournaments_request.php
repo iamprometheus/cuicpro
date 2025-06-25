@@ -240,6 +240,19 @@ function data_checks($tournament_id) {
       wp_send_json_error(['message' => 'No se pudo iniciar el torneo, no hay equipos registrados en la division ' . $division->division_name]);
     }
   }
+
+  // verify if divisions have officials
+  $has_minimum_teams = false;
+  foreach ($divisions as $division) {
+    $teams = TeamsDatabase::get_teams_by_division($division->division_id);
+    if (count($teams) >= $division->division_min_teams) {
+      $has_minimum_teams = true;
+    }
+  }
+
+  if (!$has_minimum_teams) {
+    wp_send_json_error(['message' => 'No se pudo iniciar el torneo, no hay equipos minimos en alguna division']);
+  }
 }
 
 function delete_brackets() {
@@ -432,14 +445,15 @@ function switch_selected_tournament() {
   }
   wp_send_json_success([
     'message' => 'Torneo seleccionado correctamente', 
-    'divisions' => cuicpro_divisions($tournament_id), 
-    'coaches' => cuicpro_coaches_table($tournament_id), 
-    'brackets' => generate_brackets_dropdown($tournament_id),
-    'officials' => render_officials($tournament_id),
-    'teams' => cuicpro_teams_by_coach($tournament_id) . cuicpro_teams_by_division($tournament_id),
+    'divisions' => cuicpro_divisions($tournament), 
+    'coaches' => cuicpro_coaches_table($tournament), 
+    'brackets' => generate_brackets_dropdown($tournament),
+    'officials' => render_officials($tournament),
+    'teams' => cuicpro_teams_by_coach($tournament) . cuicpro_players_by_team(),
+    'teams_by_division' => cuicpro_teams_by_division($tournament),
     'tournament_days' => $tournament->tournament_days,
     'official_hours' => create_hours_select_input($tournament_hours),
-    'matches' => cuicpro_matches($tournament_id)
+    'matches' => cuicpro_matches($tournament)
     ]);
 }
 
