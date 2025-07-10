@@ -124,10 +124,10 @@ function create_brackets() {
   $Tournament_Scheduler = new TournamentScheduler($scheduleHours, $fields5v5, $fields7v7, intval($tournament_id), $days);
   $Tournament_Scheduler->createMatchesForBrackets($divisions);
   $brackets = $Tournament_Scheduler->getBrackets();
-  $links = generate_match_links($brackets);
-
-  $brackets_dropdown = generate_brackets_dropdown($tournament_id);
-  wp_send_json_success(['message' => 'Brackets creados correctamente', 'brackets_dropdown' => $brackets_dropdown, 'links' => $links, 'brackets' => $brackets]);
+  generate_match_links($brackets);
+  
+  $brackets_dropdown = generate_brackets_dropdown($tournament);
+  wp_send_json_success(['message' => 'Brackets creados correctamente', 'brackets_dropdown' => $brackets_dropdown, 'brackets' => $brackets]);
 }
 
 function create_round_robin() {
@@ -188,7 +188,76 @@ function create_round_robin() {
   $Tournament_Scheduler->createMatchesForRoundRobin($divisions);
   $brackets = $Tournament_Scheduler->getBrackets();
 
-  wp_send_json_success(['message' => 'Round Robin creado correctamente', 'brackets' => $brackets]);
+  $brackets_dropdown = generate_brackets_dropdown($tournament);
+  wp_send_json_success(['message' => 'Round Robin creado correctamente', 'brackets' => $brackets, 'brackets_dropdown' => $brackets_dropdown]);
+}
+
+function create_general_tournament() {
+  if (!isset($_POST['tournament_id'])) {
+    wp_send_json_error(['message' => 'No se pudo iniciar el torneo']);
+  }
+  $tournament_id = intval($_POST['tournament_id']);
+
+  data_checks($tournament_id);
+  
+  TournamentsDatabase::start_tournament($tournament_id, 3);
+  
+  $divisions = DivisionsDatabase::get_active_divisions_by_tournament($tournament_id);
+  // create brackets for each division
+  foreach ($divisions as $division) {
+    $teams = TeamsDatabase::get_teams_by_division($division->division_id);
+    if (count($teams) >= $division->division_min_teams) {
+      BracketsDatabase::insert_bracket($tournament_id, $division->division_id);
+    }
+  }
+  
+  $tournament = TournamentsDatabase::get_tournament_by_id($tournament_id);
+  // prepare tournament data for scheduler
+  $tournament_id = $tournament->tournament_id;
+  $tournament_fields5v5 = $tournament->tournament_fields_5v5;
+  $tournament_fields7v7 = $tournament->tournament_fields_7v7;
+
+  $hours_schedule = create_hours_schedule($tournament_id, $tournament->tournament_days);
+  $scheduleHours = $hours_schedule['scheduleHours'];
+  $days = $hours_schedule['days'];
+
+  $fields5v5 = [];
+  for ($i = 1; $i <= $tournament_fields5v5; $i++) {
+    $fields5v5[] = intval($i);
+  }
+  $fields7v7 = [];
+  for ($i = $tournament_fields5v5 + 1; $i <= $tournament_fields7v7 + $tournament_fields5v5; $i++) {
+    $fields7v7[] = intval($i);
+  }
+  
+  $divisions_data = DivisionsDatabase::get_active_divisions_by_tournament($tournament_id);
+  
+  $divisions = [];
+  foreach ($divisions_data as $division) {
+    $bracket_id = BracketsDatabase::get_bracket_by_division($division->division_id, $tournament_id)->bracket_id;
+    $teams_data = TeamsDatabase::get_teams_by_division($division->division_id);
+    $preferred_days = explode(',', $division->division_preferred_days);
+    $teams = [];
+    foreach ($teams_data as $team) {
+      if ($team->is_enrolled) {
+        $teams[] = $team->team_id;
+      }
+    }
+    $divisions[] = [ 
+      "id"=> $division->division_id, 
+      "teams"=> $teams, 
+      "division_mode"=> $division->division_mode, 
+      "bracket_id"=> $bracket_id, 
+      "preferred_days"=> $preferred_days
+    ];
+  }
+
+  // create matches for each bracket
+  $Tournament_Scheduler = new TournamentScheduler($scheduleHours, $fields5v5, $fields7v7, intval($tournament_id), $days);
+  $brackets = $Tournament_Scheduler->createMatchesForGeneralTournament($divisions);
+
+  $brackets_dropdown = generate_brackets_dropdown($tournament);
+  wp_send_json_success(['message' => 'Partidos creados correctamente', 'brackets' => $brackets, 'brackets_dropdown' => $brackets_dropdown]);
 }
 
 function create_hours_schedule($tournament_id, $tournament_days){
@@ -241,10 +310,10 @@ function data_checks($tournament_id) {
     }
   }
 
-  // verify if divisions have officials
+  // verify if divisions have minimum enorlled teams
   $has_minimum_teams = false;
   foreach ($divisions as $division) {
-    $teams = TeamsDatabase::get_teams_by_division($division->division_id);
+    $teams = TeamsDatabase::get_enrolled_teams_by_division($division->division_id);
     if (count($teams) >= $division->division_min_teams) {
       $has_minimum_teams = true;
     }
@@ -321,6 +390,7 @@ function on_add_tournament($tournament) {
         <button class='base-button pending-button' id='edit-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "'>Editar torneo</button>
         <hr style='background-color: black; height: 1px; width: 100%; margin: 0;'/>
         <span style='text-align: center;'>Tipo de torneo:</span>
+        <button class='base-button pending-button' id='create-general-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' disabled>Liguilla + Eliminacion directa</button>
         <button class='base-button pending-button' id='create-brackets-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "'$select_bracket_type_disabled>Eliminacion directa</button>
         <button class='base-button pending-button' id='create-round-robin-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "'$select_bracket_type_disabled>Liguilla</button>
         <hr style='background-color: black; height: 1px; width: 100%; margin: 0;'/>
@@ -332,7 +402,7 @@ function on_add_tournament($tournament) {
         <button class='base-button danger-button' id='delete-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' >Eliminar Torneo</button>
       </div>
     </div>
-    <div class='tournament-table-row'>
+    <div class='tournament-table-row' id='tournament-result-table-container'>
       <span class='tournament-table-cell-header'>Resultado:</span>
       <span class='tournament-table-cell' id='tournament-result-table-" . esc_attr($tournament->tournament_id) . "'>Resultado de la accion.</span>
     </div>
@@ -389,7 +459,7 @@ function add_tournament() {
     
     wp_send_json_success(['message' => 'Torneo agregado correctamente', 'html' => on_add_tournament($tournament), 'tournament_entry' => on_add_tournament_entry($tournament)]);
   }
-  wp_send_json_error(['message' => 'Torneo no agregado, torneo ya existe']);
+  wp_send_json_error(['message' => 'Torneo no agregado, torneo con ese nombre ya existe']);
 }
 
 function edit_tournament() {
@@ -598,6 +668,8 @@ function unassign_officials() {
   wp_send_json_success(['message' => 'Arbitros desasignados correctamente', 'result' => $result]);
 }
 
+add_action('wp_ajax_create_general_tournament', 'create_general_tournament');
+add_action('wp_ajax_nopriv_create_general_tournament', 'create_general_tournament');
 add_action('wp_ajax_edit_tournament', 'edit_tournament');
 add_action('wp_ajax_nopriv_edit_tournament', 'edit_tournament');
 add_action('wp_ajax_update_tournament', 'update_tournament');

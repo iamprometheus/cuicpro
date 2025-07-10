@@ -32,7 +32,7 @@ function render_pending_teams_from_register($tournament_id, $division_id) {
   if ($tournament_id === null || $division_id === null) {
     $html = "";
     $html .= "<table id='registered-teams' border='1' align='center'>";
-    $html .= "<caption>No hay equipos registrados</caption>";
+    $html .= "<caption>No hay equipos en la fila de registro</caption>";
     $html .= "</table>";
     return $html;
   }
@@ -58,12 +58,15 @@ function render_pending_teams_from_register($tournament_id, $division_id) {
   $html .= "</thead>";
   $html .= "<tbody>";
   foreach ($teams as $team) {
+    $coach = CoachesUserDatabase::get_coach_by_id($team->coach_id);
+    $team_user = TeamsUserDatabase::get_team_by_id($team->team_id);
+
     $html .= "<tr>";
-    $html .= "<td>" . esc_html($team->coach_name) . "</td>";
-    $html .= "<td>" . esc_html($team->coach_contact) . "</td>";
-    $html .= "<td>" . esc_html($team->team_name) . "</td>";
-    $html .= "<td>" . esc_html($team->coach_city) . ", " . esc_html($team->coach_state) . ", " . esc_html($team->coach_country) . "</td>";
-    $html .= "<td><img src='" . wp_get_attachment_image_url($team->logo, 'full') . "' alt='Logo' /></td>";
+    $html .= "<td>" . esc_html($coach->coach_name) . "</td>";
+    $html .= "<td>" . esc_html($coach->coach_contact) . "</td>";
+    $html .= "<td>" . esc_html($team_user->team_name) . "</td>";
+    $html .= "<td>" . esc_html($coach->coach_city) . ", " . esc_html($coach->coach_state) . ", " . esc_html($coach->coach_country) . "</td>";
+    $html .= "<td><img src='" . wp_get_attachment_image_url($team_user->team_logo, 'full') . "' alt='Logo' /></td>";
     $html .= "<td>
                 <div>
                   <button id='accept-team-button' data-record-id='" . esc_attr($team->team_register_queue_id) . "'>Aceptar</button>

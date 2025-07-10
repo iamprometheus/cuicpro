@@ -85,7 +85,7 @@ function fetch_team_players_data() {
   // create table header
   $html = "<div class='table-wrapper'>
             <div class='table-row'>
-              <span class='table-cell'>Nombre: </span>
+              <span class='table-cell'>Jugador: </span>
               <span class='table-cell'>Foto: </span>
             </div>
             ";
@@ -94,7 +94,7 @@ function fetch_team_players_data() {
   foreach ($players as $player) {
     $html .= "<div class='table-row' id='player-$player->player_id'>";
     $html .= "<span class='table-cell'>" . esc_html($player->player_name) . "</span>";
-    $html .= "<span class='table-cell'>" . wp_get_attachment_image_url($player->player_photo, 'full') . "</span>";
+    $html .= "<span class='table-cell'>" . "<img src='" . wp_get_attachment_image_url($player->player_photo, 'full') . "'>" . "</span>";
     $html .= "</div>";
   }
 
@@ -162,7 +162,6 @@ function create_players_data($coach_id) {
   $html = "<div class='table-wrapper' id='players-coach-data'>
             <div class='table-row'>
               <span class='table-cell'>Jugador: </span>
-              <span class='table-cell'>Equipo: </span>
               <span class='table-cell'>Foto: </span>
             </div>
             ";
@@ -175,8 +174,7 @@ function create_players_data($coach_id) {
   foreach ($players as $player) {
     $html .= "<div class='table-row' id='player-$player->player_id'>";
     $html .= "<span class='table-cell'>" . esc_html($player->player_name) . "</span>";
-    $html .= "<span class='table-cell'>" . esc_html($player->team_name) . "</span>";
-    $html .= "<span class='table-cell'>" . wp_get_attachment_image_url($player->player_photo, 'full') . "</span>";
+    $html .= "<span class='table-cell'>" . "<img src='" . wp_get_attachment_image_url($player->player_photo, 'full') . "'>" . "</span>";
     $html .= "</div>";
   }
 
@@ -328,7 +326,7 @@ function add_team() {
   $attachment_id = null;
   addImageToWordPressMediaLibrary($logo['tmp_name'], $logo['name'], $logo['name'], $attachment_id);
   
-  $result = TeamsDatabase::insert_team($tournament_id, $team_name, $division_id, $team_category, $team_mode, $coach_id, strval($attachment_id));
+  $result = TeamsDatabase::insert_team($tournament_id, $team_name, $division_id, $team_category, $team_mode, $coach_id, strval($attachment_id), null);
   if ($result[0]) {
     $team = TeamsDatabase::get_team_by_id($result[1]);
     wp_send_json_success(['message' => 'Equipo agregado correctamente', 'html' => on_add_team($team)]);
@@ -348,7 +346,7 @@ function add_teams_bulk() {
     $team_mode = intval($_POST['team_mode']);
     $tournament_id = intval($_POST['tournament_id']);
     
-    $result = TeamsDatabase::insert_team($team_name, $tournament_id, null, $team_category, $team_mode, $coach_id, $team_name);
+    $result = TeamsDatabase::insert_team($tournament_id, $team_name, null, $team_category, $team_mode, $coach_id, $team_name, null);
     if ($result) wp_send_json_success(['message' => 'Equipo agregado correctamente']);
     wp_send_json_error(['message' => 'Equipo no agregado, equipo ya existe']);
 }

@@ -59,17 +59,22 @@ function accept_team_register() {
     wp_send_json_error(['message' => 'No se pudo encontrar el equipo seleccionado.']);
   }
 
+  $coach_id = $pending_team->coach_id;
+  $coach = CoachesUserDatabase::get_coach_by_id($coach_id);
+  $team = TeamsUserDatabase::get_team_by_id($pending_team->team_id);
+
   // Register coach
-  $coach = CoachesDatabase::insert_coach(
-    $pending_team->tournament_id, 
-    $pending_team->coach_name, 
-    $pending_team->coach_contact, 
-    $pending_team->coach_city, 
-    $pending_team->coach_state, 
-    $pending_team->coach_country
+  $coach_result = CoachesDatabase::insert_coach(
+    intval($coach_id),
+    $pending_team->tournament_id,
+    $coach->coach_name,
+    $coach->coach_contact,
+    $coach->coach_city,
+    $coach->coach_state,
+    $coach->coach_country,
   );
 
-  if (!$coach[0]) {
+  if (!$coach_result[0]) {
     wp_send_json_error(['message' => 'No se pudo registrar el coach.']);
   }
 
@@ -78,31 +83,33 @@ function accept_team_register() {
   $team_mode = $division->division_mode;
 
   // Register team
-  $team = TeamsDatabase::insert_team(
+  $team_result = TeamsDatabase::insert_team(
     $pending_team->tournament_id, 
-    $pending_team->team_name,
+    $team->team_name,
     $pending_team->division_id, 
     $team_category, 
     $team_mode, 
-    $coach[1], 
-    $pending_team->logo
+    $coach_result[1], 
+    $team->team_logo,
+    $pending_team->team_id,
   );
 
   // Register players
-  $players = PendingPlayersDatabase::get_players_by_team_register_queue($record_id);
-  foreach ($players as $player) {
-    PlayersDatabase::insert_player(
-      $player->player_name,
-      $team[1],
-      $player->player_photo,
-      $coach[1]
-    );
-  }
+  // $players = PendingPlayersDatabase::get_players_by_team_register_queue($record_id);
+  // foreach ($players as $player) {
+  //   PlayersDatabase::insert_player(
+  //     $player->player_name,
+  //     $team[1],
+  //     $player->player_photo,
+  //     $coach[1]
+  //   );
+  // }
   
-  if (!$team[0]) {
+  if (!$team_result[0]) {
     wp_send_json_error(['message' => 'No se pudo registrar el equipo.']);
   }
 
+  TeamRegisterQueueDatabase::delete_team($record_id);
   wp_send_json_success(['message' => 'Equipo aceptado correctamente']);
 }
 

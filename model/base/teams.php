@@ -24,6 +24,7 @@ Class TeamsDatabase {
             coach_id SMALLINT UNSIGNED NOT NULL,
             logo VARCHAR(255) NOT NULL,
             is_enrolled BOOLEAN NOT NULL,
+            teams_team_id SMALLINT UNSIGNED NULL,
             team_visible BOOLEAN NOT NULL,
             team_points INT NOT NULL DEFAULT 0,
             PRIMARY KEY (team_id),
@@ -31,7 +32,8 @@ Class TeamsDatabase {
             FOREIGN KEY (division_id) REFERENCES {$wpdb->prefix}cuicpro_divisions(division_id),
             FOREIGN KEY (team_category) REFERENCES {$wpdb->prefix}cuicpro_categories(category_id),
             FOREIGN KEY (team_mode) REFERENCES {$wpdb->prefix}cuicpro_modes(mode_id),
-            FOREIGN KEY (coach_id) REFERENCES {$wpdb->prefix}cuicpro_coaches(coach_id)
+            FOREIGN KEY (coach_id) REFERENCES {$wpdb->prefix}cuicpro_coaches(coach_id),
+            FOREIGN KEY (teams_team_id) REFERENCES {$wpdb->prefix}cuicpro_teams_user(team_id)
         ) $charset_collate;";
         require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
         dbDelta( $sql );
@@ -93,7 +95,13 @@ Class TeamsDatabase {
         return $team;
     }
 
-    public static function insert_team(int $tournament_id, string $team_name,  int | null $division_id, int $team_category, int $team_mode, int $coach_id, string $logo ) {
+    public static function get_team_tournament(int $team_user_id) {
+        global $wpdb;
+        $team = $wpdb->get_row( "SELECT * FROM {$wpdb->prefix}cuicpro_teams WHERE teams_team_id = $team_user_id AND team_visible = true" );
+        return $team;
+    }
+
+    public static function insert_team(int $tournament_id, string $team_name,  int | null $division_id, int $team_category, int $team_mode, int $coach_id, string $logo, int | null $teams_team_id ) {
         global $wpdb;
         $result = $wpdb->insert(
             $wpdb->prefix . 'cuicpro_teams',
@@ -105,6 +113,7 @@ Class TeamsDatabase {
                 'team_mode' => $team_mode,
                 'coach_id' => $coach_id,
                 'logo' => $logo,
+                'teams_team_id' => $teams_team_id,
                 'is_enrolled' => false,
                 'team_visible' => true,
             )

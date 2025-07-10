@@ -1,0 +1,262 @@
+/*!*******************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/cuicpro-profile/style.scss ***!
+  \*******************************************************************************************************************************************************************************************************************************************************/
+/**
+ * The following styles get applied both on the front of your site
+ * and in the editor.
+ *
+ * Replace them with your own styles or remove the file completely.
+ */
+.wp-block-cuicpro-cuicpro-profile {
+  font-size: 1em;
+}
+.wp-block-cuicpro-cuicpro-profile .profile-container {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+}
+.wp-block-cuicpro-cuicpro-profile .complete-profile-form-container {
+  width: -moz-fit-content;
+  width: fit-content;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #444444;
+  max-width: 80%;
+}
+.wp-block-cuicpro-cuicpro-profile .complete-profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.wp-block-cuicpro-cuicpro-profile .user-data-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #444444;
+  max-width: 80%;
+}
+.wp-block-cuicpro-cuicpro-profile .user-data-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.wp-block-cuicpro-cuicpro-profile .form-group {
+  display: flex;
+  gap: 10px;
+}
+.wp-block-cuicpro-cuicpro-profile .form-group label {
+  width: 30%;
+  text-align: right;
+  align-self: center;
+}
+.wp-block-cuicpro-cuicpro-profile .form-input {
+  width: 70%;
+  height: 20px;
+  padding: 10px;
+  border: 1px solid;
+  border-radius: 10px;
+  align-self: center;
+}
+.wp-block-cuicpro-cuicpro-profile .multiple-fields-container {
+  width: 70%;
+  display: flex;
+  gap: 10px;
+}
+.wp-block-cuicpro-cuicpro-profile button {
+  border: 1px solid black;
+  border-radius: 0;
+  background-color: white;
+  padding: 10px;
+  cursor: pointer;
+  align-self: center;
+  font-size: 18px;
+  font-weight: bold;
+}
+.wp-block-cuicpro-cuicpro-profile button:hover {
+  background-color: #ffd321;
+}
+.wp-block-cuicpro-cuicpro-profile .profile-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.wp-block-cuicpro-cuicpro-profile .profile-menu-item {
+  width: 160px;
+  background: black;
+  color: yellow;
+  text-align: center;
+  padding: 10px;
+  border: 1px solid;
+  cursor: pointer;
+}
+.wp-block-cuicpro-cuicpro-profile .profile-menu-item:hover {
+  background-color: #ffd321;
+  color: black;
+}
+.wp-block-cuicpro-cuicpro-profile .profile-menu-item.active {
+  background-color: #ffd321;
+  color: black;
+}
+.wp-block-cuicpro-cuicpro-profile .user-teams {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  padding: 20px;
+}
+.wp-block-cuicpro-cuicpro-profile .team-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-direction: column;
+  border: 1px solid black;
+  height: 100px;
+  padding: 10px;
+  background-color: yellow;
+  font-weight: bold;
+}
+.wp-block-cuicpro-cuicpro-profile .team-item:hover {
+  transform: scale(1.1);
+  transition: transform 0.2s ease-in-out;
+}
+.wp-block-cuicpro-cuicpro-profile .team-logo {
+  width: 50px;
+  height: 50px;
+  -o-object-fit: contain;
+     object-fit: contain;
+  border-radius: 10px;
+}
+.wp-block-cuicpro-cuicpro-profile .team-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 20px;
+}
+.wp-block-cuicpro-cuicpro-profile .team-logo-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.wp-block-cuicpro-cuicpro-profile .team-logo-container img {
+  width: 100px;
+  height: 100px;
+  -o-object-fit: contain;
+     object-fit: contain;
+  border-radius: 10px;
+}
+.wp-block-cuicpro-cuicpro-profile .team-status-container {
+  display: flex;
+  gap: 10px;
+}
+.wp-block-cuicpro-cuicpro-profile .add-team-button {
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: black;
+  color: yellow;
+  text-align: center;
+  padding: 10px;
+  border: 1px solid;
+  cursor: pointer;
+}
+.wp-block-cuicpro-cuicpro-profile .add-team-button:hover {
+  transform: scale(1.1);
+  transition: transform 0.2s ease-in-out;
+}
+.wp-block-cuicpro-cuicpro-profile .active-tournaments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  padding: 20px;
+}
+.wp-block-cuicpro-cuicpro-profile .tournament-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  font-weight: bold;
+  padding: 20px;
+  border: 1px solid;
+}
+.wp-block-cuicpro-cuicpro-profile .join-tournament-container {
+  padding: 0 20px;
+}
+.wp-block-cuicpro-cuicpro-profile .create-team-form,
+.wp-block-cuicpro-cuicpro-profile .join-tournament-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.wp-block-cuicpro-cuicpro-profile .create-team-form-group,
+.wp-block-cuicpro-cuicpro-profile .join-tournament-form-group {
+  display: flex;
+  gap: 10px;
+}
+.wp-block-cuicpro-cuicpro-profile .create-team-form-group label,
+.wp-block-cuicpro-cuicpro-profile .join-tournament-form-group label {
+  width: 30%;
+  text-align: right;
+  align-self: center;
+}
+.wp-block-cuicpro-cuicpro-profile .create-team-form-group input,
+.wp-block-cuicpro-cuicpro-profile .join-tournament-form-group input {
+  width: 70%;
+  height: 20px;
+  padding: 10px;
+  border: 1px solid;
+  border-radius: 10px;
+  align-self: center;
+}
+.wp-block-cuicpro-cuicpro-profile .join-tournament-form-group select {
+  width: 70%;
+  align-self: center;
+  height: 35px;
+  font-size: 14px;
+}
+.wp-block-cuicpro-cuicpro-profile .create-team-form-group input[type=file] {
+  height: 50px;
+}
+.wp-block-cuicpro-cuicpro-profile .logo-container {
+  align-items: center;
+  width: 70%;
+  display: flex;
+  gap: 10px;
+}
+.wp-block-cuicpro-cuicpro-profile .logo-container input {
+  width: 30%;
+}
+.wp-block-cuicpro-cuicpro-profile .logo-preview {
+  text-align: center;
+  width: 100px;
+  height: 100px;
+  border: 1px solid;
+  border-radius: 10px;
+}
+.wp-block-cuicpro-cuicpro-profile .logo-preview img {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: contain;
+     object-fit: contain;
+  border-radius: 10px;
+}
+@media screen and (max-width: 768px) {
+  .wp-block-cuicpro-cuicpro-profile .profile-container {
+    flex-direction: column;
+  }
+  .wp-block-cuicpro-cuicpro-profile .profile-menu {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .wp-block-cuicpro-cuicpro-profile .profile-menu-item {
+    width: 140px;
+  }
+}
+
+/*# sourceMappingURL=style-index.css.map*/

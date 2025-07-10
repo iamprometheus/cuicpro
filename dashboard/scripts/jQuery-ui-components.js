@@ -15,64 +15,58 @@ jQuery(function ($) {
 		},
 	});
 
-	let days = [];
+	jQuery("#tournament-days").multiDatesPicker({
+		minDate: 0,
+		dateFormat: "d/m/y",
+		onSelect: function (dateText, inst) {
+			const days = inst.input.val().split(",");
 
-	jQuery("#tournament-days")
-		.multiDatesPicker({
-			minDate: 0,
-			dateFormat: "d/m/y",
-			onSelect: function (dateText, inst) {
-				days = inst.input.val().split(",");
-
-				const values = {};
-				for (let i = 0; i < days.length; i++) {
-					const day = jQuery(`#hours-range-${i}`).siblings("label").text();
-					values[day] = jQuery(`#slider-hours-${i}`).slider("option", "values");
-				}
-				jQuery("#hours-container").empty();
-				for (let i = 0; i < days.length; i++) {
-					jQuery("#hours-container").append(
-						`<div class='hours-slider'>
+			const values = {};
+			for (let i = 0; i < days.length; i++) {
+				const day = jQuery(`#hours-range-${i}`).siblings("label").text();
+				values[day] = jQuery(`#slider-hours-${i}`).slider("option", "values");
+			}
+			jQuery("#hours-container").empty();
+			for (let i = 0; i < days.length; i++) {
+				jQuery("#hours-container").append(
+					`<div class='hours-slider'>
 							<div class='hours-slider-header'>
 								<label for='hours-range-${i}'>${days[i]}</label>
 								<input type='text' id='hours-range-${i}' readonly style='border:0; color:black; font-weight:bold; width: 100%;'>
 							</div>
 							<div id='slider-hours-${i}' class='tournament-slider'></div>
 						</div>`,
-					);
+				);
 
-					const values_this_day = values[days[i].trim()];
+				const values_this_day = values[days[i].trim()];
 
-					jQuery(`#slider-hours-${i}`).slider({
-						range: true,
-						min: 7,
-						max: 23,
-						step: 1,
-						values: values_this_day ? values_this_day : [10, 18],
-						slide: function (event, ui) {
-							const startHour = (ui.values[0] < 10 ? "0" : "") + ui.values[0];
-							const endHour = (ui.values[1] < 10 ? "0" : "") + ui.values[1];
-							jQuery(`#hours-range-${i}`).val(
-								startHour + ":00 - " + endHour + ":00",
-							);
-						},
-					});
+				jQuery(`#slider-hours-${i}`).slider({
+					range: true,
+					min: 7,
+					max: 23,
+					step: 1,
+					values: values_this_day ? values_this_day : [10, 18],
+					slide: function (event, ui) {
+						const startHour = (ui.values[0] < 10 ? "0" : "") + ui.values[0];
+						const endHour = (ui.values[1] < 10 ? "0" : "") + ui.values[1];
+						jQuery(`#hours-range-${i}`).val(
+							startHour + ":00 - " + endHour + ":00",
+						);
+					},
+				});
 
-					const initialStartHour =
-						(jQuery(`#slider-hours-${i}`).slider("values", 0) < 10 ? "0" : "") +
-						jQuery(`#slider-hours-${i}`).slider("values", 0);
-					const initialEndHour =
-						(jQuery(`#slider-hours-${i}`).slider("values", 1) < 10 ? "0" : "") +
-						jQuery(`#slider-hours-${i}`).slider("values", 1);
-					jQuery(`#hours-range-${i}`).val(
-						initialStartHour + ":00 - " + initialEndHour + ":00",
-					);
-				}
-			},
-		})
-		.blur(function () {
-			for (let i = 0; i < days.length; i++) {}
-		});
+				const initialStartHour =
+					(jQuery(`#slider-hours-${i}`).slider("values", 0) < 10 ? "0" : "") +
+					jQuery(`#slider-hours-${i}`).slider("values", 0);
+				const initialEndHour =
+					(jQuery(`#slider-hours-${i}`).slider("values", 1) < 10 ? "0" : "") +
+					jQuery(`#slider-hours-${i}`).slider("values", 1);
+				jQuery(`#hours-range-${i}`).val(
+					initialStartHour + ":00 - " + initialEndHour + ":00",
+				);
+			}
+		},
+	});
 
 	jQuery("#tournament-selected-days").multiDatesPicker({
 		minDate: 0,
@@ -111,6 +105,27 @@ jQuery(function ($) {
 				hoursSelector.addClass("hidden");
 			}
 		},
+	});
+
+	const preferredDays = jQuery("#division-preferred-days")
+		.val()
+		.replaceAll(" ", "")
+		.split(",");
+
+	const rawDate3 = preferredDays[0].split("/").reverse();
+	rawDate3[0] = "2025";
+	rawDate3.join("-");
+	const rawDate4 = preferredDays[preferredDays.length - 1].split("/").reverse();
+	rawDate4[0] = "2025";
+	rawDate4.join("-");
+
+	const date3 = new Date(rawDate3);
+	const date4 = new Date(rawDate4);
+
+	jQuery("#division-preferred-days").multiDatesPicker({
+		minDate: date3,
+		maxDate: date4,
+		dateFormat: "d/m/y",
 	});
 
 	jQuery("#slider-hours").slider({

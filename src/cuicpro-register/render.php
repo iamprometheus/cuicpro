@@ -65,6 +65,10 @@ if (!function_exists('render_tournaments_dropdown')) {
 
 if (!function_exists('render_register_form')) {
 	function render_register_form() {
+		if(!is_user_logged_in()) {
+			return "<div class='register-container'>";
+		}
+
 		$tournaments = TournamentsDatabase::get_active_tournaments_not_started();
 		return "<div class='register-container'>
 							<h3>Datos del coach</h3>
@@ -144,6 +148,13 @@ if (!function_exists('render_register_form')) {
 	}
 }
 
+if (!function_exists('render_register_title')) {
+	function render_register_title() {
+		if (!is_user_logged_in()) return "";
+		return "<h2 style='text-align: center;'>¡Registra tu equipo!</h2>";
+	}
+}
+
 add_action('wp_enqueue_scripts', function() {
 	wp_enqueue_script('jquery');
 });
@@ -155,7 +166,7 @@ add_action('wp_enqueue_scripts', function() {
 	data-wp-interactive="cuicpro-register"
 	>
 	<div class="register-team-container">
-		<h2 style="text-align: center;">¡Registra tu equipo!</h2>
+		<?php echo render_register_title(); ?>
 		<?php
 			echo render_register_form();
 		?>

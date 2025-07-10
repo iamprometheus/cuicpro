@@ -240,7 +240,6 @@ jQuery(document).on("click", "#edit-official-button", function () {
 			if (response.success) {
 				const official = response.data.official;
 				const officialName = official.official_name;
-				const officialSchedule = official.official_schedule;
 				const officialMode = official.official_mode;
 				const officialTeamId = !official.official_team_id
 					? 0

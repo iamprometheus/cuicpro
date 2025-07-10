@@ -6,6 +6,9 @@ jQuery(document).on("click", "#add-division-button", function (e) {
 	const divisionMinTeams = jQuery("#division-min-teams").val();
 	const divisionMaxTeams = jQuery("#division-max-teams").val();
 	const divisionCategory = jQuery("#division-category").val();
+	const divisionPreferredDays = jQuery("#division-preferred-days")
+		.val()
+		.replaceAll(" ", "");
 
 	const tournaments = jQuery(".tournament-item[selected]");
 	if (tournaments.length === 0) {
@@ -71,6 +74,7 @@ jQuery(document).on("click", "#add-division-button", function (e) {
 			division_min_teams: divisionMinTeams,
 			division_max_teams: divisionMaxTeams,
 			division_category: divisionCategory,
+			division_preferred_days: divisionPreferredDays,
 		},
 		success: function (response) {
 			if (response.success) {
@@ -156,18 +160,29 @@ jQuery(document).on("click", "#edit-division-button", function () {
 				const divisionMinTeams = division.division_min_teams;
 				const divisionMaxTeams = division.division_max_teams;
 				const divisionCategory = division.division_category;
+				const divisionPreferredDays = division.division_preferred_days
+					.replaceAll(", ", ",")
+					.split(",");
 
 				jQuery("#division-name").val(divisionName);
 				jQuery("#division-mode").val(divisionMode);
 				jQuery("#division-min-teams").val(divisionMinTeams);
 				jQuery("#division-max-teams").val(divisionMaxTeams);
 				jQuery("#division-category").val(divisionCategory);
+				jQuery("#division-preferred-days").multiDatesPicker("resetDates");
 
 				jQuery("#add-division-button").addClass("hidden");
 				jQuery("#update-division-button").removeClass("hidden");
 				jQuery("#cancel-division-button").removeClass("hidden");
 
 				jQuery("#update-division-button").data("division-id", divisionID);
+
+				for (let i = 0; i < divisionPreferredDays.length; i++) {
+					jQuery("#division-preferred-days").multiDatesPicker(
+						"addDates",
+						divisionPreferredDays[i],
+					);
+				}
 
 				jQuery("#division-result-table")
 					.removeClass("error")
@@ -210,6 +225,7 @@ jQuery(document).on("click", "#update-division-button", function (e) {
 	const divisionMinTeams = jQuery("#division-min-teams").val();
 	const divisionMaxTeams = jQuery("#division-max-teams").val();
 	const divisionCategory = jQuery("#division-category").val();
+	const divisionPreferredDays = jQuery("#division-preferred-days").val();
 
 	if (divisionName === "") {
 		jQuery("#division-result-table")
@@ -230,6 +246,7 @@ jQuery(document).on("click", "#update-division-button", function (e) {
 			division_min_teams: divisionMinTeams,
 			division_max_teams: divisionMaxTeams,
 			division_category: divisionCategory,
+			division_preferred_days: divisionPreferredDays,
 		},
 		success: function (response) {
 			if (response.success) {
@@ -302,4 +319,15 @@ function clearDivisionInputs() {
 	jQuery("#division-min-teams").val("4");
 	jQuery("#division-max-teams").val("30");
 	jQuery("#division-category").val("1");
+
+	const active_tournament = jQuery(`.tournament-item[selected]`)[0].id;
+
+	const tournamentsContainer = jQuery(".tournaments-container");
+	const active_tournament_data = tournamentsContainer.find(
+		`#${active_tournament}`,
+	);
+	const tournament_days = active_tournament_data
+		.find("#tournament-selected-days")
+		.val();
+	jQuery("#division-preferred-days").val(tournament_days);
 }

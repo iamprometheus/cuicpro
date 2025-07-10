@@ -1,6 +1,15 @@
 <?php
 
 function create_input_division() {
+  $tournament = TournamentsDatabase::get_active_tournaments();
+
+  $tournament_days =  "";
+  if (empty($tournament)) {
+     $tournament_days = "";
+  } else {
+    $tournament_days = str_replace(',', ', ', $tournament[0]->tournament_days);
+  }
+
 	$html = "";
   // dynamic input fields for adding teams
   $html .= "<div class='table-input'>";
@@ -44,6 +53,13 @@ function create_input_division() {
                 <input type='number' id='division-max-teams' placeholder='Equipos Maximo' value='30' min='4'>
               </div>
             </div>";
+            
+  $html .= "<div class='table-input-row'>
+						<span class='table-cell'>Fecha Preferencial: </span>
+						<div class='table-input-cell'>
+              <input type='text' id='division-preferred-days' readonly value='$tournament_days'>
+						</div>
+					</div>";
   $html .= "<div class='table-input-row'>
 						<span class='table-cell'>Acciones: </span>
 							<div class='table-input-cell'>
@@ -72,6 +88,7 @@ function cuicpro_divisions($tournament) {
               <span class='table-cell'>Modalidad: </span>
               <span class='table-cell'>Equipos Minimo: </span>
               <span class='table-cell'>Equipos Maximo: </span>
+              <span class='table-cell'>Fecha Preferencial: </span>
               <span class='table-cell'>Activo: </span>
               <span class='table-cell'>Acciones: </span>
             </div>
@@ -101,6 +118,7 @@ function cuicpro_divisions($tournament) {
     $html .= "<span class='table-cell'>" . esc_html($division->division_mode) . "</span>";
     $html .= "<span class='table-cell'>" . esc_html($division->division_min_teams) . "</span>";
     $html .= "<span class='table-cell'>" . esc_html($division->division_max_teams) . "</span>";
+    $html .= "<span class='table-cell'>" . esc_html($division->division_preferred_days) . "</span>";
     $html .= "<div class='table-cell'>
                 <input type='checkbox' id='active-division-button' data-division-id=$division->division_id $is_active></input>
               </div>";

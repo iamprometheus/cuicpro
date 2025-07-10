@@ -5,6 +5,7 @@ function on_add_division($division) {
   $division_mode = $division->division_mode == 1 ? "5v5" :  "7v7" ;
   $division_category = $division->division_category == 1 ? "Varonil" : ($division->division_category == 2 ? "Femenil" : "Mixto");
   $is_active = $division->division_is_active ? 'checked' : '';
+  $division_preferred_days = str_replace(',', ', ', $division->division_preferred_days);
   $html = "";
   
   $html .= "<div class='table-row' id='division-$division->division_id'>
@@ -13,6 +14,7 @@ function on_add_division($division) {
               <span class='table-cell'>" . esc_html($division_mode) . "</span>
               <span class='table-cell'>" . esc_html($division->division_min_teams) . "</span>
               <span class='table-cell'>" . esc_html($division->division_max_teams) . "</span>
+              <span class='table-cell'>" . esc_html($division_preferred_days) . "</span>
               <div class='table-cell'>
                   <input type='checkbox' id='active-division-button' data-division-id=$division->division_id $is_active></input>
               </div>
@@ -43,10 +45,10 @@ function add_division() {
       !isset($_POST['division_mode']) || 
       !isset($_POST['division_category']) || 
       !isset($_POST['division_min_teams']) || 
-      !isset($_POST['division_max_teams'])) {
+      !isset($_POST['division_max_teams']) || 
+      !isset($_POST['division_preferred_days'])) {
     wp_send_json_error(['message' => 'Faltan datos']);
   }
-  
 
   $division_name = sanitize_text_field($_POST['division_name']);
   $tournament_id = intval($_POST['tournament_id']);
@@ -54,8 +56,13 @@ function add_division() {
   $division_category = intval($_POST['division_category']);
   $division_min_teams = intval($_POST['division_min_teams']);
   $division_max_teams = intval($_POST['division_max_teams']);
+  $division_preferred_days = sanitize_text_field($_POST['division_preferred_days']);
+
+  if ($division_preferred_days === "") {
+    $division_preferred_days = TournamentsDatabase::get_tournament_by_id($tournament_id)->tournament_days;
+  }
   
-  $result = DivisionsDatabase::insert_division($division_name, $tournament_id, $division_mode, $division_min_teams, $division_max_teams, $division_category);
+  $result = DivisionsDatabase::insert_division($division_name, $tournament_id, $division_mode, $division_min_teams, $division_max_teams, $division_category, $division_preferred_days);
   
   if ($result[0]) {
     $division = DivisionsDatabase::get_division_by_id($result[1]);
@@ -77,7 +84,7 @@ function edit_division() {
 }
 
 function update_division() {
-  if (!isset($_POST['division_id']) || !isset($_POST['division_name']) || !isset($_POST['division_mode']) || !isset($_POST['division_category']) || !isset($_POST['division_min_teams']) || !isset($_POST['division_max_teams'])) {
+  if (!isset($_POST['division_id']) || !isset($_POST['division_name']) || !isset($_POST['division_mode']) || !isset($_POST['division_category']) || !isset($_POST['division_min_teams']) || !isset($_POST['division_max_teams']) || !isset($_POST['division_preferred_days'])) {
     wp_send_json_error(['message' => 'Faltan datos']);
   }
 
@@ -87,9 +94,15 @@ function update_division() {
   $division_category = intval($_POST['division_category']);
   $division_min_teams = intval($_POST['division_min_teams']);
   $division_max_teams = intval($_POST['division_max_teams']);
+  $division_preferred_days = sanitize_text_field($_POST['division_preferred_days']);
   $visible = true;
-  
-  $result = DivisionsDatabase::update_division($division_id, $division_name, $division_mode, $division_min_teams, $division_max_teams, $division_category, $visible);
+
+  $division = DivisionsDatabase::get_division_by_id($division_id);
+
+  if ($division_preferred_days === "") {
+    $division_preferred_days = TournamentsDatabase::get_tournament_by_id($division->tournament_id)->tournament_days;
+  }
+  $result = DivisionsDatabase::update_division($division_id, $division_name, $division_mode, $division_min_teams, $division_max_teams, $division_category, $division_preferred_days, $division->tournament_id, $visible);
   
   if ($result) {
     $division = DivisionsDatabase::get_division_by_id($division_id);

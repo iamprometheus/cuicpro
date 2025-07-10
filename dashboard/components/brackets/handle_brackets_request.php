@@ -199,13 +199,16 @@ function render_leaderboard_table(int $bracket_id) {
   $html .= "<th>PG</th>";
   $html .= "<th>PP</th>";
   $html .= "<th>PE</th>";
-  $html .= "<th>GF</th>";
-  $html .= "<th>GC</th>";
-  $html .= "<th>DG</th>";
+  $html .= "<th>AF</th>";
+  $html .= "<th>AC</th>";
+  $html .= "<th>DA</th>";
+  $html .= "<th>PA</th>";
   $html .= "<th>Puntos</th>";
   $html .= "</tr>";
   $html .= "</thead>";
   $html .= "<tbody>";
+
+  $data = [];
   foreach ($teams as $index => $team) {
     $matches = MatchesDatabase::get_matches_by_team($team->team_id, $bracket->tournament_id);
 
@@ -236,19 +239,43 @@ function render_leaderboard_table(int $bracket_id) {
       }
     }
 
+    $pa = $pj > 0 ? $gf / $pj : 0;
+
+    $data[] = [
+      "team" => $team->team_name,
+      "pj" => $pj,
+      "pg" => $pg,
+      "pp" => $pp,
+      "pe" => $pe,
+      "gf" => $gf,
+      "gc" => $gc,
+      "dg" => $dg,
+      "pa" => $pa,
+      "pts" => $pts
+    ];
+
+  }
+
+  usort($data, function($a, $b) {
+    return $b['pts'] - $a['pts'];
+  });
+
+  foreach ($data as $index => $team) {
     $html .= "<tr>";
     $html .= "<td>" . $index + 1 . "</td>";
-    $html .= "<td>" . $team->team_name . "</td>";
-    $html .= "<td>" . $pj . "</td>";
-    $html .= "<td>" . $pg . "</td>";
-    $html .= "<td>" . $pp . "</td>";
-    $html .= "<td>" . $pe . "</td>";
-    $html .= "<td>" . $gf . "</td>";
-    $html .= "<td>" . $gc . "</td>";
-    $html .= "<td>" . $dg . "</td>";
-    $html .= "<td>" . $pts . "</td>";
+    $html .= "<td>" . $team['team'] . "</td>";
+    $html .= "<td>" . $team['pj'] . "</td>";
+    $html .= "<td>" . $team['pg'] . "</td>";
+    $html .= "<td>" . $team['pp'] . "</td>";
+    $html .= "<td>" . $team['pe'] . "</td>";
+    $html .= "<td>" . $team['gf'] . "</td>";
+    $html .= "<td>" . $team['gc'] . "</td>";
+    $html .= "<td>" . $team['dg'] . "</td>";
+    $html .= "<td>" . $team['pa'] . "</td>";
+    $html .= "<td>" . $team['pts'] . "</td>";
     $html .= "</tr>";
   }
+
   $html .= "</tbody>";
   $html .= "</table>";
 
@@ -261,12 +288,13 @@ function create_round_robin_bracket(int $bracket_id) {
   $days = array_unique(array_map(function($match) {
     return $match->match_date;
   }, $matches));
-
+  
   $html = "<div class='matches-container'>";
   $html .= "<div class='leaderboard-container'>";
   $html .= render_leaderboard_table($bracket_id);
   $html .= "</div>";
   $elements = [];
+  
   foreach ($days as $day) {
     $html .= "<hr/>";
     $html .= "<div class='day-title'> Partidos del dia: " . $day . "</div>";
@@ -287,7 +315,6 @@ function create_round_robin_bracket(int $bracket_id) {
 }
 
 function on_fetch_bracket_data(int $bracket_id) {
-
   $bracket = BracketsDatabase::get_bracket_by_id($bracket_id);
   $tournament = TournamentsDatabase::get_tournament_by_id($bracket->tournament_id);
 
@@ -295,7 +322,7 @@ function on_fetch_bracket_data(int $bracket_id) {
     return create_single_elimination_bracket($bracket_id);
   }
 
-  if ($tournament->tournament_type == 2) {
+  if ($tournament->tournament_type == 2 || $tournament->tournament_type == 3) {
     return create_round_robin_bracket($bracket_id);
   }
 }
@@ -306,7 +333,6 @@ function fetch_bracket_data() {
   }
 
   $bracket_id = intval($_POST['bracket_id']);
-
   wp_send_json_success(['message' => 'Bracket recuperado correctamente', 'html' => on_fetch_bracket_data($bracket_id)['html'], 'elements' => on_fetch_bracket_data($bracket_id)['elements']]);
 }
 

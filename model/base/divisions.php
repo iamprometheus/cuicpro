@@ -24,6 +24,7 @@ Class DivisionsDatabase {
             division_category TINYINT UNSIGNED NOT NULL,
             division_is_active BOOLEAN NOT NULL,
             division_visible BOOLEAN NOT NULL,
+            division_preferred_days VARCHAR(255) NOT NULL,
             PRIMARY KEY (division_id),
             FOREIGN KEY (tournament_id) REFERENCES {$wpdb->prefix}cuicpro_tournaments(tournament_id),
             FOREIGN KEY (division_mode) REFERENCES {$wpdb->prefix}cuicpro_modes(mode_id),
@@ -63,8 +64,8 @@ Class DivisionsDatabase {
         return $division;
     }
 
-    public static function insert_division( string $division_name, int $tournament_id, int $division_mode, int $division_min_teams, int $division_max_teams, int $division_category ) {
-        if ( self::division_exists(null, $division_name, $division_mode, $division_category ) ) {
+    public static function insert_division( string $division_name, int $tournament_id, int $division_mode, int $division_min_teams, int $division_max_teams, int $division_category, string $division_preferred_days ) {
+        if ( self::division_exists(null, $division_name, $division_mode, $division_category, $tournament_id ) ) {
             return [false, null];
         }
 
@@ -78,8 +79,9 @@ Class DivisionsDatabase {
                 'division_min_teams' => $division_min_teams,
                 'division_max_teams' => $division_max_teams,
                 'division_category' => $division_category,
+                'division_preferred_days' => $division_preferred_days,
                 'division_is_active' => true,
-                'division_visible' => true,
+                'division_visible' => true
             )
         );
         if ( $result ) {
@@ -88,8 +90,8 @@ Class DivisionsDatabase {
         return [false, null];
     }
 
-    public static function update_division(int $division_id, string $division_name, int $division_mode, int $division_min_teams, int $division_max_teams, int $division_category, bool $visible ) {
-        if ( self::division_exists($division_id, $division_name, $division_mode, $division_category ) ) {
+    public static function update_division(int $division_id, string $division_name, int $division_mode, int $division_min_teams, int $division_max_teams, int $division_category, string $division_preferred_days, int $tournament_id, bool $visible ) {
+        if ( self::division_exists($division_id, $division_name, $division_mode, $division_category, $tournament_id ) ) {
             return "Division with this name already exists";
         }
         global $wpdb;
@@ -101,6 +103,7 @@ Class DivisionsDatabase {
                 'division_min_teams' => $division_min_teams,
                 'division_max_teams' => $division_max_teams,
                 'division_category' => $division_category,
+                'division_preferred_days' => $division_preferred_days,
                 'division_visible' => $visible,
             ),
             array(
@@ -148,12 +151,12 @@ Class DivisionsDatabase {
         return "Division not deleted or division not found";
     }
 
-    public static function division_exists(int | null $division_id, string $division_name, int $division_mode, int $division_category ) {
+    public static function division_exists(int | null $division_id, string $division_name, int $division_mode, int $division_category, int $tournament_id ) {
         global $wpdb;
         if (is_null($division_id)) {
-            $sql = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}cuicpro_divisions WHERE division_name = %s AND division_mode = %d AND division_category = %d AND division_visible = true", $division_name, $division_mode, $division_category);
+            $sql = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}cuicpro_divisions WHERE division_name = %s AND division_mode = %d AND division_category = %d AND tournament_id = %d AND division_visible = true", $division_name, $division_mode, $division_category, $tournament_id);
         } else {
-            $sql = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}cuicpro_divisions WHERE division_id != %d AND division_name = %s AND division_mode = %d AND division_category = %d AND division_visible = true", $division_id, $division_name, $division_mode, $division_category);
+            $sql = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}cuicpro_divisions WHERE division_id != %d AND division_name = %s AND division_mode = %d AND division_category = %d AND tournament_id = %d AND division_visible = true", $division_id, $division_name, $division_mode, $division_category, $tournament_id);
         }
         $division = $wpdb->get_row( $sql );
         return $division;

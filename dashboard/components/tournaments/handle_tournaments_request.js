@@ -66,7 +66,7 @@ jQuery(document).on("click", "#add-tournament-button", function (e) {
 					}
 				}
 
-				jQuery(".tournaments-container").append(response.data.html);
+				jQuery("#tournaments-container").append(response.data.html);
 				jQuery("[id='tournaments-selector']").append(
 					response.data.tournament_entry,
 				);
@@ -80,6 +80,11 @@ jQuery(document).on("click", "#add-tournament-button", function (e) {
 				jQuery("#tournament-result-table")
 					.removeClass("error")
 					.addClass("success")
+					.html(response.data.message);
+			} else {
+				jQuery("#tournament-result-table")
+					.removeClass("success")
+					.addClass("error")
 					.html(response.data.message);
 			}
 		},
@@ -386,6 +391,17 @@ jQuery(document).on(
 						},
 					});
 
+					jQuery("#division-selected-days").multiDatesPicker("destroy");
+					jQuery("#division-selected-days").val(
+						response.data.tournament_days.replaceAll(",", ", "),
+					);
+
+					jQuery("#division-selected-days").multiDatesPicker({
+						minDate: date1,
+						maxDate: date2,
+						dateFormat: "d/m/y",
+					});
+
 					jQuery("#switch-selected-tournament-button").attr("disabled", true);
 					jQuery("#tournament-result-table")
 						.removeClass("error")
@@ -450,6 +466,39 @@ jQuery(document).on("click", "#create-round-robin-button", function (e) {
 		url: cuicpro.ajax_url,
 		data: {
 			action: "create_round_robin",
+			tournament_id: tournamentID,
+		},
+		success: function (response) {
+			if (response.success) {
+				toggleButtonsWhenSelectedTypeOfTournament(buttonsContainer);
+
+				jQuery(`#tournament-result-table-${tournamentID}`)
+					.removeClass("error")
+					.addClass("success")
+					.html(response.data.message);
+			} else {
+				jQuery(`#tournament-result-table-${tournamentID}`)
+					.removeClass("success")
+					.addClass("error")
+					.html(response.data.message);
+			}
+		},
+		error: function (xhr, status, error) {
+			console.error("Error:", error);
+		},
+	});
+});
+
+jQuery(document).on("click", "#create-general-tournament-button", function (e) {
+	e.preventDefault();
+	const tournamentID = jQuery(this).data("tournament-id");
+	const buttonsContainer = jQuery(this).parent();
+
+	jQuery.ajax({
+		type: "POST",
+		url: cuicpro.ajax_url,
+		data: {
+			action: "create_general_tournament",
 			tournament_id: tournamentID,
 		},
 		success: function (response) {

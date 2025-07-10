@@ -67,9 +67,9 @@ function render_matches_response($division_id) {
 }
 
 function render_teams_for_division_response($division_id) {
-  $teams = TeamsDatabase::get_teams_by_division($division_id);
+  $teams = TeamsDatabase::get_enrolled_teams_by_division($division_id);
   if (empty($teams)) {
-    return "<span>No hay equipos registrados en esta division</span>";
+    return "<span>No hay equipos inscritos en esta division</span>";
   }
 
   $tddata = "";

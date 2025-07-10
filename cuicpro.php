@@ -29,7 +29,8 @@ function cuicpro_init() {
 		array( 'name' => 'cuicpro-leagues' ),
 		array( 'name' => 'cuicpro-teams' ),
 		array( 'name' => 'cuicpro-brackets' ),
-		array( 'name' => 'cuicpro-register' )
+		array( 'name' => 'cuicpro-register' ),
+		array( 'name' => 'cuicpro-profile' ),
 	);
 
 	foreach ( $blocks as $block ) {
@@ -45,8 +46,10 @@ add_action( 'init', 'cuicpro_init' );
 
 // Models
 require_once __DIR__ . '/model/base/teams.php';
+require_once __DIR__ . '/model/base/teams_user.php';
 require_once __DIR__ . '/model/base/players.php';
 require_once __DIR__ . '/model/base/coaches.php';
+require_once __DIR__ . '/model/base/coaches_user.php';
 require_once __DIR__ . '/model/base/officials.php';
 require_once __DIR__ . '/model/base/officials_hours.php';
 require_once __DIR__ . '/model/base/divisions.php';
@@ -77,6 +80,7 @@ require_once __DIR__ . '/frontend/register_form/register_form.php';
 require_once __DIR__ . '/frontend/tournaments/tournaments_frontend.php';
 require_once __DIR__ . '/frontend/teams/teams_frontend.php';
 require_once __DIR__ . '/frontend/brackets/brackets_frontend.php';
+require_once __DIR__ . '/frontend/profile/profile_frontend.php';
 
 // Initialize database tables if they don't exist
 function cuicpro_databases() {
@@ -95,17 +99,14 @@ function cuicpro_databases() {
 	PendingMatchesDatabase::init();
 	TeamRegisterQueueDatabase::init();
 	PendingPlayersDatabase::init();
+	CoachesUserDatabase::init();
+	TeamsUserDatabase::init();
 }
 
 add_action('admin_menu', 'cuicpro_databases');
 
 if(!defined('WPINC')) {
 	return;
-}
-
-add_action('admin_head', 'add_custom_admin_script');
-function add_custom_admin_script() {
-    echo '<script src="https://unpkg.com/@sjmc11/tourguidejs/dist/tour.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>';
 }
 
 add_action('admin_enqueue_scripts', 'load_jquery');
@@ -125,7 +126,7 @@ function load_jquery() {
 	wp_enqueue_script('jquery-ui-multidatespicker', plugin_dir_url(__FILE__) . 'dashboard/dependencies/jquery-ui.multidatespicker.js', array('jquery','jquery-ui-datepicker'));
 	wp_enqueue_script('leader-line', plugin_dir_url(__FILE__) . 'dashboard/dependencies/leader-line.min.js');
 	wp_enqueue_script('custom-script', plugin_dir_url(__FILE__) . 'dashboard/scripts/jQuery-ui-components.js', array('jquery'));
-	
+	wp_enqueue_script('guidedtourjs', plugin_dir_url(__FILE__) . 'dashboard/dependencies/tour.js');
 	// Pass the AJAX URL to JavaScript
 	wp_localize_script('custom-script', 'cuicpro', array(
 		'ajax_url' => admin_url('admin-ajax.php')
@@ -138,6 +139,7 @@ function cuicpro_guided_tour() {
 }
 add_action('admin_enqueue_scripts', 'cuicpro_guided_tour', 20);
 
+// Dashboard
 // Add plugin to menu Page
 add_action('admin_menu', 'cuicpro_menu_page');
 

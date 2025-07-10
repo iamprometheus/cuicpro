@@ -31,7 +31,6 @@ jQuery(document).ready(function ($) {
 			processData: false,
 			contentType: false,
 			success: function (response) {
-				console.log(response.data);
 				if (response.success) {
 					$("#register-form")[0].reset();
 					$("#logo-preview").attr("src", "#");
@@ -39,9 +38,11 @@ jQuery(document).ready(function ($) {
 						"<option value=''>Selecciona una division</option>",
 					);
 					$(".photo-container").find("img").attr("src", "#");
-					alert(response.data.message);
+					alert("Equipo registrado exitosamente");
 				} else {
-					alert(response.data.message);
+					alert(
+						"Error al registrar equipo, si el problema persiste contacta al administrador.",
+					);
 				}
 			},
 			error: function (xhr, status, error) {
@@ -96,6 +97,26 @@ jQuery(document).ready(function ($) {
 
 	$("#logo").change(function () {
 		readURL(this, "logo-preview");
+	});
+
+	$.ajax({
+		url: cuicpro.ajax_url,
+		type: "POST",
+		data: {
+			action: "user_logged_in",
+		},
+		success: function (response) {
+			if (response.success) {
+				jQuery(".login-button").html("Cerrar sesión");
+				jQuery(".login-button").attr(
+					"href",
+					"https://cuic.pro/wp-login.php?action=logout",
+				);
+			}
+		},
+		error: function (xhr, status, error) {
+			console.error("Error:", error);
+		},
 	});
 });
 
