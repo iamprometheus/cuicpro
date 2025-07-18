@@ -21,7 +21,7 @@ Class TeamsUserDatabase {
             coach_id SMALLINT UNSIGNED NOT NULL,
             is_registered BOOLEAN NOT NULL DEFAULT FALSE,
             PRIMARY KEY (team_id),
-            FOREIGN KEY (coach_id) REFERENCES {$wpdb->prefix}cuicpro_coaches_user(coach_id)
+            FOREIGN KEY (coach_id) REFERENCES {$wpdb->prefix}cuicpro_coaches_user(user_id)
         ) $charset_collate;";
         require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
         dbDelta( $sql );

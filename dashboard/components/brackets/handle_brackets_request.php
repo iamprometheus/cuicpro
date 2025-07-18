@@ -77,11 +77,11 @@ function create_bracket_match($match) {
     $html .= "<div class='match-data-end-data'>";
     $html .= "<span style='font-weight: bold; font-size: 16px;'>Resultados</span>";
     $html .= "<div class='score-select'>";
-    $html .= "<span>Goles equipo $team_1_name : </span>";
+    $html .= "<span>Anotaciones equipo $team_1_name : </span>";
     $html .= "<input type='number' min='0' data-team-id='" . $match->team_id_1 . "' id='team-1-score-" . $match->match_id . "' value=0 />";
     $html .= "</div>";
     $html .= "<div class='score-select'>";
-    $html .= "<span>Goles equipo $team_2_name : </span>";
+    $html .= "<span>Anotaciones equipo $team_2_name : </span>";
     $html .= "<input type='number' min='0' data-team-id='" . $match->team_id_2 . "' id='team-2-score-" . $match->match_id . "' value=0 />";
     $html .= "</div>";
    
@@ -140,6 +140,67 @@ function create_single_elimination_bracket(int $bracket_id) {
   return ['html' => $html, 'elements' => $elements, 'matches' => $matches];
 }
 
+function create_playoffs_bracket(int $bracket_id) {
+  $matches = PendingMatchesDatabase::get_matches_by_bracket($bracket_id);
+
+  $playoffs_id = array_unique(array_map(function($match) {
+    return $match->playoff_id;
+  }, $matches));
+
+  $elements = [];
+  $html = "";
+  $html .= "<div class='playoffs-container'>";
+  $html .= "<hr />";
+  $html .= "<span style='font-weight: bold; font-size: 40px; text-align: center;'>Playoffs</span>";
+  foreach ($playoffs_id as $playoff_id) {
+    if (!$playoff_id) continue;
+    $bracket_matches = array_filter($matches, function($match) use ($playoff_id) {
+      return $match->playoff_id == $playoff_id;
+    });
+
+    $bracket_rounds = array_unique(array_map(function($match) {
+      return $match->bracket_round;
+    }, $bracket_matches));
+
+    $html .= "<div class='bracket-container' id='playoff_" . $playoff_id . "'>";
+    $html .= "<span style='font-weight: bold; font-size: 22px; text-align: center;'>Playoffs #" . $playoff_id . "</span>";
+    $html .= "<hr />";
+    $html .= "<div class='rounds-container'>";
+    $elements[$playoff_id] = [];
+    foreach ($bracket_rounds as $round) {
+      $html .= "<div id='round_" . $round . "' class='bracket-round'>";
+
+      $elements[$playoff_id][$round] = [];
+      foreach ($bracket_matches as $match) {
+        if ($match->bracket_round == $round) {
+          $previous_match_1 = $match->match_link_1;
+          $previous_match_2 = $match->match_link_2;
+
+          if ($previous_match_1) {
+            $previous_match_1_info = PendingMatchesDatabase::get_match_by_bracket_match_and_playoff($previous_match_1, $match->bracket_id, $playoff_id);
+            $elements[$playoff_id][$round]["match_playoff_" . $match->match_id][] = "match_playoff_" . $previous_match_1_info->match_id;
+          }
+
+          if ($previous_match_2) {
+            $previous_match_2_info = PendingMatchesDatabase::get_match_by_bracket_match_and_playoff($previous_match_2, $match->bracket_id, $playoff_id);
+            $elements[$playoff_id][$round]["match_playoff_" . $match->match_id][] = "match_playoff_" . $previous_match_2_info->match_id;
+          }
+
+          $html .= "<div id='match_playoff_" . $match->match_id . "' class='bracket-match-container'>";
+          $html .= create_bracket_match($match);
+          $html .= "</div>";
+        }
+      }
+      $html .= "</div>";
+    }
+    $html .= "</div>";
+    $html .= "</div>";
+  }
+  $html .= "</div>";
+
+  return ['html' => $html, 'elements' => $elements, 'matches' => $matches];
+}
+
 function render_round_robin_match($match) {
   $team_1_name = TeamsDatabase::get_team_by_id($match->team_id_1)->team_name;
   $team_2_name = TeamsDatabase::get_team_by_id($match->team_id_2)->team_name;
@@ -171,11 +232,64 @@ function render_round_robin_match($match) {
   $html .= "<option value='" . $match->team_id_2 . "'>" . $team_2_name . "</option>";
   $html .= "<option value='0'>Empate</option>";
   $html .= "</select>";
-  $html .= "<span>Goles equipo $team_1_name : </span>";
+  $html .= "<span>Anotaciones equipo $team_1_name : </span>";
   $html .= "<input type='number' min='0' data-team-id='" . $match->team_id_1 . "' id='team-1-score-" . $match->match_id . "' value=0 />";
-  $html .= "<span>Goles equipo $team_2_name : </span>";
+  $html .= "<span>Anotaciones equipo $team_2_name : </span>";
   $html .= "<input type='number' min='0' data-team-id='" . $match->team_id_2 . "' id='team-2-score-" . $match->match_id . "' value=0 />";
   $html .= "<button id='save-match' data-match-id='" . $match->match_id . "'>Guardar Resultado</button>";
+  $html .= "</div>";
+  return $html;
+}
+
+function render_playoff_match($match) {
+  $team_1_name = "TBD";
+  $team_2_name = "TBD";
+
+  if ($match->team_id_1) {
+    $team_1_name = TeamsDatabase::get_team_by_id($match->team_id_1)->team_name;
+  }
+
+  if ($match->team_id_2) {
+    $team_2_name = TeamsDatabase::get_team_by_id($match->team_id_2)->team_name;
+  }
+
+  $match_time = $match->match_time . ":00";
+
+  $html = "<div class='bracket-match'>";
+  $html .= "<span>" . $team_1_name . "</span>";
+  $html .= "<span>VS</span>";
+  $html .= "<span>" . $team_2_name . "</span>";
+  $html .= "</div>";
+  $html .= "<div class='match-data-container'>";
+  $html .= "<div class='match-data'>";
+  $html .= "<span>Fecha: " . $match->match_date . "</span>";
+  $html .= "<span>Hora: " . $match_time . "</span>";
+  $html .= "</div>";
+  $html .= "<div class='match-data text-right'>";
+  $html .= "<span>Arbitro: " . render_available_officials($match) . "</span>";
+  $html .= "<span>Campo: " . $match->field_number . "</span>";
+  $html .= "</div>";
+  $html .= "</div>";
+  $html .= "<div class='match-data-end-data'>";
+  $html .= "<hr/>";
+  if ($match->team_id_1 && $match->team_id_2) {
+    $html .= "<span style='font-weight: bold; font-size: 16px;'>Resultados</span>";
+    $html .= "<span>Ganador: </span>";
+    $html .= "<select id='team-winner-" . $match->match_id . "'>";
+    $html .= "<option value='-1'>Seleccionar Ganador</option>";
+    $html .= "<option value='" . $match->team_id_1 . "'>" . $team_1_name . "</option>";
+    $html .= "<option value='" . $match->team_id_2 . "'>" . $team_2_name . "</option>";
+    $html .= "<option value='0'>Empate</option>";
+    $html .= "</select>";
+    $html .= "<span>Anotaciones equipo $team_1_name : </span>";
+    $html .= "<input type='number' min='0' data-team-id='" . $match->team_id_1 . "' id='team-1-score-" . $match->match_id . "' value=0 />";
+    $html .= "<span>Anotaciones equipo $team_2_name : </span>";
+    $html .= "<input type='number' min='0' data-team-id='" . $match->team_id_2 . "' id='team-2-score-" . $match->match_id . "' value=0 />";
+    $html .= "<button id='save-match' data-match-id='" . $match->match_id . "'>Guardar Resultado</button>";
+  }
+  else {
+    $html .= "<span style='font-weight: bold; font-size: 16px;'>Pendiente resultado de partidos anteriores</span>";
+  }
   $html .= "</div>";
   return $html;
 }
@@ -211,6 +325,10 @@ function render_leaderboard_table(int $bracket_id) {
   $data = [];
   foreach ($teams as $index => $team) {
     $matches = MatchesDatabase::get_matches_by_team($team->team_id, $bracket->tournament_id);
+
+    $matches = array_filter($matches, function($match) {
+      return $match->match_type == 1;
+    });
 
     $pj = count($matches);
     $pg = count(array_filter($matches, function($match) use ($team) {
@@ -314,6 +432,42 @@ function create_round_robin_bracket(int $bracket_id) {
   return ['html' => $html, 'elements' => $elements, 'matches' => $matches];
 }
 
+function create_mixed_bracket(int $bracket_id) {
+  $matches = PendingMatchesDatabase::get_pending_matches_by_bracket($bracket_id);
+
+  $days = array_unique(array_map(function($match) {
+    return $match->match_date;
+  }, $matches));
+  
+  $html = "<div class='matches-container'>";
+  $html .= "<div class='leaderboard-container'>";
+  $html .= render_leaderboard_table($bracket_id);
+  $html .= "</div>";
+  
+  foreach ($days as $day) {
+    $html .= "<hr/>";
+    $html .= "<div class='day-title'> Partidos del dia: " . $day . "</div>";
+    $html .= "<div id='day_" . $day . "' class='day-container'>";
+
+    foreach ($matches as $match) {
+      if ($match->match_date == $day) {
+        if ($match->match_type == 2) continue;
+
+        $html .= "<div id='match_" . $match->match_id . "' class='bracket-match-container'>";
+        $html .= render_round_robin_match($match);
+        $html .= "</div>";
+      }
+    }
+    $html .= "</div>";
+  }
+
+  $playoffs = create_playoffs_bracket($bracket_id);
+  $html .= $playoffs['html'];
+
+  $html .= "</div>";
+  return ['html' => $html, 'elements' => $playoffs['elements'], 'matches' => $matches];
+}
+
 function on_fetch_bracket_data(int $bracket_id) {
   $bracket = BracketsDatabase::get_bracket_by_id($bracket_id);
   $tournament = TournamentsDatabase::get_tournament_by_id($bracket->tournament_id);
@@ -322,8 +476,12 @@ function on_fetch_bracket_data(int $bracket_id) {
     return create_single_elimination_bracket($bracket_id);
   }
 
-  if ($tournament->tournament_type == 2 || $tournament->tournament_type == 3) {
+  if ($tournament->tournament_type == 2) {
     return create_round_robin_bracket($bracket_id);
+  }
+
+  if ($tournament->tournament_type == 3) {
+    return create_mixed_bracket($bracket_id);
   }
 }
 
@@ -368,11 +526,14 @@ function update_match_winner_single_elimination() {
       $match_data->bracket_round,
       $match_data->bracket_match, 
       $match_data->field_number, 
+      $match_data->field_type,
       $match_data->team_id_1, 
       $match_data->team_id_2, 
       $match_data->official_id === 0 ? null : $match_data->official_id,
       $match_data->match_date, 
       $match_data->match_time, 
+      $match_data->match_type,
+      $match_data->playoff_id,
       $team_1_score,
       $team_2_score,
       $match_winner,
@@ -417,9 +578,12 @@ function update_match_winner_round_robin() {
       $prev_match_info->field_number, 
       $prev_match_info->team_id_1, 
       $prev_match_info->team_id_2, 
+      $prev_match_info->field_type,
       $prev_match_info->official_id === 0 ? null : $prev_match_info->official_id,
       $prev_match_info->match_date, 
       $prev_match_info->match_time, 
+      $prev_match_info->match_type,
+      $prev_match_info->playoff_id,
       $team_1_score,
       $team_2_score,
       $match_winner,

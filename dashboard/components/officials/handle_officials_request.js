@@ -36,6 +36,8 @@ jQuery(document).on("click", "#add-official-button", function (e) {
 			`#hours-selector-${day} .hours-selector-item`,
 		);
 		for (let j = 0; j < hoursContainer.length; j++) {
+			if (hoursContainer[j].children[0].id === "hours-selector-all") continue;
+
 			if (hoursContainer[j].children[0].checked) {
 				officialHours[rawDay].push(hoursContainer[j].children[0].value);
 			}
@@ -451,6 +453,20 @@ jQuery(document).on("click", ".hours-viewer-container", function () {
 	jQuery(this)
 		.next("#hours-viewer-" + id)
 		.toggleClass("hidden");
+});
+
+jQuery(document).on("click", "#hours-selector-all", function () {
+	const allHours = jQuery(this).prop("checked");
+	const parent = jQuery(this).parent().parent();
+	jQuery(parent).find(".hours-selector-item input").prop("checked", allHours);
+});
+
+jQuery(document).on("click", "#hour-checkbox", function () {
+	const parent = jQuery(this).parent().parent();
+	const allHours =
+		jQuery(parent).find(".hours-selector-item input:checked").length ===
+		jQuery(parent).find(".hours-selector-item input").length;
+	jQuery("#hours-selector-all").prop("checked", allHours);
 });
 
 function clearOfficialInputs(tournamentDays) {

@@ -2,9 +2,11 @@
 
 
 function create_division_entry_selector($selected, $division) {
+  $mode = ModesDatabase::get_mode_by_id($division->division_mode);
+  $category = CategoriesDatabase::get_category_by_id($division->division_category);
   $html = "";
   $html .= "<div class='tournament-item' id='division-" . esc_attr($division->division_id) . "' $selected>";
-  $html .= "<span class='tournament-item-name'>" . esc_html($division->division_name) . "</span>";
+  $html .= "<span class='tournament-item-name'>" . esc_html($division->division_name) . " " . $mode->mode_description . " " . $category->category_description . "</span>";
   $html .= "</div>";
   return $html;
 }
@@ -62,10 +64,10 @@ function render_pending_teams_from_register($tournament_id, $division_id) {
     $team_user = TeamsUserDatabase::get_team_by_id($team->team_id);
 
     $html .= "<tr>";
-    $html .= "<td>" . esc_html($coach->coach_name) . "</td>";
-    $html .= "<td>" . esc_html($coach->coach_contact) . "</td>";
+    $html .= "<td>" . esc_html($coach->user_name) . "</td>";
+    $html .= "<td>" . esc_html($coach->user_contact) . "</td>";
     $html .= "<td>" . esc_html($team_user->team_name) . "</td>";
-    $html .= "<td>" . esc_html($coach->coach_city) . ", " . esc_html($coach->coach_state) . ", " . esc_html($coach->coach_country) . "</td>";
+    $html .= "<td>" . esc_html($coach->user_city) . ", " . esc_html($coach->user_state) . ", " . esc_html($coach->user_country) . "</td>";
     $html .= "<td><img src='" . wp_get_attachment_image_url($team_user->team_logo, 'full') . "' alt='Logo' /></td>";
     $html .= "<td>
                 <div>

@@ -24,6 +24,7 @@ Class PendingMatchesDatabase {
             team_id_1 SMALLINT UNSIGNED NULL,
             team_id_2 SMALLINT UNSIGNED NULL,
             field_number TINYINT UNSIGNED NOT NULL,
+            field_type TINYINT UNSIGNED NOT NULL,
             official_id SMALLINT UNSIGNED NULL,
             match_date VARCHAR(10) NOT NULL,
             match_time TINYINT UNSIGNED NOT NULL,
@@ -31,6 +32,8 @@ Class PendingMatchesDatabase {
             goals_team_2 TINYINT UNSIGNED NULL,
             match_link_1 MEDIUMINT UNSIGNED NULL,
             match_link_2 MEDIUMINT UNSIGNED NULL,
+            match_type TINYINT UNSIGNED NOT NULL,
+            playoff_id TINYINT UNSIGNED NULL,
             match_pending BOOLEAN NOT NULL,
             PRIMARY KEY (match_id),
             FOREIGN KEY (tournament_id) REFERENCES {$wpdb->prefix}cuicpro_tournaments(tournament_id),
@@ -103,9 +106,27 @@ Class PendingMatchesDatabase {
         return $match;
     }
 
+    public static function get_match_by_bracket_match_and_playoff(int $bracket_match, int $bracket_id, int $playoff_id) {
+        global $wpdb;
+        $match = $wpdb->get_row( "SELECT * FROM {$wpdb->prefix}cuicpro_pending_matches WHERE bracket_match = $bracket_match AND bracket_id = $bracket_id AND playoff_id = $playoff_id" );
+        return $match;
+    }
+
+    public static function get_matches_by_type(int $match_type, int $bracket_id) {
+        global $wpdb;
+        $matches = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_pending_matches WHERE match_type = $match_type AND bracket_id = $bracket_id" );
+        return $matches;
+    }
+
     public static function get_match_by_match_link(int $bracket_id, int $match_link) {
         global $wpdb;
         $match = $wpdb->get_row( "SELECT * FROM {$wpdb->prefix}cuicpro_pending_matches WHERE $match_link IN (match_link_1, match_link_2) AND bracket_id = $bracket_id" );
+        return $match;
+    }
+
+    public static function get_match_by_bracket_match_to_link(int $bracket_match, int $bracket_id) {
+        global $wpdb;
+        $match = $wpdb->get_row( "SELECT * FROM {$wpdb->prefix}cuicpro_pending_matches WHERE $bracket_match IN (match_link_1, match_link_2) AND bracket_id = $bracket_id" );
         return $match;
     }
 
@@ -114,12 +135,15 @@ Class PendingMatchesDatabase {
         int $division_id, 
         int $bracket_id, 
         int $field_number, 
+        int $field_type,
         string $match_date, 
         int $match_time, 
         int $bracket_match, 
         int | null $official_id, 
         int | null $team_id_1, 
         int | null $team_id_2,
+        int $match_type,
+        int | null $playoff_id,
         int $bracket_round ) {
         global $wpdb;
         $result = $wpdb->insert(
@@ -130,6 +154,7 @@ Class PendingMatchesDatabase {
                 'official_id' => $official_id,
                 'bracket_id' => $bracket_id,
                 'field_number' => $field_number,
+                'field_type' => $field_type,
                 'goals_team_1' => null,
                 'goals_team_2' => null,
                 'team_id_1' => $team_id_1,
@@ -140,6 +165,8 @@ Class PendingMatchesDatabase {
                 'bracket_round' => $bracket_round,
                 'match_link_1' => null,
                 'match_link_2' => null,
+                'match_type' => $match_type,
+                'playoff_id' => $playoff_id,
                 'match_pending' => true,
             )
         );

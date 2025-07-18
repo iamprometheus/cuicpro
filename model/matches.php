@@ -27,6 +27,8 @@ Class MatchesDatabase {
             official_id SMALLINT UNSIGNED NULL,
             match_date VARCHAR(255) NOT NULL,
             match_time TINYINT UNSIGNED NOT NULL,
+            match_type TINYINT UNSIGNED NOT NULL,
+            playoff_id TINYINT UNSIGNED NULL,
             goals_team_1 TINYINT UNSIGNED NULL,
             goals_team_2 TINYINT UNSIGNED NULL,
             match_winner SMALLINT UNSIGNED NULL,
@@ -53,7 +55,7 @@ Class MatchesDatabase {
       global $wpdb;
       $matches = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_matches WHERE tournament_id = $tournament_id" );
       return $matches;
-  }
+    }
     
     public static function get_matches_by_division(int $division_id, int $tournament_id) {
         global $wpdb;
@@ -64,6 +66,12 @@ Class MatchesDatabase {
     public static function get_matches_by_team(int $team_id, int $tournament_id) {
         global $wpdb;
         $matches = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_matches WHERE team_id_1 = $team_id OR team_id_2 = $team_id AND tournament_id = $tournament_id" );
+        return $matches;
+    }
+
+    public static function get_matches_by_playoff(int $playoff_id, int $bracket_id) {
+        global $wpdb;
+        $matches = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_matches WHERE playoff_id = $playoff_id AND bracket_id = $bracket_id" );
         return $matches;
     }
 
@@ -103,6 +111,8 @@ Class MatchesDatabase {
         int | null $official_id, 
         string $match_date, 
         int $match_time, 
+        int $match_type,
+        int | null $playoff_id,
         int | null $goals_team_1, 
         int | null $goals_team_2, 
         int | null $match_winner,
@@ -127,6 +137,8 @@ Class MatchesDatabase {
                 'official_id' => $official_id,
                 'match_date' => $match_date,
                 'match_time' => $match_time,
+                'match_type' => $match_type,
+                'playoff_id' => $playoff_id,
                 'goals_team_1' => $goals_team_1,
                 'goals_team_2' => $goals_team_2,
                 'match_winner' => $match_winner,

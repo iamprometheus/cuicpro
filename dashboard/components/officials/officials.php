@@ -22,10 +22,14 @@ function create_hours_select_input($tournament_hours) {
     $html .= "</div>";
     $html .= "<div class='hours-selector hidden' id='hours-selector-$day'>";
     $html .= "<span>Horas:</span>";
+    $html .= "<div class='hours-selector-item'>";
+    $html .= "<input type='checkbox' value='all' id='hours-selector-all'>";
+    $html .= "<label for='hours-selector-all'> Todo el dia </label>";
+    $html .= "</div>";
     
     for ($i = $hours_start; $i <= $hours_end; $i++) {
       $html .= "<div class='hours-selector-item'>";
-      $html .= "<input type='checkbox' value='$i'>";
+      $html .= "<input type='checkbox' value='$i' id='hour-checkbox'>";
       $html .= "<label> $i:00 </label>";
       $html .= "</div>";
     }

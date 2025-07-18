@@ -17,6 +17,7 @@ Class OfficialsDatabase {
         $sql = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}cuicpro_officials (
             official_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
             tournament_id SMALLINT UNSIGNED NOT NULL,
+            official_user_id SMALLINT UNSIGNED NULL,
             official_name VARCHAR(255) NOT NULL,
             official_schedule VARCHAR(255) NULL,
             official_mode TINYINT UNSIGNED NOT NULL,
@@ -28,6 +29,7 @@ Class OfficialsDatabase {
             official_visible BOOLEAN NOT NULL,
             official_is_certified BOOLEAN NOT NULL,
             PRIMARY KEY (official_id),
+            FOREIGN KEY (official_user_id) REFERENCES {$wpdb->prefix}cuicpro_officials_user(user_id),
             FOREIGN KEY (tournament_id) REFERENCES {$wpdb->prefix}cuicpro_tournaments(tournament_id),
             FOREIGN KEY (official_team_id) REFERENCES {$wpdb->prefix}cuicpro_teams(team_id),
             FOREIGN KEY (official_mode) REFERENCES {$wpdb->prefix}cuicpro_modes(mode_id)
@@ -69,6 +71,7 @@ Class OfficialsDatabase {
 
     public static function insert_official(
         int $tournament_id,
+        int | null $official_user_id,
         string $official_name, 
         string | null $official_schedule, 
         int $official_mode, 
@@ -84,6 +87,7 @@ Class OfficialsDatabase {
             $wpdb->prefix . 'cuicpro_officials',
             array(
                 'tournament_id' => $tournament_id,
+                'official_user_id' => $official_user_id,
                 'official_name' => $official_name,
                 'official_schedule' => $official_schedule,
                 'official_mode' =>  $official_mode,

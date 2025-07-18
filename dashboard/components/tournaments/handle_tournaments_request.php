@@ -40,6 +40,61 @@ function generate_match_links($brackets) {
   //return $links;
 }
 
+function generate_match_link_multibracket($brackets) {
+  foreach ($brackets as $bracket) {
+    $playoffs_matches = PendingMatchesDatabase::get_matches_by_type(2, intval($bracket["bracket_id"]));
+    $playoff_id = 1;
+    foreach ($bracket['matches_single_elimination'] as $playoff) {
+
+      $playoff_matches = array_filter($playoffs_matches, function($match) use ($playoff_id) {
+        return $match->playoff_id == $playoff_id;
+      });
+
+      $playoff_matches = array_values($playoff_matches);
+
+      if (count($playoff_matches) == 0) {
+        $playoff_id++;
+        continue;
+      }
+
+      $rounds = array_unique(array_map(function($match) {
+        return $match->bracket_round;
+      }, $playoff_matches));
+
+      $total_matches = count($playoff_matches) - 1;
+      $counter = $playoff_matches[$total_matches]->bracket_match - 1;
+      for ($round = count($rounds) - 1; $round > 0; $round--) {
+        $matches = array_filter($playoff_matches, function($match) use ($round) {
+          return $match->bracket_round == $round;
+        });
+        $matches_this_round = count($matches);
+        $matches = array_reverse($matches);
+
+        for ($index = 0; $index < $matches_this_round; $index++) {
+          if ($matches[$index]->team_id_1 == null && $matches[$index]->team_id_2 == null) {
+            $match_link_2 = $counter--;
+            $match_link_1 = $counter;
+            $match_id = $matches[$index]->match_id;
+
+            PendingMatchesDatabase::update_match_link($match_id, $match_link_1, $match_link_2);
+            $counter--;
+          } elseif ($matches[$index]->team_id_1 == null || $matches[$index]->team_id_2 == null) {
+            if ($matches[$index]->team_id_1 == null) {
+              PendingMatchesDatabase::update_match_link($matches[$index]->match_id, $counter, null);
+            } else {
+              PendingMatchesDatabase::update_match_link($matches[$index]->match_id, null, $counter);
+            }
+            $counter--;
+          }
+          
+          $total_matches--;
+        }
+      }
+      $playoff_id++;
+    }
+  }
+}
+
 function create_brackets() {
   if (!isset($_POST['tournament_id'])) {
     wp_send_json_error(['message' => 'No se pudo iniciar el torneo']);
@@ -243,6 +298,7 @@ function create_general_tournament() {
         $teams[] = $team->team_id;
       }
     }
+    shuffle($teams);
     $divisions[] = [ 
       "id"=> $division->division_id, 
       "teams"=> $teams, 
@@ -255,9 +311,11 @@ function create_general_tournament() {
   // create matches for each bracket
   $Tournament_Scheduler = new TournamentScheduler($scheduleHours, $fields5v5, $fields7v7, intval($tournament_id), $days);
   $brackets = $Tournament_Scheduler->createMatchesForGeneralTournament($divisions);
+  $brackets_playoffs = $Tournament_Scheduler->createMatchesForPlayoffs($brackets);
+  $result = generate_match_link_multibracket($brackets);
 
   $brackets_dropdown = generate_brackets_dropdown($tournament);
-  wp_send_json_success(['message' => 'Partidos creados correctamente', 'brackets' => $brackets, 'brackets_dropdown' => $brackets_dropdown]);
+  wp_send_json_success(['message' => 'Partidos creados correctamente', 'brackets' => $brackets, 'brackets_dropdown' => $brackets_dropdown, 'brackets_playoffs' => $brackets_playoffs, 'result' => $result]);
 }
 
 function create_hours_schedule($tournament_id, $tournament_days){
@@ -343,18 +401,37 @@ function delete_brackets() {
 }
 
 function on_add_tournament($tournament) {
-  
   $brackets = BracketsDatabase::get_brackets_by_tournament($tournament->tournament_id);
   $pending_matches = PendingMatchesDatabase::get_pending_matches_by_tournament($tournament->tournament_id);
   $has_matches = $brackets ? true : false;
   $has_officials = $tournament->tournament_has_officials == 1 ? true : false;
   $has_pending_matches = $pending_matches ? true : false;
 
-  $add_officials_disabled = $has_matches && $has_officials ? 'disabled' : '';
-  $unassign_officials_disabled = !$has_matches && !$has_officials ? 'disabled' : '';
-  $select_bracket_type_disabled = $has_matches ? 'disabled' : '';
-  $delete_matches_disabled = !$has_matches ? 'disabled' : '';
-  $finish_tournament_disabled = !$has_matches || $has_pending_matches ? 'disabled' : '';
+  $assign_officials_disabled = '';
+  $unassign_officials_disabled = '';
+  $select_bracket_type_disabled = '';
+  $delete_matches_disabled = '';
+  $finish_tournament_disabled = '';
+
+  if ($has_matches) {
+    $select_bracket_type_disabled = 'disabled';
+    if ($has_pending_matches) {
+      $finish_tournament_disabled = 'disabled';
+    }
+    if (!$has_officials) {
+      $unassign_officials_disabled = 'disabled';
+    }
+    if ($has_officials) {
+      $assign_officials_disabled = 'disabled';
+    }
+  }
+
+  if (!$has_matches) {
+    $finish_tournament_disabled = 'disabled';
+    $assign_officials_disabled = 'disabled';
+    $unassign_officials_disabled = 'disabled';
+    $delete_matches_disabled = 'disabled';
+  }
 
   $tournament_days = str_replace(',', ', ', $tournament->tournament_days);
 
@@ -387,14 +464,12 @@ function on_add_tournament($tournament) {
     <div class='tournament-table-row'>
       <span class='tournament-table-cell-header'>Acciones:</span>
       <div class='tournament-table-cell-column'>
-        <button class='base-button pending-button' id='edit-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "'>Editar torneo</button>
+        <button class='base-button pending-button' id='edit-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $select_bracket_type_disabled>Editar torneo</button>
         <hr style='background-color: black; height: 1px; width: 100%; margin: 0;'/>
         <span style='text-align: center;'>Tipo de torneo:</span>
-        <button class='base-button pending-button' id='create-general-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' disabled>Liguilla + Eliminacion directa</button>
-        <button class='base-button pending-button' id='create-brackets-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "'$select_bracket_type_disabled>Eliminacion directa</button>
-        <button class='base-button pending-button' id='create-round-robin-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "'$select_bracket_type_disabled>Liguilla</button>
+        <button class='base-button pending-button' id='create-general-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $select_bracket_type_disabled>Generar Partidos (Liguilla + Playoffs)</button>
         <hr style='background-color: black; height: 1px; width: 100%; margin: 0;'/>
-        <button class='base-button pending-button' id='assign-officials-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $add_officials_disabled>Asignar Arbitros</button>
+        <button class='base-button pending-button' id='assign-officials-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $assign_officials_disabled>Asignar Arbitros</button>
         <button class='base-button danger-button' id='unassign-officials-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $unassign_officials_disabled>Desasignar Arbitros</button>
         <hr style='background-color: black; height: 1px; width: 100%; margin: 0;'/>
         <button class='base-button danger-button' id='delete-matches-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $delete_matches_disabled>Eliminar Partidos</button>

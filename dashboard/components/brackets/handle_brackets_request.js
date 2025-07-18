@@ -2,7 +2,6 @@ jQuery(document).ready(function ($) {
 	$("#brackets-dropdown").change(function () {
 		const bracketID = $(this).val();
 
-		$("#brackets-data").off("scroll");
 		$(".leader-line").remove();
 		$("#leader-line-defs").remove();
 
@@ -20,28 +19,34 @@ jQuery(document).ready(function ($) {
 						newElement.innerHTML = response.data.html;
 
 						const elements = response.data.elements;
-						$("#brackets-data").off("scroll");
 
 						if (elements !== null) {
-							for (let i = elements.length - 1; i > 0; i--) {
-								for (let match in elements[i]) {
-									for (let j = 0; j < elements[i][match].length; j++) {
-										const line = new LeaderLine(
-											document.getElementById(elements[i][match][j]),
-											document.getElementById(match),
-											{
-												color: "#000000",
-												size: 2,
-												endPlug: "behind",
-												endPlugSize: 2,
-												path: "grid",
-												endSocket: "left",
-												startSocket: "right",
-											},
-										);
-										$("#brackets-data").on("scroll", function () {
-											line.position();
-										});
+							for (let playoff in elements) {
+								$("#playoff_" + playoff).off("scroll");
+								for (let i = elements[playoff].length - 1; i > 0; i--) {
+									for (let match in elements[playoff][i]) {
+										for (
+											let j = 0;
+											j < elements[playoff][i][match].length;
+											j++
+										) {
+											const line = new LeaderLine(
+												document.getElementById(elements[playoff][i][match][j]),
+												document.getElementById(match),
+												{
+													color: "#000000",
+													size: 2,
+													endPlug: "behind",
+													endPlugSize: 2,
+													path: "grid",
+													endSocket: "left",
+													startSocket: "right",
+												},
+											);
+											$("#playoff_" + playoff).on("scroll", function () {
+												line.position();
+											});
+										}
 									}
 								}
 							}
@@ -64,7 +69,6 @@ jQuery(document).ready(function ($) {
 jQuery(document).on("click", "#brackets-reload-button", function () {
 	const bracketID = jQuery("#brackets-dropdown").val();
 
-	jQuery("#brackets-data").off("scroll");
 	jQuery(".leader-line").remove();
 	jQuery("#leader-line-defs").remove();
 
@@ -82,28 +86,30 @@ jQuery(document).on("click", "#brackets-reload-button", function () {
 					newElement.innerHTML = response.data.html;
 
 					const elements = response.data.elements;
-					jQuery("#brackets-data").off("scroll");
 
 					if (elements !== null) {
-						for (let i = elements.length - 1; i > 0; i--) {
-							for (let match in elements[i]) {
-								for (let j = 0; j < elements[i][match].length; j++) {
-									const line = new LeaderLine(
-										document.getElementById(elements[i][match][j]),
-										document.getElementById(match),
-										{
-											color: "#000000",
-											size: 2,
-											endPlug: "behind",
-											endPlugSize: 2,
-											path: "grid",
-											endSocket: "left",
-											startSocket: "right",
-										},
-									);
-									jQuery("#brackets-data").on("scroll", function () {
-										line.position();
-									});
+						for (let playoff in elements) {
+							jQuery("#playoff_" + playoff).off("scroll");
+							for (let i = elements[playoff].length - 1; i > 0; i--) {
+								for (let match in elements[playoff][i]) {
+									for (let j = 0; j < elements[playoff][i][match].length; j++) {
+										const line = new LeaderLine(
+											document.getElementById(elements[playoff][i][match][j]),
+											document.getElementById(match),
+											{
+												color: "#000000",
+												size: 2,
+												endPlug: "behind",
+												endPlugSize: 2,
+												path: "grid",
+												endSocket: "left",
+												startSocket: "right",
+											},
+										);
+										jQuery("#playoff_" + playoff).on("scroll", function () {
+											line.position();
+										});
+									}
 								}
 							}
 						}
@@ -163,17 +169,17 @@ jQuery(document).on("click", "#save-match", function () {
 	}
 
 	if (team1Score === "" || team2Score === "") {
-		alert("Debe ingresar los goles");
+		alert("Debe ingresar las anotaciones");
 		return;
 	}
 
 	if (team1ScoreInt < 0 || team2ScoreInt < 0) {
-		alert("Los goles no pueden ser negativos");
+		alert("Las anotaciones no pueden ser negativas");
 		return;
 	}
 
 	if (team1Score === team2Score && matchWinner !== "0") {
-		alert("Los equipos no pueden empatar si hay un ganador.");
+		alert("Los equipos no pueden empatar si las anotaciones son iguales.");
 		return;
 	}
 
@@ -183,12 +189,16 @@ jQuery(document).on("click", "#save-match", function () {
 	}
 
 	if (matchWinner === team1ID.toString() && team1ScoreInt <= team2ScoreInt) {
-		alert("Diferencia entre el ganador y los goles anotados.");
+		alert(
+			"Diferencia entre el ganador y la cantidad de anotaciones ingresadas.",
+		);
 		return;
 	}
 
 	if (matchWinner === team2ID.toString() && team1ScoreInt >= team2ScoreInt) {
-		alert("Diferencia entre el ganador y los goles anotados.");
+		alert(
+			"Diferencia entre el ganador y la cantidad de anotaciones ingresadas.",
+		);
 		return;
 	}
 
@@ -234,22 +244,26 @@ jQuery(document).on("click", "#save-match-single-elimination", function () {
 	}
 
 	if (team1Score === "" || team2Score === "") {
-		alert("Debe ingresar los goles");
+		alert("Debe ingresar las anotaciones");
 		return;
 	}
 
 	if (team1ScoreInt < 0 || team2ScoreInt < 0) {
-		alert("Los goles no pueden ser negativos");
+		alert("Las anotaciones no pueden ser negativas");
 		return;
 	}
 
 	if (matchWinner === team1ID.toString() && team1ScoreInt < team2ScoreInt) {
-		alert("Diferencia entre el ganador y los goles anotados.");
+		alert(
+			"Diferencia entre el ganador y la cantidad de anotaciones ingresadas.",
+		);
 		return;
 	}
 
 	if (matchWinner === team2ID.toString() && team1ScoreInt > team2ScoreInt) {
-		alert("Diferencia entre el ganador y los goles anotados.");
+		alert(
+			"Diferencia entre el ganador y la cantidad de anotaciones ingresadas.",
+		);
 		return;
 	}
 
@@ -258,7 +272,7 @@ jQuery(document).on("click", "#save-match-single-elimination", function () {
 
 	const onResponse = function (response) {
 		if (response.success) {
-			jQuery("#match_" + matchID)
+			jQuery("#match_playoff_" + matchID)
 				.children(".match-data-end-data")
 				.html(response.data.html);
 		} else {

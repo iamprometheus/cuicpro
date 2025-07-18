@@ -85,7 +85,7 @@ function create_table_for_schedule($tournament) {
   return $html;
 }
 
-function schedule_viewer() {
+function officials_schedule_viewer() {
   $tournaments = TournamentsDatabase::get_active_tournaments();
   $tournament = null;
   if (!empty($tournaments)) {
@@ -100,21 +100,21 @@ function schedule_viewer() {
 }
 
 // enqueue scripts related to this file
-function enqueue_schedule_scripts() {
-	wp_enqueue_style( 'schedule-styles', plugins_url('/styles.css', __FILE__) );
+function enqueue_officials_schedule_scripts() {
+	wp_enqueue_style( 'officials-schedule-styles', plugins_url('/styles.css', __FILE__) );
 	wp_enqueue_script(
-			'schedule-script',
-			plugins_url('/handle_schedule_request.js', __FILE__),
+			'officials-schedule-script',
+			plugins_url('/handle_officials_schedule_request.js', __FILE__),
 			array('jquery'),
 			null,
 			true
 	);
 
 	// Pass the AJAX URL to JavaScript
-	wp_localize_script('schedule-script', 'cuicpro', array(
+	wp_localize_script('officials-schedule-script', 'cuicpro', array(
 			'ajax_url' => admin_url('admin-ajax.php')
 	));
 }
-add_action('admin_enqueue_scripts', 'enqueue_schedule_scripts');
+add_action('admin_enqueue_scripts', 'enqueue_officials_schedule_scripts');
 
-require_once __DIR__ . '/handle_schedule_request.php';
+require_once __DIR__ . '/handle_officials_schedule_request.php';

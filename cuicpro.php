@@ -46,10 +46,8 @@ add_action( 'init', 'cuicpro_init' );
 
 // Models
 require_once __DIR__ . '/model/base/teams.php';
-require_once __DIR__ . '/model/base/teams_user.php';
 require_once __DIR__ . '/model/base/players.php';
 require_once __DIR__ . '/model/base/coaches.php';
-require_once __DIR__ . '/model/base/coaches_user.php';
 require_once __DIR__ . '/model/base/officials.php';
 require_once __DIR__ . '/model/base/officials_hours.php';
 require_once __DIR__ . '/model/base/divisions.php';
@@ -64,6 +62,12 @@ require_once __DIR__ . '/model/brackets.php';
 require_once __DIR__ . '/model/pending_matches.php';
 require_once __DIR__ . '/model/tournament_scheduler.php';
 
+// User models
+require_once __DIR__ . '/model/users/coaches_user.php';
+require_once __DIR__ . '/model/users/players_user.php';
+require_once __DIR__ . '/model/users/officials_user.php';
+require_once __DIR__ . '/model/users/teams_user.php';
+
 // Dashboard components
 require_once __DIR__ . '/dashboard/components/divisions/divisions.php';
 require_once __DIR__ . '/dashboard/components/teams/teams.php';
@@ -72,7 +76,8 @@ require_once __DIR__ . '/dashboard/components/officials/officials.php';
 require_once __DIR__ . '/dashboard/components/tournaments/tournaments.php';
 require_once __DIR__ . '/dashboard/components/brackets/brackets.php';
 require_once __DIR__ . '/dashboard/components/matches/matches.php';
-require_once __DIR__ . '/dashboard/components/schedule/schedule.php';
+require_once __DIR__ . '/dashboard/components/officials_schedule/officials_schedule.php';
+require_once __DIR__ . '/dashboard/components/matches_schedule/matches_schedule.php';
 require_once __DIR__ . '/dashboard/components/register/register.php';
 
 // Frontend components
@@ -101,6 +106,8 @@ function cuicpro_databases() {
 	PendingPlayersDatabase::init();
 	CoachesUserDatabase::init();
 	TeamsUserDatabase::init();
+	PlayersUserDatabase::init();
+	OfficialsUserDatabase::init();
 }
 
 add_action('admin_menu', 'cuicpro_databases');
@@ -139,6 +146,43 @@ function cuicpro_guided_tour() {
 }
 add_action('admin_enqueue_scripts', 'cuicpro_guided_tour', 20);
 
+// Roles
+function cuicpro_roles() {
+	$roles = wp_roles();
+
+	if (!$roles->is_role('coach')) {
+		add_role('coach', 'Coach', array(
+			'read' => true,
+			'edit_posts' => false,
+			'upload_files' => false,
+			'edit_others_posts' => false,
+			'publish_posts' => false,
+			'delete_posts' => false,
+		));
+	}
+	if (!$roles->is_role('player')) {
+		add_role('player', 'Player', array(
+			'read' => true,
+			'edit_posts' => false,
+			'upload_files' => false,
+			'edit_others_posts' => false,
+			'publish_posts' => false,
+			'delete_posts' => false,
+		));
+	}
+	if (!$roles->is_role('official')) {
+		add_role('official', 'Official', array(
+			'read' => true,
+			'edit_posts' => false,
+			'upload_files' => false,
+			'edit_others_posts' => false,
+			'publish_posts' => false,
+			'delete_posts' => false,
+		));
+	}
+}
+add_action('admin_init', 'cuicpro_roles');
+
 // Dashboard
 // Add plugin to menu Page
 add_action('admin_menu', 'cuicpro_menu_page');
@@ -156,11 +200,20 @@ function cuicpro_menu_page() {
 
 	add_submenu_page(
 		'cuicpro',
-		'Horarios',
-		'Horarios',
+		'Horario de arbitros',
+		'Horario de arbitros',
 		'manage_options',
-		'cuicpro-schedule',
-		'cuicpro_handle_schedule_page'
+		'cuicpro-officials-schedule',
+		'cuicpro_handle_officials_schedule_page'
+	);
+
+	add_submenu_page(
+		'cuicpro',
+		'Horario de partidos',
+		'Horario de partidos',
+		'manage_options',
+		'cuicpro-matches-schedule',
+		'cuicpro_handle_matches_schedule_page'
 	);
 
 	add_submenu_page(
@@ -179,9 +232,15 @@ function cuicpro_handle_admin_page() {
 	echo ob_get_clean();
 }
 
-function cuicpro_handle_schedule_page() {
+function cuicpro_handle_officials_schedule_page() {
 	ob_start();
-	include_once __DIR__ . '/dashboard/views/schedule.php';
+	include_once __DIR__ . '/dashboard/views/officials_schedule.php';
+	echo ob_get_clean();
+}
+
+function cuicpro_handle_matches_schedule_page() {
+	ob_start();
+	include_once __DIR__ . '/dashboard/views/matches_schedule.php';
 	echo ob_get_clean();
 }
 

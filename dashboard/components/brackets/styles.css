@@ -26,9 +26,25 @@
 
 .bracket-container {
 	display: flex;
+	flex-direction: column;
 	justify-content: space-between;
 	min-height: inherit;
-	margin-bottom: 15px;
+	padding: 15px;
+	gap: 15px;
+	overflow: auto;
+}
+
+.playoffs-container {
+	display: flex;
+	flex-direction: column;
+	padding: 10px;
+	gap: 15px;
+}
+
+.rounds-container {
+	display: flex;
+	justify-content: space-between;
+	min-height: inherit;
 }
 
 .bracket-round {

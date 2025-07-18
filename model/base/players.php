@@ -16,14 +16,16 @@ Class PlayersDatabase {
         $charset_collate = $wpdb->get_charset_collate();
         $sql = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}cuicpro_players (
             player_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+            player_user_id SMALLINT UNSIGNED NULL,
             coach_id SMALLINT UNSIGNED NOT NULL,
             team_id SMALLINT UNSIGNED NOT NULL,
             player_name VARCHAR(255) NOT NULL,
             player_photo VARCHAR(255) NOT NULL,
             player_visible BOOLEAN NOT NULL,
             PRIMARY KEY (player_id),
-            FOREIGN KEY (coach_id) REFERENCES {$wpdb->prefix}cuicpro_coaches(coach_id),
-            FOREIGN KEY (team_id) REFERENCES {$wpdb->prefix}cuicpro_teams(team_id)
+            FOREIGN KEY (player_user_id) REFERENCES {$wpdb->prefix}cuicpro_players_user(user_id),
+            FOREIGN KEY (coach_id) REFERENCES {$wpdb->prefix}cuicpro_coaches_user(user_id),
+            FOREIGN KEY (team_id) REFERENCES {$wpdb->prefix}cuicpro_teams_user(team_id)
         ) $charset_collate;";
         require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
         dbDelta( $sql );
@@ -44,6 +46,12 @@ Class PlayersDatabase {
         return $player;
     }
 
+    public static function get_player_by_user_id(int $user_id) {
+        global $wpdb;
+        $player = $wpdb->get_row( "SELECT * FROM {$wpdb->prefix}cuicpro_players WHERE player_user_id = $user_id AND player_visible = true" );
+        return $player;
+    }
+
     public static function get_players_by_team(int $team_id) {
         global $wpdb;
         $players = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_players WHERE team_id = $team_id AND player_visible = true" );
@@ -57,6 +65,7 @@ Class PlayersDatabase {
     }
 
     public static function insert_player(
+        int | null $user_id,
         string $player_name,
         int $team_id,
         string $player_photo,
@@ -65,6 +74,7 @@ Class PlayersDatabase {
         $result = $wpdb->insert(
             $wpdb->prefix . 'cuicpro_players',
             array(
+                'player_user_id' => $user_id,
                 'player_name' => $player_name,
                 'team_id' => $team_id,
                 'player_photo' => $player_photo,
@@ -82,15 +92,13 @@ Class PlayersDatabase {
     public static function update_player(
             int $player_id, 
             string $player_name, 
-            string $player_photo,
-            int $coach_id ) {
+            string $player_photo ) {
         global $wpdb;
         $result = $wpdb->update(
             $wpdb->prefix . 'cuicpro_players',
             array(
                 'player_name' => $player_name,
                 'player_photo' => $player_photo,
-                'coach_id' => $coach_id,
                 'player_visible' => true
             ),
             array(
@@ -101,6 +109,24 @@ Class PlayersDatabase {
             return "Player updated successfully";
         }
         return "Player not updated";
+    }
+
+    public static function update_player_name(int $player_id, string $player_name ) {
+        global $wpdb;
+        $result = $wpdb->update(
+            $wpdb->prefix . 'cuicpro_players',
+            array(
+                'player_name' => $player_name,
+                'player_visible' => true
+            ),
+            array(
+                'player_id' => $player_id,
+            )
+        );
+        if ( $result ) {
+            return "Player name updated successfully";
+        }
+        return "Player name not updated";
     }
 
     public static function delete_player(int $player_id ) {

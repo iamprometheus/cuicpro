@@ -44,7 +44,7 @@ function reject_team_register() {
   }
 
   TeamRegisterQueueDatabase::delete_team($record_id);
-  PendingPlayersDatabase::delete_players_by_team_register_queue($record_id);
+  // PendingPlayersDatabase::delete_players_by_team_register_queue($record_id);
 
   wp_send_json_success(['message' => 'Equipo rechazado correctamente']);
 }
@@ -65,13 +65,13 @@ function accept_team_register() {
 
   // Register coach
   $coach_result = CoachesDatabase::insert_coach(
-    intval($coach_id),
+    $coach_id,
     $pending_team->tournament_id,
-    $coach->coach_name,
-    $coach->coach_contact,
-    $coach->coach_city,
-    $coach->coach_state,
-    $coach->coach_country,
+    $coach->user_name,
+    $coach->user_contact,
+    $coach->user_city,
+    $coach->user_state,
+    $coach->user_country,
   );
 
   if (!$coach_result[0]) {
@@ -109,6 +109,7 @@ function accept_team_register() {
     wp_send_json_error(['message' => 'No se pudo registrar el equipo.']);
   }
 
+  TeamsUserDatabase::update_team_is_registered($pending_team->team_id, true);
   TeamRegisterQueueDatabase::delete_team($record_id);
   wp_send_json_success(['message' => 'Equipo aceptado correctamente']);
 }

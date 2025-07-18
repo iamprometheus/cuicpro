@@ -1,0 +1,23 @@
+#matches-schedule-container {
+	overflow: auto;
+}
+
+#matches-schedule-container table {
+	font-size: 20px;
+}
+
+#matches-schedule-container table th {
+	font-weight: bold;
+	padding: 10px;
+}
+
+#matches-schedule-container table td {
+	padding: 10px;
+}
+
+#matches-schedule-container table td div {
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+	text-align: center;
+}

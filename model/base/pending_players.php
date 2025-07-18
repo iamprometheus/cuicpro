@@ -16,12 +16,16 @@ Class PendingPlayersDatabase {
         $charset_collate = $wpdb->get_charset_collate();
         $sql = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}cuicpro_pending_players (
             player_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-            team_register_queue_id INT UNSIGNED NOT NULL,
+            player_user_id SMALLINT UNSIGNED NULL,
+            coach_id SMALLINT UNSIGNED NOT NULL,
+            team_id SMALLINT UNSIGNED NOT NULL,
             player_name VARCHAR(255) NOT NULL,
             player_photo VARCHAR(255) NOT NULL,
             player_visible BOOLEAN NOT NULL,
             PRIMARY KEY (player_id),
-            FOREIGN KEY (team_register_queue_id) REFERENCES {$wpdb->prefix}cuicpro_team_register_queue(team_register_queue_id)
+            FOREIGN KEY (player_user_id) REFERENCES {$wpdb->prefix}cuicpro_players_user(user_id),
+            FOREIGN KEY (coach_id) REFERENCES {$wpdb->prefix}cuicpro_coaches_user(user_id),
+            FOREIGN KEY (team_id) REFERENCES {$wpdb->prefix}cuicpro_teams_user(team_id)
         ) $charset_collate;";
         require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
         dbDelta( $sql );
@@ -42,14 +46,16 @@ Class PendingPlayersDatabase {
         return $player;
     }
 
-    public static function get_players_by_team_register_queue(int $team_register_queue_id) {
+    public static function get_players_by_team(int $team_id) {
         global $wpdb;
-        $players = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_pending_players WHERE team_register_queue_id = $team_register_queue_id AND player_visible = true" );
+        $players = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_pending_players WHERE team_id = $team_id AND player_visible = true" );
         return $players;
     }
 
     public static function insert_player(
-      int $team_register_queue_id,
+      int $player_user_id,
+      int $coach_id,
+      int $team_id,
       string $player_name,
       string $player_photo ) {
         global $wpdb;
@@ -57,7 +63,9 @@ Class PendingPlayersDatabase {
             $wpdb->prefix . 'cuicpro_pending_players',
             array(
                 'player_name' => $player_name,
-                'team_register_queue_id' => $team_register_queue_id,
+                'player_user_id' => $player_user_id,
+                'coach_id' => $coach_id,
+                'team_id' => $team_id,
                 'player_photo' => $player_photo,
                 'player_visible' => true,
             )
@@ -108,7 +116,7 @@ Class PendingPlayersDatabase {
         return "Player not deleted or player not found";
     }
 
-    public static function delete_players_by_team_register_queue(int $team_register_queue_id) {
+    public static function delete_players_by_team(int $team_id) {
         global $wpdb;
         $result = $wpdb->update(
             $wpdb->prefix . 'cuicpro_pending_players',
@@ -116,7 +124,7 @@ Class PendingPlayersDatabase {
                 'player_visible' => false,
             ),
             array(
-                'team_register_queue_id' => $team_register_queue_id,
+                'team_id' => $team_id,
             )
         );
         if ( $result ) {

@@ -98,26 +98,6 @@ jQuery(document).ready(function ($) {
 	$("#logo").change(function () {
 		readURL(this, "logo-preview");
 	});
-
-	$.ajax({
-		url: cuicpro.ajax_url,
-		type: "POST",
-		data: {
-			action: "user_logged_in",
-		},
-		success: function (response) {
-			if (response.success) {
-				jQuery(".login-button").html("Cerrar sesión");
-				jQuery(".login-button").attr(
-					"href",
-					"https://cuic.pro/wp-login.php?action=logout",
-				);
-			}
-		},
-		error: function (xhr, status, error) {
-			console.error("Error:", error);
-		},
-	});
 });
 
 jQuery(document).on("change", "#player-logo", function () {

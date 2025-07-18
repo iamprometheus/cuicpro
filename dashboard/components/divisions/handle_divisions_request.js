@@ -55,6 +55,14 @@ jQuery(document).on("click", "#add-division-button", function (e) {
 		return;
 	}
 
+	if (divisionPreferredDays.length < 2) {
+		jQuery("#division-result-table")
+			.removeClass("success")
+			.addClass("error")
+			.html("Agregar al menos dos dias preferidos");
+		return;
+	}
+
 	if (parseInt(divisionMaxTeams) < parseInt(divisionMinTeams)) {
 		jQuery("#division-result-table")
 			.removeClass("success")
@@ -225,7 +233,18 @@ jQuery(document).on("click", "#update-division-button", function (e) {
 	const divisionMinTeams = jQuery("#division-min-teams").val();
 	const divisionMaxTeams = jQuery("#division-max-teams").val();
 	const divisionCategory = jQuery("#division-category").val();
-	const divisionPreferredDays = jQuery("#division-preferred-days").val();
+	const divisionPreferredDays = jQuery("#division-preferred-days")
+		.val()
+		.replaceAll(", ", ",")
+		.split(",");
+
+	if (divisionPreferredDays.length < 2) {
+		jQuery("#division-result-table")
+			.removeClass("success")
+			.addClass("error")
+			.html("Agregar al menos dos dias preferidos");
+		return;
+	}
 
 	if (divisionName === "") {
 		jQuery("#division-result-table")

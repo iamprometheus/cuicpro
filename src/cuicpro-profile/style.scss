@@ -7,11 +7,19 @@
 
 .wp-block-cuicpro-cuicpro-profile {
 	font-size: 1em;
+	min-height: 59.4vh;
 
 	.profile-container {
 		display: flex;
 		gap: 20px;
 		width: 100%;
+	}
+
+	.complete-profile-container {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 	}
 
 	.complete-profile-form-container {
@@ -66,6 +74,21 @@
 		align-self: center;
 	}
 
+	select.form-input {
+		height: 40px;
+		font-size: 16px;
+	}
+
+	.form-input-radio {
+		width: 20px;
+		height: 20px;
+		align-self: center;
+	}
+
+	.form-input-radio-label {
+		text-align: left !important;
+	}
+
 	.multiple-fields-container {
 		width: 70%;
 		display: flex;
@@ -113,11 +136,13 @@
 		color: black;
 	}
 
-	.user-teams {
+	.user-teams,
+	.user-players {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 30px;
 		padding: 20px;
+		align-items: center;
 	}
 
 	.team-item {
@@ -133,7 +158,21 @@
 		font-weight: bold;
 	}
 
-	.team-item:hover {
+	.player-item {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 10px;
+		flex-direction: column;
+		border: 1px solid black;
+		height: 160px;
+		padding: 10px;
+		background-color: yellow;
+		font-weight: bold;
+	}
+
+	.team-item:hover,
+	.player-item:hover {
 		transform: scale(1.1);
 		transition: transform 0.2s ease-in-out;
 	}
@@ -145,32 +184,44 @@
 		border-radius: 10px;
 	}
 
-	.team-info {
+	.player-photo {
+		width: 100px;
+		height: 130px;
+		object-fit: contain;
+		border-radius: 10px;
+	}
+
+	.team-info,
+	.player-info {
 		display: flex;
 		flex-direction: column;
 		gap: 10px;
 		padding: 0 20px;
 	}
 
-	.team-logo-container {
+	.team-logo-container,
+	.player-info-container {
 		display: flex;
 		gap: 10px;
 		align-items: center;
 	}
 
-	.team-logo-container img {
+	.team-logo-container img,
+	.player-info-container img {
 		width: 100px;
 		height: 100px;
 		object-fit: contain;
 		border-radius: 10px;
 	}
 
-	.team-status-container {
+	.team-status-container,
+	.player-status-container {
 		display: flex;
 		gap: 10px;
 	}
 
-	.add-team-button {
+	.add-team-button,
+	.add-player-button {
 		width: 100px;
 		height: 100px;
 		display: flex;
@@ -184,9 +235,37 @@
 		cursor: pointer;
 	}
 
-	.add-team-button:hover {
+	.add-team-button:hover,
+	.add-player-button:hover {
 		transform: scale(1.1);
 		transition: transform 0.2s ease-in-out;
+	}
+
+	#back-button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: black;
+		color: yellow;
+		text-align: center;
+		padding: 10px 15px;
+		border: 1px solid;
+		cursor: pointer;
+	}
+
+	#back-button:hover {
+		transform: scale(1.1);
+		transition: transform 0.2s ease-in-out;
+	}
+
+	.info-header {
+		display: flex;
+		align-items: center;
+	}
+
+	.info-header h2 {
+		text-align: center;
+		flex: 1;
 	}
 
 	// active tournaments
@@ -278,6 +357,69 @@
 		height: 100%;
 		object-fit: contain;
 		border-radius: 10px;
+	}
+
+	// matches
+	.user-matches {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 30px;
+		padding: 20px;
+		align-items: center;
+	}
+
+	.bracket-match-container {
+		display: flex;
+		flex-direction: column;
+		border: 1px solid #000000;
+		padding: 20px;
+		border-radius: 10px;
+		gap: 10px;
+		width: 250px;
+		height: fit-content;
+	}
+
+	.bracket-match-container hr {
+		background-color: black;
+		height: 1px;
+		width: 100%;
+		margin: 0;
+	}
+
+	.bracket-match-container-empty {
+		width: 250px;
+	}
+
+	.bracket-match {
+		display: flex;
+		justify-content: space-between;
+		gap: 10px;
+		align-items: center;
+	}
+
+	.bracket-match span {
+		font-size: 18px;
+		font-weight: bold;
+		text-wrap: wrap;
+	}
+
+	.match-data-container {
+		display: flex;
+		justify-content: space-between;
+	}
+
+	.match-data {
+		display: flex;
+		flex-direction: column;
+		gap: 5px;
+	}
+
+	.match-data span {
+		font-size: 14px;
+	}
+
+	.text-right {
+		text-align: right;
 	}
 
 	@media screen and (max-width: 768px) {

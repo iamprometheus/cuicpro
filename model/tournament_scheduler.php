@@ -7,7 +7,6 @@ class TournamentScheduler {
   private $tournament_id;
   private $tournament_days;
   private $first_part_brackets;
-  private $second_part_brackets;
 
   public function __construct($hours, $fields5v5, $fields7v7, $tournament_id, $tournament_days) {
     $this->tournament_id = $tournament_id;
@@ -296,12 +295,15 @@ class TournamentScheduler {
                   intval($division['id']), 
                   intval($division['bracket_id']), 
                   $hour[1], 
+                  $mode,
                   $this->tournament_days[$day], 
                   $hour[0], 
                   $bracket_match[$division['id']], 
                   null,
                   $team_1, 
                   $team_2,
+                  2,
+                  1,
                   intval($round)
                 );
 
@@ -412,12 +414,15 @@ class TournamentScheduler {
                   intval($division['id']), 
                   intval($division['bracket_id']), 
                   $hour[1], 
+                  $mode,
                   $this->tournament_days[$day], 
                   $hour[0], 
                   $bracket_match[$division['id']], 
                   null,
                   $match[0], 
                   $match[1],
+                  1,
+                  null,
                   intval($round)
                 );
 
@@ -447,7 +452,8 @@ class TournamentScheduler {
 
   private function initializePartialRoundRobin(&$divisions) {
     $matches = [];
-    foreach ($divisions as &$division) {
+    shuffle($divisions);
+    foreach ($divisions as $index => &$division) {
       $teams = $division['teams'];
       shuffle($teams);
       
@@ -490,14 +496,16 @@ class TournamentScheduler {
 
       // create matches for single elimination brackets
       $matches_single_elimination = [];
-      $matches_single_elimination['rounds_per_day'] = [];
       $number_of_teams = $teams_count;
+      $preferred_days_single_elimination = array_slice($division['preferred_days'], 1);
       while ($number_of_teams > 0) {
+        $bracket_data = [];
+        $bracket_data['rounds_per_day'] = [];
         $teams_this_bracket = 0;
         match (true) {
           $number_of_teams <= 8 => $teams_this_bracket = $this->selectBracketTeams($number_of_teams, true),
           $number_of_teams > 8 && $number_of_teams < 16 => $teams_this_bracket = $this->selectBracketTeams($number_of_teams, true),
-          $number_of_teams > 16 => $teams_this_bracket = $this->selectBracketTeams($number_of_teams, false),
+          $number_of_teams >= 16 => $teams_this_bracket = $this->selectBracketTeams($number_of_teams, false),
           default => $teams_this_bracket = $number_of_teams,
         };
 
@@ -514,29 +522,30 @@ class TournamentScheduler {
             for ($i = 0; $i < $matchCount; $i++) {
                 $match[] = ["TBD", "TBD"];
             }
-            $matches_single_elimination['matches_per_round'][] = $matchCount;
-            $matches_single_elimination['matches'][] = $match;
+            $bracket_data['matches_per_round'][] = $matchCount;
+            $bracket_data['matches_playoffs'][] = $match;
         }
         
         $rounds_per_day = [];
         for ($i = 0; $i < count($this->tournament_days); $i++) {
-          $rounds_per_day[$i] = isset($matches_single_elimination['rounds_per_day'][$i]) ? $matches_single_elimination['rounds_per_day'][$i] : 0;
+          $rounds_per_day[$i] = isset($bracket_data['rounds_per_day'][$i]) ? $bracket_data['rounds_per_day'][$i] : 0;
         }
 
         $total_rounds = count($rounds_single_elimination);
         while($total_rounds > 0) {
           for ($i = 0; $i < count($this->tournament_days) && $total_rounds > 0; $i++) {
-            if (in_array($this->tournament_days[$i], $division['preferred_days'])) {
+            if (in_array($this->tournament_days[$i], $preferred_days_single_elimination)) {
               $rounds_per_day[$i] += 1;
               $total_rounds--;
             }
           }
         }
 
-        rsort($rounds_per_day);
-
-        $matches_single_elimination['rounds_per_day'] = $rounds_per_day;
-        $matches_single_elimination['bye_teams'] = $bye_teams;
+        $bracket_data['matches_playoffs_copy'] = $bracket_data['matches_playoffs'];
+        $bracket_data['teams'] = $teams_this_bracket;
+        $bracket_data['rounds_per_day'] = $rounds_per_day;
+        $bracket_data['bye_teams'] = $bye_teams;
+        $matches_single_elimination[] = $bracket_data;
       }
 
       $division['matches'] = $matches;
@@ -550,16 +559,13 @@ class TournamentScheduler {
 
       while($total_matches > 0) {
         for ($i = 0; $i < count($this->tournament_days) && $total_matches > 0; $i++) {
-          if (in_array($this->tournament_days[$i], $division['preferred_days'])) {
+          if ($this->tournament_days[$i] == $division['preferred_days'][0]) {
             $matches_per_day[$i] += 1;
             $total_matches--;
           }
         }
       }
 
-      rsort($matches_per_day);
-
-      $division['preferred_days'] = $division['preferred_days'];
       $division['matches_per_day'] = $matches_per_day;
     }
 
@@ -638,70 +644,210 @@ class TournamentScheduler {
     
     $bracket_match = [];
     for ($day = 0 ;$day < count($this->scheduleHours); $day++) {
-        // cycle through each division
-       for ($i = 0; $i < count($this->first_part_brackets); $i++) {
-           $division = &$this->first_part_brackets[$i];
-           if (!isset($division['matches_per_day'])) continue;
-           if ( $division['matches_per_day'][$day] == 0) continue;
-           $matches_this_day = &$division['matches_per_day'][$day];
-           $mode = $division['division_mode'];
+      // cycle through each division
+      for ($i = 0; $i < count($this->first_part_brackets); $i++) {
+        $division = &$this->first_part_brackets[$i];
+        if (!isset($division['matches_per_day'])) continue;
+        if ( $division['matches_per_day'][$day] == 0) continue;
 
-           if (!isset($bracket_match[$division['id']])) {
-             $bracket_match[$division['id']] = 1;
-           }
-           $need_rest = false;
-           // cycle through each round
-           foreach($division['matches'] as $round => &$matches) {
-              if ($matches_this_day == 0) break;
-              $scheduleMatches = [];
-             
-             // cycle through each match
-              foreach ($matches as &$match) {
-               // get next available hour
-               $hour = $this->getNextHour($need_rest, $day,$mode);
-               if (!$hour) $hour = $this->getNextHour($need_rest, $day + 1,$mode);;
-                // $official = $this->assignOfficial($day, $hour[0], $mode);
-								$scheduleMatches[] = [
-                  "tournament_id" => $this->tournament_id,
-									"division_id" => $division['id'],
-									"bracket_id" => $division['bracket_id'],
-									"field" => $hour[1],
-									"team_id_1" => $match[0],
-									"team_id_2" => $match[1],
-									"day" => $day,
-									"hour" => $hour[0],
-									"bracket_match" => $bracket_match[$division['id']],
-									"official" => null,
-									"bracket_round" => $round
-								];
+        $matches_this_day = &$division['matches_per_day'][$day];
+        $mode = $division['division_mode'];
 
-                PendingMatchesDatabase::insert_match(
-                  $this->tournament_id, 
-                  intval($division['id']), 
-                  intval($division['bracket_id']), 
-                  $hour[1], 
-                  $this->tournament_days[$day], 
-                  $hour[0], 
-                  $bracket_match[$division['id']], 
-                  null,
-                  $match[0], 
-                  $match[1],
-                  intval($round)
-                );
-
-							}
-              $bracket_match[$division['id']]++;
-							$division['scheduled_matches'][$round] = $scheduleMatches;
-							unset($division['matches'][$round]);
-							$matches_this_day--;
-              if ($matches_this_day == 1) $need_rest = true;
-						}
+        if (!isset($bracket_match[$division['bracket_id']])) {
+          $bracket_match[$division['bracket_id']] = 1;
         }
+
+        $multiple_matches = false;
+        $hour_shift = 0;
+        $last_assigned_hour = null;
+        $current_day = $day;
+        // cycle through each round
+        foreach($division['matches'] as $round => &$matches) {
+          if (!$multiple_matches && count($matches) > 1) $multiple_matches = true;
+          if ($matches_this_day == 0) break;
+          $scheduleMatches = [];
+          
+          // cycle through each match of the round
+          foreach ($matches as &$match) {
+            // get next available hour
+            $hour = $this->getNextHourAndField($current_day,$mode,$hour_shift, $last_assigned_hour, $multiple_matches);
+            if (!$hour) {
+              $current_day++;
+              $hour = $this->getNextHourAndField($current_day,$mode,$hour_shift, $last_assigned_hour, $multiple_matches);
+            }
+            if (!$hour) break;
+            $scheduleMatches[] = [
+              "tournament_id" => $this->tournament_id,
+              "division_id" => $division['id'],
+              "bracket_id" => $division['bracket_id'],
+              "field" => $hour[1],
+              "field_type" => $mode,
+              "team_id_1" => $match[0],
+              "team_id_2" => $match[1],
+              "day" => $day,
+              "hour" => $hour[0],
+              "match_type" => 1,
+              "bracket_match" => $bracket_match[$division['bracket_id']],
+              "official" => null,
+              "playoff_id" => null,
+              "bracket_round" => $round
+            ];
+
+            PendingMatchesDatabase::insert_match(
+              $this->tournament_id, 
+              intval($division['id']), 
+              intval($division['bracket_id']), 
+              $hour[1], 
+              $mode,
+              $this->tournament_days[$day], 
+              $hour[0], 
+              $bracket_match[$division['bracket_id']], 
+              null,
+              $match[0], 
+              $match[1],
+              1,
+              null,
+              intval($round)
+            );
+
+            $bracket_match[$division['bracket_id']]++;
+          }
+          $hour_shift = 2;
+          $division['scheduled_matches'][$round] = $scheduleMatches;
+          unset($division['matches'][$round]);
+            $matches_this_day--;
+        }
+
+        $division['bracket_match'] = $bracket_match[$division['bracket_id']];
+      }
     }
-    
+      
+    // First, assign randomized teams to round 1, handle BYEs
+    foreach ($this->first_part_brackets as &$division) {
+      $teams = &$division['teams'];
+
+      foreach ($division['matches_single_elimination'] as &$bracket) {
+        $teams_this_bracket = array_splice($teams, 0, $bracket['teams']);
+        $bracket['teams_array'] = $teams_this_bracket;
+        
+        // assign teams to first round matches
+        if(!isset($bracket['matches_playoffs'])) continue;
+        foreach ($bracket['matches_playoffs'][0] as &$match) {
+          $match = [array_pop($teams_this_bracket), array_pop($teams_this_bracket)];
+        }
+      
+        // Add BYE teams
+        $bye_teams = $bracket['bye_teams'];
+        $team_position = 0;
+        $matches_per_round = $bracket['matches_per_round'][1];
+        $jump = $matches_per_round / 2;
+        while($bye_teams > 0) {
+          for ($i = 0; $i < $jump && $bye_teams > 0; $i++) {
+            for ($j = $i; $j < $matches_per_round && $bye_teams > 0; $j+= $jump) {
+              $bye_team = array_pop($teams_this_bracket);
+              $bracket['matches_playoffs'][1][$j][$team_position] = $bye_team;
+              $bye_teams--;
+            }
+          }
+          $team_position = 1;
+        }
+        $bracket['matches_playoffs_copy'] = $bracket['matches_playoffs'];
+      }
+    }
+
     return $this->first_part_brackets;
   }
 
+  public function createMatchesForPlayoffs($brackets) {
+
+    // cycle through each day and assign matches to hours
+    for ($day = 0; $day < count($this->scheduleHours); $day++) {
+      // cycle through each division
+      for ($i = 0; $i < count($brackets); $i++) {
+        $division = &$brackets[$i];
+        
+        $bracket_match = $division['bracket_match'];
+        $playoff_id = 1;
+        for($j = 0; $j < count($division['matches_single_elimination']); $j++) {
+          $bracket = &$division['matches_single_elimination'][$j];
+          if (!isset($bracket['rounds_per_day'])) continue;
+          if ( $bracket['rounds_per_day'][$day] == 0) continue;
+          $matches_this_day = &$bracket['rounds_per_day'][$day];
+          $mode = $division['division_mode'];
+
+
+          $multiple_matches = false;
+          $hour_shift = 0;
+          $last_assigned_hour = null;
+          $current_day = $day;
+
+          foreach($bracket['matches_playoffs'] as $round => &$matches) {
+            if (!$multiple_matches && count($matches) > 1) $multiple_matches = true;
+            if ($matches_this_day == 0) break;
+            $scheduleMatches = [];
+            
+            // cycle through each match
+            foreach ($matches as $match) {
+              // get next available hour  
+              $hour = $this->getNextHourAndField($current_day,$mode,$hour_shift, $last_assigned_hour, $multiple_matches);
+              if (!$hour) {
+                $current_day++;
+                $hour = $this->getNextHourAndField($current_day,$mode,$hour_shift, $last_assigned_hour, $multiple_matches);
+              }
+
+              if (!$hour) break;
+              $scheduleMatches[] = [
+                "tournament_id" => $this->tournament_id,
+                "division_id" => $division['id'],
+                "bracket_id" => $division['bracket_id'],
+                "field" => $hour[1],
+                "field_type" => $mode,
+                "team_id_1" => $match[0],
+                "team_id_2" => $match[1],
+                "match_type" => 1,
+                "day" => $day,
+                "hour" => $hour[0],
+                "bracket_match" => $bracket_match,
+                "official" => null,
+                "playoff_id" => $playoff_id,
+                "bracket_round" => $round
+              ];
+
+              $team_1 = $match[0] == "TBD" ? null : intval($match[0]);
+              $team_2 = $match[1] == "TBD" ? null : intval($match[1]);
+
+              PendingMatchesDatabase::insert_match(
+                $this->tournament_id, 
+                intval($division['id']), 
+                intval($division['bracket_id']), 
+                $hour[1], 
+                $mode,
+                $this->tournament_days[$day], 
+                $hour[0], 
+                $bracket_match,
+                null,
+                $team_1, 
+                $team_2,
+                2,
+                $playoff_id,
+                intval($round)
+              );
+
+              $bracket_match++;
+            }
+
+            $hour_shift = 2;
+            $bracket['scheduled_matches'][$round] = $scheduleMatches;
+            unset($bracket['matches_playoffs'][$round]);
+            $matches_this_day--;
+          }
+          $playoff_id++;
+        }
+      }
+    }
+    return $brackets;
+  }
+        
   private function getNextHour($need_rest, $day, $fieldType) {
     $rest_hours = 2;
 
@@ -714,6 +860,20 @@ class TournamentScheduler {
       }
       
       $field = array_pop($fields[$fieldType]);
+      return [$hour, $field];
+    }
+    return null;
+  }
+
+  private function getNextHourAndField($day, $fieldType, &$hour_shift, &$last_assigned_hour, $multiple_matches) {
+    foreach ($this->scheduleHours[$day] as $hour => &$fields) {
+      if (!$fields[$fieldType]) continue;
+      if ($multiple_matches && $last_assigned_hour && $hour < $last_assigned_hour) continue;
+      if ($multiple_matches && $last_assigned_hour && $hour_shift > 0 && $hour - $last_assigned_hour != $hour_shift) continue;
+      
+      $hour_shift = 0;
+      $last_assigned_hour = $hour;
+      $field = array_shift($fields[$fieldType]);
       return [$hour, $field];
     }
     return null;

@@ -60,7 +60,7 @@ function add_official() {
   $official_country = sanitize_text_field($_POST['official_country']);
   $tournament_id = intval($_POST['tournament_id']);
 
-  $result = OfficialsDatabase::insert_official($tournament_id, $official_name, $official_schedule, $official_mode, $official_team_id, $official_city, $official_state, $official_country);
+  $result = OfficialsDatabase::insert_official($tournament_id, null, $official_name, $official_schedule, $official_mode, $official_team_id, $official_city, $official_state, $official_country);
   
   if ($result[0]) {
     $official = OfficialsDatabase::get_official_by_id($result[1]);

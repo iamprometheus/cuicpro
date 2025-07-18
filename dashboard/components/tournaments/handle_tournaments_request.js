@@ -503,7 +503,6 @@ jQuery(document).on("click", "#create-general-tournament-button", function (e) {
 		},
 		success: function (response) {
 			if (response.success) {
-				console.log(response.data);
 				toggleButtonsWhenSelectedTypeOfTournament(buttonsContainer);
 
 				jQuery(`#tournament-result-table-${tournamentID}`)
@@ -671,6 +670,8 @@ jQuery(document).on("click", "#delete-tournament-button", function () {
 
 // toggle buttons when selected type of tournament
 function toggleButtonsWhenSelectedTypeOfTournament(element) {
+	element.find("#edit-tournament-button").attr("disabled", true);
+	element.find("#create-general-tournament-button").attr("disabled", true);
 	element.find("#create-round-robin-button").attr("disabled", true);
 	element.find("#create-brackets-button").attr("disabled", true);
 	element.find("#assign-officials-button").attr("disabled", false);
@@ -679,6 +680,8 @@ function toggleButtonsWhenSelectedTypeOfTournament(element) {
 
 // toggle buttons deleting matches of tournament
 function toggleButtonsWhenDeletingMatchesOfTournament(element) {
+	element.find("#edit-tournament-button").attr("disabled", false);
+	element.find("#create-general-tournament-button").attr("disabled", false);
 	element.find("#create-round-robin-button").attr("disabled", false);
 	element.find("#create-brackets-button").attr("disabled", false);
 	element.find("#assign-officials-button").attr("disabled", true);
