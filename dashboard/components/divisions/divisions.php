@@ -111,6 +111,7 @@ function cuicpro_divisions($tournament) {
     $division->division_category = ($division->division_category == 1 ? "Varonil" : ($division->division_category == 2 ? "Femenil" : "Mixto"));
     $division->division_mode = ($division->division_mode == 1 ? "5v5" : ($division->division_mode == 2 ? "7v7" : "Ambos"));
     $is_active = $division->division_is_active ? 'checked' : '';
+    $division_preferred_days = str_replace(',', ', ', $division->division_preferred_days);
     
     $html .= "<div class='table-row' id='division-$division->division_id'>";
     $html .= "<span class='table-cell'>" . esc_html($division->division_name) . "</span>";
@@ -118,7 +119,7 @@ function cuicpro_divisions($tournament) {
     $html .= "<span class='table-cell'>" . esc_html($division->division_mode) . "</span>";
     $html .= "<span class='table-cell'>" . esc_html($division->division_min_teams) . "</span>";
     $html .= "<span class='table-cell'>" . esc_html($division->division_max_teams) . "</span>";
-    $html .= "<span class='table-cell'>" . esc_html($division->division_preferred_days) . "</span>";
+    $html .= "<span class='table-cell'>" . esc_html($division_preferred_days) . "</span>";
     $html .= "<div class='table-cell'>
                 <input type='checkbox' id='active-division-button' data-division-id=$division->division_id $is_active></input>
               </div>";

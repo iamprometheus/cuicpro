@@ -391,12 +391,12 @@ jQuery(document).on(
 						},
 					});
 
-					jQuery("#division-selected-days").multiDatesPicker("destroy");
-					jQuery("#division-selected-days").val(
+					jQuery("#division-preferred-days").multiDatesPicker("destroy");
+					jQuery("#division-preferred-days").val(
 						response.data.tournament_days.replaceAll(",", ", "),
 					);
 
-					jQuery("#division-selected-days").multiDatesPicker({
+					jQuery("#division-preferred-days").multiDatesPicker({
 						minDate: date1,
 						maxDate: date2,
 						dateFormat: "d/m/y",

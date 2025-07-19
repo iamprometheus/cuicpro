@@ -55,7 +55,7 @@ jQuery(document).on("click", "#add-division-button", function (e) {
 		return;
 	}
 
-	if (divisionPreferredDays.length < 2) {
+	if (divisionPreferredDays.split(",").length < 2) {
 		jQuery("#division-result-table")
 			.removeClass("success")
 			.addClass("error")

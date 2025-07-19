@@ -9,7 +9,7 @@ jQuery(document).on(
 			type: "POST",
 			url: cuicpro.ajax_url,
 			data: {
-				action: "switch_selected_tournament_schedule",
+				action: "switch_selected_tournament_matches_schedule",
 				tournament_id: tournamentID,
 			},
 			success: function (response) {
@@ -19,7 +19,7 @@ jQuery(document).on(
 						.siblings()
 						.attr("selected", false);
 
-					jQuery("#schedule-container").html(response.data.schedule);
+					jQuery("#matches-schedule-container").html(response.data.schedule);
 				}
 			},
 			error: function (xhr, status, error) {

@@ -1,7 +1,7 @@
 <?php
 
-if (!function_exists('switch_selected_tournament_schedule')) {
-  function switch_selected_tournament_schedule() {
+if (!function_exists('switch_selected_tournament_matches_schedule')) {
+  function switch_selected_tournament_matches_schedule() {
     if (!isset($_POST['tournament_id'])) {
       wp_send_json_error(['message' => 'No se pudo iniciar el torneo']);
     }
@@ -16,5 +16,5 @@ if (!function_exists('switch_selected_tournament_schedule')) {
       ]);
   }
 }
-add_action('wp_ajax_switch_selected_tournament_schedule', 'switch_selected_tournament_schedule');
-add_action('wp_ajax_nopriv_switch_selected_tournament_schedule', 'switch_selected_tournament_schedule');
+add_action('wp_ajax_switch_selected_tournament_matches_schedule', 'switch_selected_tournament_matches_schedule');
+add_action('wp_ajax_nopriv_switch_selected_tournament_matches_schedule', 'switch_selected_tournament_matches_schedule');

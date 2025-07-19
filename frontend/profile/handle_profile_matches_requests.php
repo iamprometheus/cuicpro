@@ -119,16 +119,26 @@ function render_matches_by_team($team_id) {
 
 function render_matches_by_team_player() {
   $user = wp_get_current_user();
-  $team_id = PlayersDatabase::get_player_by_user_id($user->ID)->team_id;
+  $player = PlayersDatabase::get_player_by_user_id($user->ID);
 
-  $team = TeamsDatabase::get_team_by_teams_team_id($team_id);
+  if (!$player->team_id) {
+    $html = "<div class='info-header'>
+						<h2>Mis Partidos</h2>
+					</div>";
+    $html .= "<div>";
+    $html .= "<h3>No tienes equipo asignado</h3>";
+    $html .= "</div>";
+    return $html;
+  }
+
+  $team = TeamsDatabase::get_team_by_teams_team_id($player->team_id);
   $matches = PendingMatchesDatabase::get_matches_by_team($team->team_id, $team->tournament_id);
 
 	$html = "<div class='info-header'>
 						<h2>Mis Partidos</h2>
 					</div>";
   $html .= "<div>";
-	$html .= "<div class='user-matches' id='team-matches-" . esc_attr($team_id) . "'>";
+	$html .= "<div class='user-matches' id='team-matches-" . esc_attr($team->team_id) . "'>";
 	foreach ($matches as $match) {
     $html .= "<div class='bracket-match-container'>";
     $html .= render_team_match($match);
