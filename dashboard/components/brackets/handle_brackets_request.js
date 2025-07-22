@@ -203,7 +203,7 @@ jQuery(document).on("click", "#save-match", function () {
 	}
 
 	const confirmationBoxText =
-		"¿Estas seguro de que el resultado es correcto? Al aceptar, el partido sera guardado y es posible que no pueda ser modificado.";
+		"¿Estas seguro de que el resultado es correcto? Al aceptar, el partido sera guardado y es posible que no pueda ser modificado. Cualquier modificacion a las anotaciones y el ganador no se veran reflejadas mientras este recuadro este activo.";
 
 	const onResponse = function (response) {
 		if (response.success) {

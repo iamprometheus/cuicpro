@@ -460,8 +460,24 @@ function on_add_tournament($tournament) {
     <div class='tournament-table-row'>
       <span class='tournament-table-cell-header'>Campos 7v7:</span>
       <span class='tournament-table-cell'>" . esc_html($tournament->tournament_fields_7v7) . "</span>
-    </div>
-    <div class='tournament-table-row'>
+    </div>";
+    $html .= "<div class='tournament-table-row'>
+              <span class='tournament-table-cell-header'>Administrador:</span>
+              <div class='tournament-table-cell'>
+                <select id='tournament-organizer-dropdown' class='tournament-table-cell' data-tournament-id='" . esc_attr($tournament->tournament_id) . "'>
+                  <option value='0'>Seleccionar Administrador de Torneo</option>";
+
+                  $users = get_users([
+                    'role' => 'tournament-organizer'
+                  ]);
+                  foreach ($users as $user) {
+                    $selected = $user->ID == $tournament->organizer_assigned_id ? 'selected' : '';
+                    $html .= "<option value='" . esc_attr($user->ID) . "' $selected>" . esc_html($user->display_name) . "</option>";
+                  }
+    $html .= "</select>
+                </div>
+              </div>";
+    $html .= "<div class='tournament-table-row'>
       <span class='tournament-table-cell-header'>Acciones:</span>
       <div class='tournament-table-cell-column'>
         <button class='base-button pending-button' id='edit-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $select_bracket_type_disabled>Editar torneo</button>
@@ -472,8 +488,8 @@ function on_add_tournament($tournament) {
         <button class='base-button pending-button' id='assign-officials-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $assign_officials_disabled>Asignar Arbitros</button>
         <button class='base-button danger-button' id='unassign-officials-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $unassign_officials_disabled>Desasignar Arbitros</button>
         <hr style='background-color: black; height: 1px; width: 100%; margin: 0;'/>
-        <button class='base-button danger-button' id='delete-matches-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $delete_matches_disabled>Eliminar Partidos</button>
         <button class='base-button danger-button' id='finish-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $finish_tournament_disabled>Finalizar Torneo</button>
+        <button class='base-button danger-button' id='delete-matches-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $delete_matches_disabled>Eliminar Partidos</button>
         <button class='base-button danger-button' id='delete-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' >Eliminar Torneo</button>
       </div>
     </div>
@@ -498,6 +514,12 @@ function delete_tournament() {
     wp_send_json_error(['message' => 'No se pudo eliminar el torneo']);
   }
   $tournament_id = intval($_POST['tournament_id']);
+  $tournament_started = TournamentsDatabase::is_tournament_started($tournament_id);
+
+  if ($tournament_started) {
+    wp_send_json_error(['message' => 'No se pudo eliminar el torneo, el torneo ha comenzado']);
+  }
+
   $result = TournamentsDatabase::delete_tournament($tournament_id);
   if ($result) {
     PendingMatchesDatabase::delete_pending_matches_by_tournament($tournament_id);
@@ -511,7 +533,7 @@ function delete_tournament() {
 }
 
 function add_tournament() {
-  if (!isset($_POST['tournament_name']) || !isset($_POST['tournament_days']) || !isset($_POST['tournament_hours']) || !isset($_POST['tournament_fields_5v5']) || !isset($_POST['tournament_fields_7v7'])) {
+  if (!isset($_POST['tournament_name']) || !isset($_POST['tournament_days']) || !isset($_POST['tournament_hours']) || !isset($_POST['tournament_fields_5v5']) || !isset($_POST['tournament_fields_7v7']) || !isset($_POST['tournament_organizer'])) {
     wp_send_json_error(['message' => 'Faltan datos']);
   }
 
@@ -521,8 +543,10 @@ function add_tournament() {
   $tournament_fields_5v5 = intval($_POST['tournament_fields_5v5']);
   $tournament_fields_7v7 = intval($_POST['tournament_fields_7v7']);
   $tournament_creation_date = date('Y-m-d');
+  $tournament_organizer = intval($_POST['tournament_organizer']);
+  if ($tournament_organizer === 0) $tournament_organizer = null;
 
-  $result = TournamentsDatabase::insert_tournament($tournament_name, $tournament_days, $tournament_fields_5v5, $tournament_fields_7v7, $tournament_creation_date );
+  $result = TournamentsDatabase::insert_tournament($tournament_name, $tournament_days, $tournament_fields_5v5, $tournament_fields_7v7, $tournament_creation_date, $tournament_organizer );
   if ($result['success']) {
     $days = explode(',', $tournament_days);
     $days = array_map('trim', $days);
@@ -743,6 +767,20 @@ function unassign_officials() {
   wp_send_json_success(['message' => 'Arbitros desasignados correctamente', 'result' => $result]);
 }
 
+function assign_organizer() {
+  if (!isset($_POST['tournament_id']) || !isset($_POST['organizer_id'])) {
+    wp_send_json_error(['message' => 'No se pudo iniciar el torneo']);
+  }
+  $tournament_id = intval($_POST['tournament_id']);
+
+  $organizer_id = intval($_POST['organizer_id']);
+  TournamentsDatabase::update_tournament_organizer($tournament_id, $organizer_id);
+
+  wp_send_json_success(['message' => 'Administrador asignado correctamente']);
+}
+
+add_action('wp_ajax_assign_organizer', 'assign_organizer');
+add_action('wp_ajax_nopriv_assign_organizer', 'assign_organizer');
 add_action('wp_ajax_create_general_tournament', 'create_general_tournament');
 add_action('wp_ajax_nopriv_create_general_tournament', 'create_general_tournament');
 add_action('wp_ajax_edit_tournament', 'edit_tournament');

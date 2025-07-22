@@ -69,6 +69,12 @@ Class TeamsDatabase {
         return $teams;
     }
 
+    public static function get_teams_by_coach_and_tournament(int $coach_id, int $tournament_id) {
+        global $wpdb;
+        $teams = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_teams WHERE coach_id = $coach_id AND tournament_id = $tournament_id AND team_visible = true" );
+        return $teams;
+    }
+
     public static function get_team_by_id(int | null $team_id) {
         if ( $team_id === null ) {
             return null;
@@ -153,6 +159,41 @@ Class TeamsDatabase {
         return "Team not updated";
     }
 
+    public static function update_teams_name(int $team_id, string $team_name ) {
+        global $wpdb;
+        $result = $wpdb->update(
+            $wpdb->prefix . 'cuicpro_teams',
+            array(
+                'team_name' => $team_name,
+            ),
+            array(
+                'teams_team_id' => $team_id,
+            )
+        );
+        if ( $result ) {
+            return "Team updated successfully";
+        }
+        return "Team not updated";
+    }
+
+    public static function update_teams_name_and_logo(int $team_id, string $team_name, string $logo ) {
+        global $wpdb;
+        $result = $wpdb->update(
+            $wpdb->prefix . 'cuicpro_teams',
+            array(
+                'team_name' => $team_name,
+                'logo' => $logo,
+            ),
+            array(
+                'teams_team_id' => $team_id,
+            )
+        );
+        if ( $result ) {
+            return "Team updated successfully";
+        }
+        return "Team not updated";
+    }
+
     public static function update_team_division(int $team_id, int | null $division_id ) {
         global $wpdb;
         $result = $wpdb->update(
@@ -206,11 +247,8 @@ Class TeamsDatabase {
 
     public static function delete_team(int $team_id ) {
         global $wpdb;
-        $result = $wpdb->update(
+        $result = $wpdb->delete(
             $wpdb->prefix . 'cuicpro_teams',
-            array(
-                'team_visible' => false,
-            ),
             array(
                 'team_id' => $team_id,
             )

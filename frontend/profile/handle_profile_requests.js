@@ -30,7 +30,12 @@ jQuery(document).ready(function ($) {
 	$(document).on("click", "#back-button", function () {
 		const toScreen = $(this).data("screen");
 		let teamID = $(this).data("team-id");
+		let tournamentID = $(this).data("tournament-id");
 		if (!teamID) teamID = 0;
+		if (!tournamentID) tournamentID = 0;
+
+		$("#leader-line-defs").remove();
+		$(".leader-line").remove();
 		$.ajax({
 			url: cuicpro.ajax_url,
 			type: "POST",
@@ -38,6 +43,7 @@ jQuery(document).ready(function ($) {
 				action: "handle_back_button",
 				screen: toScreen,
 				team_id: teamID,
+				tournament_id: tournamentID,
 			},
 			success: function (response) {
 				if (response.success) {
@@ -178,6 +184,8 @@ jQuery(document).ready(function ($) {
 
 		if (isActive) return;
 
+		$("#leader-line-defs").remove();
+		$(".leader-line").remove();
 		$.ajax({
 			url: cuicpro.ajax_url,
 			type: "POST",
@@ -197,6 +205,143 @@ jQuery(document).ready(function ($) {
 				} else {
 					alert(
 						"Error al cambiar de menu, si el problema persiste contacta al administrador.",
+					);
+				}
+			},
+			error: function (xhr, status, error) {
+				console.error("Error:", error);
+			},
+		});
+	});
+
+	$(document).on("click", "#tournament-played", function (e) {
+		e.preventDefault();
+		const tournamentID = $(this).data("tournament-id");
+		$.ajax({
+			url: cuicpro.ajax_url,
+			type: "POST",
+			data: {
+				action: "handle_coach_teams_in_tournament",
+				tournament_id: tournamentID,
+			},
+			success: function (response) {
+				if (response.success) {
+					$(".user-data-container").html(response.data.html);
+				} else {
+					alert(
+						"Error al acceder a los equipos, si el problema persiste contacta al administrador.",
+					);
+				}
+			},
+			error: function (xhr, status, error) {
+				console.error("Error:", error);
+			},
+		});
+	});
+
+	$(document).on("click", "#team-item-results", function (e) {
+		e.preventDefault();
+		const teamID = $(this).data("team-id");
+		$.ajax({
+			url: cuicpro.ajax_url,
+			type: "POST",
+			data: {
+				action: "handle_results_for_team",
+				team_id: teamID,
+			},
+			success: function (response) {
+				if (response.success) {
+					$(".user-data-container").html(response.data.html);
+
+					const elements = response.data.elements;
+
+					if (elements !== null) {
+						for (let playoff in elements) {
+							const container = jQuery(`#playoff_${playoff} .rounds-container`);
+							container.off("scroll");
+							for (let i = elements[playoff].length - 1; i > 0; i--) {
+								for (let match in elements[playoff][i]) {
+									for (let j = 0; j < elements[playoff][i][match].length; j++) {
+										const startElement = document.getElementById(
+											elements[playoff][i][match][j],
+										);
+										const endElement = document.getElementById(match);
+
+										const line = new LeaderLine(startElement, endElement, {
+											color: "#000000",
+											size: 2,
+											endPlug: "behind",
+											endPlugSize: 2,
+											path: "grid",
+											endSocket: "left",
+											startSocket: "right",
+										});
+
+										container.on("scroll", () => {
+											line.position();
+										});
+									}
+								}
+							}
+
+							let lines = jQuery(".leader-line");
+							const containerRect = container[0].getBoundingClientRect();
+
+							// filter lines not belonging to current container
+							lines = lines.filter((line) => {
+								const lineEl = lines[line];
+								const lineRect = lineEl.getBoundingClientRect();
+
+								const isOutside =
+									lineRect.top < containerRect.top ||
+									lineRect.bottom > containerRect.bottom;
+
+								return !isOutside;
+							});
+
+							lines.each(function (line) {
+								lines[line].style.removeProperty("display");
+								const lineEl = lines[line];
+								const lineRect = lineEl.getBoundingClientRect();
+								const lineBox = lineEl.getAttribute("viewBox").split(" ");
+
+								const isOutside =
+									lineRect.right > containerRect.right ||
+									lineRect.left < containerRect.left;
+
+								if (isOutside) {
+									lineEl.style.setProperty("display", "none");
+								} else {
+									lineEl.style.removeProperty("display");
+								}
+							});
+
+							jQuery(`#playoff_${playoff} .rounds-container`).on(
+								"scroll",
+								function () {
+									lines.each(function (index) {
+										lines[index].style.removeProperty("display");
+										const lineEl = lines[index];
+										const lineRect = lineEl.getBoundingClientRect();
+										const lineBox = lineEl.getAttribute("viewBox").split(" ");
+
+										const isOutside =
+											lineRect.right > containerRect.right ||
+											lineRect.left < containerRect.left;
+
+										if (isOutside) {
+											lineEl.style.setProperty("display", "none");
+										} else {
+											lineEl.style.removeProperty("display");
+										}
+									});
+								},
+							);
+						}
+					}
+				} else {
+					alert(
+						"Error al acceder a los equipos, si el problema persiste contacta al administrador.",
 					);
 				}
 			},
@@ -526,6 +671,41 @@ jQuery(document).ready(function ($) {
 
 	$(document).on("change", "#logo", function () {
 		readURL(this, "logo-preview");
+	});
+
+	$(document).on("click", ".bracket-match-container", function (e) {
+		const matchData = $(this).children()[2];
+		matchData.toggleAttribute("hidden");
+	});
+
+	$(document).on("click", "#show-cancel-registration-dialog", function (e) {
+		const dialog = document.getElementById("cancel-registration-dialog");
+		dialog.showModal();
+	});
+
+	$(document).on("click", "#show-delete-team-dialog", function (e) {
+		const dialog = document.getElementById("delete-team-dialog");
+		dialog.showModal();
+	});
+
+	$(document).on("click", "#cancel-cancel-registration-button", function (e) {
+		const dialog = document.getElementById("cancel-registration-dialog");
+		dialog.close();
+	});
+
+	$(document).on("click", "#cancel-delete-team-button", function (e) {
+		const dialog = document.getElementById("delete-team-dialog");
+		dialog.close();
+	});
+
+	$(document).on("click", "#confirm-cancel-registration-button", function (e) {
+		const dialog = document.getElementById("cancel-registration-dialog");
+		dialog.close();
+	});
+
+	$(document).on("click", "#confirm-delete-team-button", function (e) {
+		const dialog = document.getElementById("delete-team-dialog");
+		dialog.close();
 	});
 
 	function readURL(input, id) {

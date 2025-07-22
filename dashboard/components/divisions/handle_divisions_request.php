@@ -35,6 +35,13 @@ function delete_division() {
     wp_send_json_error(['message' => 'No se pudo eliminar la division, hay equipos asociados']);
   }
   $division_id = intval($_POST['division_id']);
+  $tournament_id = DivisionsDatabase::get_division_by_id($division_id)->tournament_id;
+  $tournament_started = TournamentsDatabase::is_tournament_started($tournament_id);
+
+  if ($tournament_started) {
+    wp_send_json_error(['message' => 'No se pudo eliminar la division, el torneo ha comenzado']);
+  }
+
   DivisionsDatabase::delete_division($division_id);
   wp_send_json_success(['message' => 'Division eliminada correctamente']);
 }

@@ -87,8 +87,7 @@ function render_matches_by_team($team_id) {
 						<span id='back-button' data-screen='user-teams-matches' data-team-id='" . esc_attr($team_id) . "'>Volver</span>
 						<h2>Partidos</h2>
 					</div>";
-  $html .= "<div>";
-	$html .= "<div class='user-matches' id='team-matches-" . esc_attr($team_id) . "'>";
+	$html .= "<div class='user-matches'>";
 	foreach ($matches as $match) {
     $html .= "<div class='bracket-match-container'>";
     $html .= render_team_match($match);
@@ -112,7 +111,6 @@ function render_matches_by_team($team_id) {
     $html .= "</div>";
   }
 
-  $html .= "</div>";
 	$html .= "</div>";
 	return $html;
 }
@@ -138,7 +136,7 @@ function render_matches_by_team_player() {
 						<h2>Mis Partidos</h2>
 					</div>";
   $html .= "<div>";
-	$html .= "<div class='user-matches' id='team-matches-" . esc_attr($team->team_id) . "'>";
+	$html .= "<div class='user-matches'>";
 	foreach ($matches as $match) {
     $html .= "<div class='bracket-match-container'>";
     $html .= render_team_match($match);

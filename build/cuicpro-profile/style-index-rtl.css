@@ -128,7 +128,8 @@
   padding: 20px;
   align-items: center;
 }
-.wp-block-cuicpro-cuicpro-profile .team-item {
+.wp-block-cuicpro-cuicpro-profile .team-item,
+.wp-block-cuicpro-cuicpro-profile .team-item-results {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -139,6 +140,9 @@
   padding: 10px;
   background-color: yellow;
   font-weight: bold;
+}
+.wp-block-cuicpro-cuicpro-profile .team-item-results {
+  height: 120px;
 }
 .wp-block-cuicpro-cuicpro-profile .player-item {
   display: flex;
@@ -151,9 +155,12 @@
   padding: 10px;
   background-color: yellow;
   font-weight: bold;
+  text-wrap: wrap;
+  max-width: 200px;
 }
 .wp-block-cuicpro-cuicpro-profile .team-item:hover,
-.wp-block-cuicpro-cuicpro-profile .player-item:hover {
+.wp-block-cuicpro-cuicpro-profile .player-item:hover,
+.wp-block-cuicpro-cuicpro-profile .team-item-results:hover {
   transform: scale(1.1);
   transition: transform 0.2s ease-in-out;
 }
@@ -245,7 +252,7 @@
   gap: 30px;
   padding: 20px;
 }
-.wp-block-cuicpro-cuicpro-profile .tournament-item {
+.wp-block-cuicpro-cuicpro-profile .tournament-item-fe {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -254,6 +261,16 @@
   font-weight: bold;
   padding: 20px;
   border: 1px solid;
+  min-width: 150px;
+  height: 100px;
+  text-align: center;
+  width: -moz-fit-content;
+  width: fit-content;
+}
+.wp-block-cuicpro-cuicpro-profile .tournament-item-fe:hover {
+  transform: scale(1.1);
+  background-color: #ffd321;
+  transition: transform 0.2s ease-in-out;
 }
 .wp-block-cuicpro-cuicpro-profile .join-tournament-container {
   padding: 0 20px;
@@ -316,6 +333,28 @@
      object-fit: contain;
   border-radius: 10px;
 }
+.wp-block-cuicpro-cuicpro-profile .team-results-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+}
+.wp-block-cuicpro-cuicpro-profile .user-tournaments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
+  align-items: center;
+}
+.wp-block-cuicpro-cuicpro-profile .team-results {
+  display: flex;
+  gap: 20px;
+}
+.wp-block-cuicpro-cuicpro-profile .team-results div {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 .wp-block-cuicpro-cuicpro-profile .user-matches {
   display: flex;
   flex-wrap: wrap;
@@ -323,16 +362,35 @@
   padding: 20px;
   align-items: center;
 }
+.wp-block-cuicpro-cuicpro-profile .playoffs-container {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  gap: 15px;
+}
+.wp-block-cuicpro-cuicpro-profile .rounds-container {
+  display: flex;
+  justify-content: space-between;
+  min-height: inherit;
+  padding: 20px;
+  overflow: auto;
+}
+.wp-block-cuicpro-cuicpro-profile .bracket-round {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  gap: 50px;
+  min-width: 450px;
+  min-height: inherit;
+}
 .wp-block-cuicpro-cuicpro-profile .bracket-match-container {
   display: flex;
   flex-direction: column;
-  border: 1px solid #000000;
-  padding: 20px;
-  border-radius: 10px;
-  gap: 10px;
+  border: 2px solid #979797;
   width: 250px;
   height: -moz-fit-content;
   height: fit-content;
+  position: relative;
 }
 .wp-block-cuicpro-cuicpro-profile .bracket-match-container hr {
   background-color: black;
@@ -346,17 +404,20 @@
 .wp-block-cuicpro-cuicpro-profile .bracket-match {
   display: flex;
   justify-content: space-between;
-  gap: 10px;
   align-items: center;
+  flex-direction: column;
 }
 .wp-block-cuicpro-cuicpro-profile .bracket-match span {
   font-size: 18px;
   font-weight: bold;
   text-wrap: wrap;
+  width: 100%;
+  text-align: center;
 }
 .wp-block-cuicpro-cuicpro-profile .match-data-container {
   display: flex;
   justify-content: space-between;
+  padding: 5px;
 }
 .wp-block-cuicpro-cuicpro-profile .match-data {
   display: flex;
@@ -366,16 +427,238 @@
 .wp-block-cuicpro-cuicpro-profile .match-data span {
   font-size: 14px;
 }
+.wp-block-cuicpro-cuicpro-profile .match-data-end-data {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;
+  padding: 5px;
+}
+.wp-block-cuicpro-cuicpro-profile .match-winner {
+  background-color: #00ff00;
+}
 .wp-block-cuicpro-cuicpro-profile .text-right {
   text-align: left;
 }
+.wp-block-cuicpro-cuicpro-profile .action-buttons-container {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+.wp-block-cuicpro-cuicpro-profile .danger-button {
+  background-color: #ff0000;
+  color: white;
+  border: 1px solid black;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+}
+.wp-block-cuicpro-cuicpro-profile .danger-button[disabled] {
+  background-color: #979797;
+  cursor: not-allowed;
+}
+.wp-block-cuicpro-cuicpro-profile .danger-button:hover {
+  background-color: #c5cc00;
+  color: black;
+}
+.wp-block-cuicpro-cuicpro-profile .danger-button:hover[disabled] {
+  cursor: not-allowed;
+}
+.wp-block-cuicpro-cuicpro-profile .left-team div {
+  justify-content: flex-end;
+}
+.wp-block-cuicpro-cuicpro-profile .matches-results-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.wp-block-cuicpro-cuicpro-profile .matches-results-container hr {
+  border: 1px solid #696969;
+  width: 100%;
+}
+.wp-block-cuicpro-cuicpro-profile .match-item {
+  display: grid;
+  grid-template-columns: 1fr 70% 1fr;
+  font-size: 16px;
+}
+.wp-block-cuicpro-cuicpro-profile .match-results {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+}
+.wp-block-cuicpro-cuicpro-profile .match-team-container {
+  font-size: 16px;
+  color: #414141;
+}
+.wp-block-cuicpro-cuicpro-profile .team-name {
+  font-size: 16px;
+  color: #414141;
+  align-items: center;
+  display: flex;
+  gap: 10px;
+}
+.wp-block-cuicpro-cuicpro-profile .match-info-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.wp-block-cuicpro-cuicpro-profile .match-info-right {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.wp-block-cuicpro-cuicpro-profile .winner {
+  color: #000;
+  font-weight: bold;
+}
+.wp-block-cuicpro-cuicpro-profile .winner span {
+  background-color: #00ff00;
+  border-radius: 5px;
+  padding: 5px;
+}
+.wp-block-cuicpro-cuicpro-profile .match-scoreboard {
+  background-color: #4d4d4d;
+  padding: 7px;
+  border-radius: 5px;
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  min-width: -moz-fit-content;
+  min-width: fit-content;
+  text-wrap: nowrap;
+}
+.wp-block-cuicpro-cuicpro-profile .leaderboard-container {
+  overflow: auto;
+}
+.wp-block-cuicpro-cuicpro-profile .leaderboard-table {
+  border-collapse: collapse;
+  min-width: 50%;
+}
+.wp-block-cuicpro-cuicpro-profile .leaderboard-table th {
+  padding: 8px;
+  font-size: 15px;
+  font-weight: bold;
+}
+.wp-block-cuicpro-cuicpro-profile .leaderboard-table td {
+  padding: 8px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+}
+.wp-block-cuicpro-cuicpro-profile .leaderboard-table .odd-row {
+  background-color: #b7b7b7;
+}
+.wp-block-cuicpro-cuicpro-profile .match-info[hidden] {
+  display: block;
+}
+@media screen and (max-width: 1100px) {
+  .wp-block-cuicpro-cuicpro-profile .user-data-container {
+    max-width: 72%;
+  }
+  .wp-block-cuicpro-cuicpro-profile hr.hidden {
+    display: none;
+  }
+  .wp-block-cuicpro-cuicpro-profile .playoffs-container {
+    padding: 0;
+  }
+  .wp-block-cuicpro-cuicpro-profile .user-matches {
+    justify-content: center;
+  }
+  .wp-block-cuicpro-cuicpro-profile .active-tournaments {
+    justify-content: center;
+  }
+  .wp-block-cuicpro-cuicpro-profile .info-header {
+    flex-direction: row-reverse;
+    padding: 10px 20px;
+    gap: 20px;
+  }
+  .wp-block-cuicpro-cuicpro-profile .match-item {
+    grid-template-rows: auto auto auto;
+    grid-template-columns: 1fr;
+    font-size: 20px;
+    gap: 20px;
+  }
+  .wp-block-cuicpro-cuicpro-profile .match-data-container {
+    flex-direction: column;
+    padding: 5px 10px;
+  }
+  .wp-block-cuicpro-cuicpro-profile .match-data {
+    gap: 3px;
+  }
+  .wp-block-cuicpro-cuicpro-profile .text-right {
+    text-align: right;
+  }
+  .wp-block-cuicpro-cuicpro-profile .match-team-container {
+    display: flex;
+  }
+  .wp-block-cuicpro-cuicpro-profile .match-info-left,
+  .wp-block-cuicpro-cuicpro-profile .match-info-right {
+    text-align: center;
+  }
+  .wp-block-cuicpro-cuicpro-profile .match-results {
+    gap: 20px;
+  }
+  .wp-block-cuicpro-cuicpro-profile .left-team {
+    justify-content: flex-end !important;
+  }
+  .wp-block-cuicpro-cuicpro-profile .left-team div {
+    flex-direction: column;
+  }
+  .wp-block-cuicpro-cuicpro-profile .right-team div {
+    flex-direction: column-reverse;
+    justify-content: flex-start !important;
+  }
+  .wp-block-cuicpro-cuicpro-profile .white-space {
+    flex: 1;
+  }
+  .wp-block-cuicpro-cuicpro-profile .rounds-container {
+    padding: 10px 0;
+  }
+  .wp-block-cuicpro-cuicpro-profile .bracket-round {
+    min-width: 225px;
+  }
+  .wp-block-cuicpro-cuicpro-profile .bracket-match-container {
+    width: 140px;
+  }
+  .wp-block-cuicpro-cuicpro-profile .bracket-match {
+    flex-direction: column;
+    text-align: center;
+  }
+  .wp-block-cuicpro-cuicpro-profile .match-info {
+    font-size: 14px;
+    position: absolute;
+    z-index: 10;
+    top: 100%;
+    right: 0;
+    background-color: white;
+    border: 1px solid;
+    margin: 0px -2px;
+  }
+  .wp-block-cuicpro-cuicpro-profile .match-info[hidden] {
+    display: none;
+  }
+  .wp-block-cuicpro-cuicpro-profile .match-data-end-data {
+    gap: 5px;
+    font-size: 12px;
+  }
+}
 @media screen and (max-width: 768px) {
+  .wp-block-cuicpro-cuicpro-profile .user-data-container {
+    max-width: 95%;
+  }
   .wp-block-cuicpro-cuicpro-profile .profile-container {
     flex-direction: column;
+    align-items: center;
   }
   .wp-block-cuicpro-cuicpro-profile .profile-menu {
     flex-direction: row;
     flex-wrap: wrap;
+    justify-content: center;
   }
   .wp-block-cuicpro-cuicpro-profile .profile-menu-item {
     width: 140px;

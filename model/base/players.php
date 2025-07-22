@@ -52,7 +52,10 @@ Class PlayersDatabase {
         return $player;
     }
 
-    public static function get_players_by_team(int $team_id) {
+    public static function get_players_by_team(int | null $team_id) {
+        if (!$team_id) {
+            return [];
+        }
         global $wpdb;
         $players = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_players WHERE team_id = $team_id AND player_visible = true" );
         return $players;

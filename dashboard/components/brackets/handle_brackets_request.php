@@ -303,7 +303,8 @@ function render_leaderboard_table(int $bracket_id) {
     return $b->team_points - $a->team_points;
   });
 
-  $html = "<table class='leaderboard-table' border='1' align='center'>";
+  $html = "<div class='leaderboard-container'>";
+  $html .= "<table class='leaderboard-table' border='1' align='center'>";
   $html .= "<caption>Tabla de lideres</caption>";
   $html .= "<thead>";
   $html .= "<tr>";
@@ -324,11 +325,7 @@ function render_leaderboard_table(int $bracket_id) {
 
   $data = [];
   foreach ($teams as $index => $team) {
-    $matches = MatchesDatabase::get_matches_by_team($team->team_id, $bracket->tournament_id);
-
-    $matches = array_filter($matches, function($match) {
-      return $match->match_type == 1;
-    });
+    $matches = MatchesDatabase::get_round_robin_matches_by_team($team->team_id, $bracket->tournament_id);
 
     $pj = count($matches);
     $pg = count(array_filter($matches, function($match) use ($team) {
@@ -379,7 +376,7 @@ function render_leaderboard_table(int $bracket_id) {
   });
 
   foreach ($data as $index => $team) {
-    $html .= "<tr>";
+    $html .= "<tr class='" . ($index % 2 == 0 ? "odd-row" : "even-row") . "'>";
     $html .= "<td>" . $index + 1 . "</td>";
     $html .= "<td>" . $team['team'] . "</td>";
     $html .= "<td>" . $team['pj'] . "</td>";
@@ -396,6 +393,7 @@ function render_leaderboard_table(int $bracket_id) {
 
   $html .= "</tbody>";
   $html .= "</table>";
+  $html .= "</div>";
 
   return $html;
 }
@@ -509,7 +507,7 @@ function update_match_winner_single_elimination() {
   $bracket_id = $match_data->bracket_id;
 
   $total_matches = count(PendingMatchesDatabase::get_matches_by_bracket($bracket_id));
-
+  
   if ($total_matches != $match_link) { 
     $match_link_data = PendingMatchesDatabase::get_match_by_match_link($bracket_id, $match_link);
     if ($match_link_data->match_link_1 == $match_link) {
@@ -518,27 +516,27 @@ function update_match_winner_single_elimination() {
       PendingMatchesDatabase::update_match_team_2($match_link_data->match_id, $match_winner);
     }
   }
-    
-  $result = MatchesDatabase::insert_match(
-      $match_data->tournament_id, 
-      $match_data->division_id, 
-      $match_data->bracket_id, 
-      $match_data->bracket_round,
-      $match_data->bracket_match, 
-      $match_data->field_number, 
-      $match_data->field_type,
-      $match_data->team_id_1, 
-      $match_data->team_id_2, 
-      $match_data->official_id === 0 ? null : $match_data->official_id,
-      $match_data->match_date, 
-      $match_data->match_time, 
-      $match_data->match_type,
-      $match_data->playoff_id,
-      $team_1_score,
-      $team_2_score,
-      $match_winner,
-      $match_id);
   
+  $result = MatchesDatabase::insert_match(
+    $match_data->tournament_id, 
+    $match_data->division_id, 
+    $match_data->bracket_id, 
+    $match_data->bracket_round,
+    $match_data->bracket_match, 
+    $match_data->field_number, 
+    $match_data->field_type,
+    $match_data->team_id_1, 
+    $match_data->team_id_2, 
+    $match_data->official_id === 0 ? null : $match_data->official_id,
+    $match_data->match_date, 
+    $match_data->match_time, 
+    $match_data->match_type,
+    $match_data->playoff_id,
+    $team_1_score,
+    $team_2_score,
+    $match_winner,
+    $match_id);
+    
   if ($result) {
     PendingMatchesDatabase::end_match($match_id);
     $match_winner_name = TeamsDatabase::get_team_by_id($match_winner)->team_name;
@@ -576,9 +574,9 @@ function update_match_winner_round_robin() {
       $prev_match_info->bracket_round,
       $prev_match_info->bracket_match, 
       $prev_match_info->field_number, 
+      $prev_match_info->field_type,
       $prev_match_info->team_id_1, 
       $prev_match_info->team_id_2, 
-      $prev_match_info->field_type,
       $prev_match_info->official_id === 0 ? null : $prev_match_info->official_id,
       $prev_match_info->match_date, 
       $prev_match_info->match_time, 

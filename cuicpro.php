@@ -79,6 +79,7 @@ require_once __DIR__ . '/dashboard/components/matches/matches.php';
 require_once __DIR__ . '/dashboard/components/officials_schedule/officials_schedule.php';
 require_once __DIR__ . '/dashboard/components/matches_schedule/matches_schedule.php';
 require_once __DIR__ . '/dashboard/components/register/register.php';
+require_once __DIR__ . '/dashboard/components/tournaments/tournaments_list.php';
 
 // Frontend components
 require_once __DIR__ . '/frontend/register_form/register_form.php';
@@ -148,38 +149,48 @@ add_action('admin_enqueue_scripts', 'cuicpro_guided_tour', 20);
 
 // Roles
 function cuicpro_roles() {
-	$roles = wp_roles();
+	add_role('coach', 'Coach', array(
+		'read' => true,
+		'edit_posts' => false,
+		'upload_files' => false,
+		'edit_others_posts' => false,
+		'publish_posts' => false,
+		'delete_posts' => false,
+	));
+	
+	add_role('tournament-organizer', 'Admin de Torneo', array(
+		'read' => true,
+		'edit_posts' => false,
+		'upload_files' => false,
+		'edit_others_posts' => false,
+		'publish_posts' => false,
+		'delete_posts' => false,
+		'cuicpro_manage_tournament' => true,
+	));
 
-	if (!$roles->is_role('coach')) {
-		add_role('coach', 'Coach', array(
-			'read' => true,
-			'edit_posts' => false,
-			'upload_files' => false,
-			'edit_others_posts' => false,
-			'publish_posts' => false,
-			'delete_posts' => false,
-		));
-	}
-	if (!$roles->is_role('player')) {
-		add_role('player', 'Player', array(
-			'read' => true,
-			'edit_posts' => false,
-			'upload_files' => false,
-			'edit_others_posts' => false,
-			'publish_posts' => false,
-			'delete_posts' => false,
-		));
-	}
-	if (!$roles->is_role('official')) {
-		add_role('official', 'Official', array(
-			'read' => true,
-			'edit_posts' => false,
-			'upload_files' => false,
-			'edit_others_posts' => false,
-			'publish_posts' => false,
-			'delete_posts' => false,
-		));
-	}
+	remove_role('player');
+	// add_role('player', 'Jugador', array(
+	// 	'read' => true,
+	// 	'edit_posts' => false,
+	// 	'upload_files' => false,
+	// 	'edit_others_posts' => false,
+	// 	'publish_posts' => false,
+	// 	'delete_posts' => false,
+	// ));
+	remove_role('official');
+	// add_role('official', 'Arbitro', array(
+	// 	'read' => true,
+	// 	'edit_posts' => false,
+	// 	'upload_files' => false,
+	// 	'edit_others_posts' => false,
+	// 	'publish_posts' => false,
+	// 	'delete_posts' => false,
+	// ));
+
+	// add capabilities to admin role
+	$admin_role = get_role('administrator');
+	$admin_role->add_cap('cuicpro_manage_tournament');
+	$admin_role->add_cap('cuicpro_administrate_tournaments');
 }
 add_action('admin_init', 'cuicpro_roles');
 
@@ -188,10 +199,14 @@ add_action('admin_init', 'cuicpro_roles');
 add_action('admin_menu', 'cuicpro_menu_page');
 
 function cuicpro_menu_page() {
+
+	if (!current_user_can('cuicpro_manage_tournament')) {
+		return;
+	}
 	add_menu_page(
 		'CUICPRO',
 		'CUICPRO Admin',
-		'manage_options',
+		'cuicpro_manage_tournament',
 		'cuicpro',
 		'cuicpro_handle_admin_page',
 		"dashicons-admin-multisite",
@@ -202,7 +217,7 @@ function cuicpro_menu_page() {
 		'cuicpro',
 		'Horario de arbitros',
 		'Horario de arbitros',
-		'manage_options',
+		'cuicpro_manage_tournament',
 		'cuicpro-officials-schedule',
 		'cuicpro_handle_officials_schedule_page'
 	);
@@ -211,7 +226,7 @@ function cuicpro_menu_page() {
 		'cuicpro',
 		'Horario de partidos',
 		'Horario de partidos',
-		'manage_options',
+		'cuicpro_manage_tournament',
 		'cuicpro-matches-schedule',
 		'cuicpro_handle_matches_schedule_page'
 	);
@@ -220,7 +235,7 @@ function cuicpro_menu_page() {
 		'cuicpro',
 		'Registro de equipos',
 		'Registro de equipos',
-		'manage_options',
+		'cuicpro_manage_tournament',
 		'cuicpro-register',
 		'cuicpro_handle_register_page'
 	);

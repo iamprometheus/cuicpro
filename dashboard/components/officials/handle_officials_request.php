@@ -41,6 +41,13 @@ function delete_official() {
     wp_send_json_error(['message' => 'No se pudo eliminar el arbitro']);
   }
   $official_id = intval($_POST['official_id']);
+  $tournament_id = OfficialsDatabase::get_official_by_id($official_id)->tournament_id;
+  $tournament_started = TournamentsDatabase::is_tournament_started($tournament_id);
+
+  if ($tournament_started) {
+    wp_send_json_error(['message' => 'No se pudo eliminar el arbitro, el torneo ha comenzado']);
+  }
+
   OfficialsDatabase::delete_official($official_id);
   wp_send_json_success(['message' => 'Arbitro eliminado correctamente']);
 }

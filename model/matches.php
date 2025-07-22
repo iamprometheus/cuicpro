@@ -24,6 +24,7 @@ Class MatchesDatabase {
             team_id_1 SMALLINT UNSIGNED NOT NULL,
             team_id_2 SMALLINT UNSIGNED NOT NULL,
             field_number TINYINT UNSIGNED NOT NULL,
+            field_type TINYINT UNSIGNED NOT NULL,
             official_id SMALLINT UNSIGNED NULL,
             match_date VARCHAR(255) NOT NULL,
             match_time TINYINT UNSIGNED NOT NULL,
@@ -39,7 +40,8 @@ Class MatchesDatabase {
             FOREIGN KEY (division_id) REFERENCES {$wpdb->prefix}cuicpro_divisions(division_id),
             FOREIGN KEY (bracket_id) REFERENCES {$wpdb->prefix}cuicpro_brackets(bracket_id),
             FOREIGN KEY (team_id_1) REFERENCES {$wpdb->prefix}cuicpro_teams(team_id),
-            FOREIGN KEY (team_id_2) REFERENCES {$wpdb->prefix}cuicpro_teams(team_id)
+            FOREIGN KEY (team_id_2) REFERENCES {$wpdb->prefix}cuicpro_teams(team_id),
+            FOREIGN KEY (match_winner) REFERENCES {$wpdb->prefix}cuicpro_teams(team_id)
         ) $charset_collate;";
         require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
         dbDelta( $sql );
@@ -67,6 +69,12 @@ Class MatchesDatabase {
         global $wpdb;
         $matches = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_matches WHERE team_id_1 = $team_id OR team_id_2 = $team_id AND tournament_id = $tournament_id" );
         return $matches;
+    }
+
+    public static function get_round_robin_matches_by_team(int $team_id, int $tournament_id) {
+      global $wpdb;
+      $matches = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_matches WHERE (team_id_1 = $team_id OR team_id_2 = $team_id) AND tournament_id = $tournament_id AND match_type = 1" );
+      return $matches;
     }
 
     public static function get_matches_by_playoff(int $playoff_id, int $bracket_id) {
@@ -106,6 +114,7 @@ Class MatchesDatabase {
         int $bracket_round, 
         int $bracket_match, 
         int $field_number, 
+        int $field_type,
         int $team_id_1, 
         int $team_id_2, 
         int | null $official_id, 
@@ -132,6 +141,7 @@ Class MatchesDatabase {
                 'bracket_round' => $bracket_round,
                 'bracket_match' => $bracket_match,
                 'field_number' => $field_number,
+                'field_type' => $field_type,
                 'team_id_1' => $team_id_1,
                 'team_id_2' => $team_id_2,
                 'official_id' => $official_id,
@@ -193,7 +203,7 @@ Class MatchesDatabase {
 
     public static function get_goals_in_favor_by_team(int $team_id) {
         global $wpdb;
-        $results = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_matches WHERE team_id_1 = $team_id OR team_id_2 = $team_id" );
+        $results = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_matches WHERE (team_id_1 = $team_id OR team_id_2 = $team_id) AND match_type = 1" );
         $goals = 0;
         foreach ($results as $result) {
             if ($result->team_id_1 == $team_id) {
@@ -208,7 +218,7 @@ Class MatchesDatabase {
 
     public static function get_goals_against_by_team(int $team_id) {
         global $wpdb;
-        $results = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_matches WHERE team_id_1 = $team_id OR team_id_2 = $team_id" );
+        $results = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_matches WHERE (team_id_1 = $team_id OR team_id_2 = $team_id) AND match_type = 1" );
         $goals = 0;
         foreach ($results as $result) {
             if ($result->team_id_1 == $team_id) {

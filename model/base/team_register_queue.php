@@ -66,6 +66,12 @@ Class TeamRegisterQueueDatabase {
       return $teams;
     }
 
+    public static function get_registration_by_team_id(int $team_id) {
+      global $wpdb;
+      $registration = $wpdb->get_row( "SELECT * FROM {$wpdb->prefix}cuicpro_team_register_queue WHERE team_id = $team_id" );
+      return $registration;
+    }
+
     public static function is_team_pending($team_id) {
       global $wpdb;
       $team = $wpdb->get_row( "SELECT * FROM {$wpdb->prefix}cuicpro_team_register_queue WHERE team_id = $team_id" );

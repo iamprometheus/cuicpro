@@ -69,6 +69,12 @@ Class CoachesDatabase {
         return $coaches;
     }
 
+    public static function get_coach_by_coach_user_and_tournament(int $coach_user_id, int $tournament_id) {
+        global $wpdb;
+        $coach = $wpdb->get_row( "SELECT * FROM {$wpdb->prefix}cuicpro_coaches WHERE coach_user_id = $coach_user_id AND tournament_id = $tournament_id AND coach_visible = true" );
+        return $coach;
+    }
+
     public static function get_coaches_by_tournament_and_name(int $tournament_id, string $coach_name) {
         global $wpdb;
         $coaches = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_coaches WHERE tournament_id = $tournament_id AND coach_name = '$coach_name' AND coach_visible = true" );

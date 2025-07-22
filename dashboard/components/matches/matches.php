@@ -33,11 +33,17 @@ function cuicpro_matches($tournament) {
     foreach ($matches as $match) {
       if ($match->match_date != $day) continue;
 
-      $team_1_name = TeamsDatabase::get_team_by_id($match->team_id_1)->team_name;
-      $team_2_name = TeamsDatabase::get_team_by_id($match->team_id_2)->team_name;
+      $team_1 = TeamsDatabase::get_team_by_id($match->team_id_1);
+      $team_2 = TeamsDatabase::get_team_by_id($match->team_id_2);
+      $team_1_name = $team_1->team_name;
+      $team_2_name = $team_2->team_name;
+      $team_1_logo = $team_1->logo;
+      $team_2_logo = $team_2->logo;
+
+      $division_name = DivisionsDatabase::get_division_by_id($match->division_id)->division_name;
     
       $official = OfficialsDatabase::get_official_by_id($match->official_id);
-      $official_name = $official ? $official->official_name : "Asignacion Pendiente";
+      $official_name = $official ? $official->official_name : "No Asignado";
 
       $match_winner = "";
       if ($match->match_winner) {
@@ -51,13 +57,15 @@ function cuicpro_matches($tournament) {
       $match_winner_class_2 = $match_winner == $team_2_name ? 'winner' : '';
       
       $html .= "<div class='match-item'>";
-      $html .= "<div class='match-hour'>";
-      $html .= "<span>" . $match_time . "</span>";
+      $html .= "<div class='match-info-left'>";
+      $html .= "<span>Hora: " . $match_time . "</span>";
+      $html .= "<span>Division: " . $division_name . "</span>";
       $html .= "</div>";
     
       $html .= "<div class='match-results'>";
-      $html .= "<div class='match-team-name $match_winner_class_1'>
+      $html .= "<div class='match-team-name left-team $match_winner_class_1'>
                   <span>" . $team_1_name . "</span>
+                  <img width='50' height='50' src='" . wp_get_attachment_image_url($team_1_logo, 'full') . "' alt='" . $team_1_name . "' />
                 </div>";
       $html .= "<div class='match-scoreboard'>
                   <span>" . $match->goals_team_1 . "</span>
@@ -65,11 +73,12 @@ function cuicpro_matches($tournament) {
                   <span>" . $match->goals_team_2 . "</span>
                 </div>";
       $html .= "<div class='match-team-name $match_winner_class_2'>
+                  <img width='50' height='50' src='" . wp_get_attachment_image_url($team_2_logo, 'full') . "' alt='" . $team_2_name . "' />
                   <span>" . $team_2_name . "</span>
                 </div>";
       $html .= "</div>";
       
-      $html .= "<div class='match-official-field'>";
+      $html .= "<div class='match-info-right'>";
       $html .= "<div>";
       $html .= "<span>Arbitro: </span>";
       $html .= "<span>" . $official_name . "</span>";
@@ -115,20 +124,3 @@ function cuicpro_matches_viewer() {
 }
 
 // enqueue scripts related to this file
-function enqueue_matches_scripts() {
-	wp_enqueue_script(
-			'matches-script',
-			plugins_url('/handle_matches_request.js', __FILE__),
-			array('jquery'),
-			null,
-			true
-	);
-
-	// Pass the AJAX URL to JavaScript
-	wp_localize_script('matches-script', 'cuicpro', array(
-			'ajax_url' => admin_url('admin-ajax.php')
-	));
-}
-add_action('admin_enqueue_scripts', 'enqueue_matches_scripts');
-
-require_once __DIR__ . '/handle_matches_request.php';

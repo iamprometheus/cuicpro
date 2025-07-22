@@ -20,6 +20,7 @@ Class TeamsUserDatabase {
             team_logo VARCHAR(255) NOT NULL,
             coach_id SMALLINT UNSIGNED NOT NULL,
             is_registered BOOLEAN NOT NULL DEFAULT FALSE,
+            is_visible BOOLEAN NOT NULL DEFAULT TRUE,
             PRIMARY KEY (team_id),
             FOREIGN KEY (coach_id) REFERENCES {$wpdb->prefix}cuicpro_coaches_user(user_id)
         ) $charset_collate;";
@@ -62,6 +63,7 @@ Class TeamsUserDatabase {
                 'coach_id' => $coach_id,
                 'team_logo' => $logo,
                 'is_registered' => false,
+                'is_visible' => true,
                 )
             );
 
@@ -78,6 +80,23 @@ Class TeamsUserDatabase {
             array(
                 'team_name' => $team_name,
                 'team_logo' => $logo,
+            ),
+            array(
+                'team_id' => $team_id,
+            )
+        );
+        if ( $result ) {
+            return "Team updated successfully";
+        }
+        return "Team not updated";
+    }
+
+    public static function update_team_name(int $team_id, string $team_name ) {
+        global $wpdb;
+        $result = $wpdb->update(
+            $wpdb->prefix . 'cuicpro_teams_user',
+            array(
+                'team_name' => $team_name,
             ),
             array(
                 'team_id' => $team_id,
@@ -108,15 +127,18 @@ Class TeamsUserDatabase {
 
     public static function delete_team(int $team_id ) {
         global $wpdb;
-        $result = $wpdb->delete(
+        $result = $wpdb->update(
             $wpdb->prefix . 'cuicpro_teams_user',
+            array(
+                'is_visible' => false,
+            ),
             array(
                 'team_id' => $team_id,
             )
         );
         if ( $result ) {
-            return "Team deleted successfully";
+            return "Team hidden successfully";
         }
-        return "Team not deleted or team not found";
+        return "Team not hidden or team not found";
     }
 }

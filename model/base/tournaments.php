@@ -27,6 +27,7 @@ Class TournamentsDatabase {
             tournament_is_active BOOLEAN NOT NULL,
             tournament_visible BOOLEAN NOT NULL,
             tournament_has_officials BOOLEAN NOT NULL,
+            organizer_assigned_id SMALLINT UNSIGNED NULL,
             PRIMARY KEY (tournament_id)
         ) $charset_collate;";
         require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
@@ -42,6 +43,12 @@ Class TournamentsDatabase {
     public static function get_active_tournaments() {
         global $wpdb;
         $tournaments = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_tournaments where tournament_is_active = 1 and tournament_visible = 1" );
+        return $tournaments;
+    }
+    
+    public static function get_active_tournaments_by_organizer(int $user_id) {
+        global $wpdb;
+        $tournaments = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_tournaments where tournament_is_active = 1 and tournament_visible = 1 and organizer_assigned_id = $user_id" );
         return $tournaments;
     }
 
@@ -67,6 +74,12 @@ Class TournamentsDatabase {
         global $wpdb;
         $tournament = $wpdb->get_row( "SELECT * FROM {$wpdb->prefix}cuicpro_tournaments WHERE tournament_is_active = 1" );
         return $tournament;
+    }
+
+    public static function is_tournament_started(int $tournament_id) {
+        global $wpdb;
+        $tournament = $wpdb->get_row( $wpdb->prepare("SELECT * FROM {$wpdb->prefix}cuicpro_tournaments WHERE tournament_id = %d", $tournament_id) );
+        return $tournament->tournament_start_date !== null;
     }
 
     public static function start_tournament(int $tournament_id, int $tournament_type ) {
@@ -124,7 +137,7 @@ Class TournamentsDatabase {
         return "Tournament not reset or tournament not found";
     }
 
-    public static function insert_tournament(string $tournament_name, string $tournament_days, int $tournament_fields_5v5, int $tournament_fields_7v7, string $tournament_creation_date ) {
+    public static function insert_tournament(string $tournament_name, string $tournament_days, int $tournament_fields_5v5, int $tournament_fields_7v7, string $tournament_creation_date, int | null $organizer_assigner_id ) {
         if ( self::tournament_exists( $tournament_name, null ) ) {
             return [
                 "success" => false,
@@ -144,6 +157,7 @@ Class TournamentsDatabase {
                 'tournament_is_active' => true,
                 'tournament_visible' => true,
                 'tournament_has_officials' => false,
+                'organizer_assigned_id' => $organizer_assigner_id
             )
         );
         if ( $result  ) {
@@ -196,6 +210,23 @@ Class TournamentsDatabase {
             $wpdb->prefix . 'cuicpro_tournaments',
             array(
                 'tournament_has_officials' => $tournament_has_officials,
+            ),
+            array(
+                'tournament_id' => $tournament_id,
+            )
+        );
+        if ( $result ) {
+            return true;
+        }
+        return false;
+    }
+
+    public static function update_tournament_organizer(int $tournament_id, int | null $organizer_assigned_id ) {
+        global $wpdb;
+        $result = $wpdb->update(
+            $wpdb->prefix . 'cuicpro_tournaments',
+            array(
+                'organizer_assigned_id' => $organizer_assigned_id,
             ),
             array(
                 'tournament_id' => $tournament_id,

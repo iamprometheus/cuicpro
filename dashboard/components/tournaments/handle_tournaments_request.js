@@ -18,6 +18,7 @@ jQuery(document).on("click", "#add-tournament-button", function (e) {
 
 	const tournamentFields5v5 = jQuery("#fields-5v5").val();
 	const tournamentFields7v7 = jQuery("#fields-7v7").val();
+	const tournamentOrganizer = jQuery("#organizer").val();
 
 	if (tournamentName === "") {
 		jQuery("#tournament-result-table")
@@ -53,6 +54,7 @@ jQuery(document).on("click", "#add-tournament-button", function (e) {
 			tournament_hours: tournamentHours,
 			tournament_fields_5v5: tournamentFields5v5,
 			tournament_fields_7v7: tournamentFields7v7,
+			tournament_organizer: tournamentOrganizer,
 		},
 		success: function (response) {
 			if (response.success) {
@@ -76,6 +78,7 @@ jQuery(document).on("click", "#add-tournament-button", function (e) {
 				jQuery("#hours-container").html("");
 				jQuery("#fields-5v5").val(1);
 				jQuery("#fields-7v7").val(0);
+				jQuery("#organizer").val("0");
 
 				jQuery("#tournament-result-table")
 					.removeClass("error")
@@ -116,6 +119,8 @@ jQuery(document).on("click", "#edit-tournament-button", function (e) {
 				jQuery("#fields-7v7").val(
 					response.data.tournament.tournament_fields_7v7,
 				);
+
+				jQuery("#organizer").attr("disabled", true);
 
 				jQuery("#tournament-days").multiDatesPicker("resetDates");
 				jQuery("#hours-container").html("");
@@ -253,6 +258,7 @@ jQuery(document).on("click", "#update-tournament-button", function (e) {
 				jQuery("#fields-5v5").val(1);
 				jQuery("#fields-7v7").val(0);
 				jQuery("#hours-container").html("");
+				jQuery("#organizer").attr("disabled", false);
 
 				jQuery("#add-tournament-button").removeClass("hidden");
 				jQuery("#update-tournament-button").addClass("hidden");
@@ -282,6 +288,7 @@ jQuery(document).on("click", "#cancel-tournament-button", function (e) {
 	jQuery("#fields-5v5").val("1");
 	jQuery("#fields-7v7").val("0");
 	jQuery("#hours-container").html("");
+	jQuery("#organizer").attr("disabled", false);
 
 	jQuery("#add-tournament-button").removeClass("hidden");
 	jQuery("#update-tournament-button").addClass("hidden");
@@ -666,6 +673,37 @@ jQuery(document).on("click", "#delete-tournament-button", function () {
 		{ tournament_id: tournamentID },
 		onResponse,
 	);
+});
+
+jQuery(document).on("change", "#tournament-organizer-dropdown", function () {
+	const tournamentID = jQuery(this).data("tournament-id");
+	const selectedOrganizer = jQuery(this).val();
+
+	jQuery.ajax({
+		type: "POST",
+		url: cuicpro.ajax_url,
+		data: {
+			action: "assign_organizer",
+			tournament_id: tournamentID,
+			organizer_id: selectedOrganizer,
+		},
+		success: function (response) {
+			if (response.success) {
+				jQuery("#tournament-result-table-" + tournamentID)
+					.removeClass("error")
+					.addClass("success")
+					.html(response.data.message);
+			} else {
+				jQuery("#tournament-result-table-" + tournamentID)
+					.removeClass("success")
+					.addClass("error")
+					.html(response.data.message);
+			}
+		},
+		error: function (xhr, status, error) {
+			console.error("Error:", error);
+		},
+	});
 });
 
 // toggle buttons when selected type of tournament

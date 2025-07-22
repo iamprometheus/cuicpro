@@ -26,7 +26,7 @@ Class PendingMatchesDatabase {
             field_number TINYINT UNSIGNED NOT NULL,
             field_type TINYINT UNSIGNED NOT NULL,
             official_id SMALLINT UNSIGNED NULL,
-            match_date VARCHAR(10) NOT NULL,
+            match_date VARCHAR(255) NOT NULL,
             match_time TINYINT UNSIGNED NOT NULL,
             goals_team_1 TINYINT UNSIGNED NULL,
             goals_team_2 TINYINT UNSIGNED NULL,
@@ -76,6 +76,12 @@ Class PendingMatchesDatabase {
         return $matches;
     }
 
+    public static function get_pending_matches_by_team(int $team_id, int $tournament_id) {
+        global $wpdb;
+        $matches = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_pending_matches WHERE (team_id_1 = $team_id OR team_id_2 = $team_id) AND tournament_id = $tournament_id AND match_pending = true"  );
+        return $matches;
+    }
+
     public static function get_pending_matches_by_bracket(int $bracket_id) {
         global $wpdb;
         $matches = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_pending_matches WHERE bracket_id = $bracket_id AND match_pending = true"  );
@@ -90,7 +96,7 @@ Class PendingMatchesDatabase {
 
     public static function get_matches_by_team(int $team_id, int $tournament_id) {
         global $wpdb;
-        $matches = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_pending_matches WHERE team_id_1 = $team_id OR team_id_2 = $team_id AND tournament_id = $tournament_id" );
+        $matches = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_pending_matches WHERE (team_id_1 = $team_id OR team_id_2 = $team_id) AND tournament_id = $tournament_id AND match_pending = true" );
         return $matches;
     }
 

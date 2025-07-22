@@ -60,19 +60,25 @@ function accept_team_register() {
   }
 
   $coach_id = $pending_team->coach_id;
-  $coach = CoachesUserDatabase::get_coach_by_id($coach_id);
+  $coach_user = CoachesUserDatabase::get_coach_by_id($coach_id);
   $team = TeamsUserDatabase::get_team_by_id($pending_team->team_id);
+  $coach = CoachesDatabase::get_coach_by_coach_user_and_tournament($coach_id, $pending_team->tournament_id);
 
-  // Register coach
-  $coach_result = CoachesDatabase::insert_coach(
-    $coach_id,
-    $pending_team->tournament_id,
-    $coach->user_name,
-    $coach->user_contact,
-    $coach->user_city,
-    $coach->user_state,
-    $coach->user_country,
-  );
+  // Register coach if not exists
+  $coach_result = [false, null];
+  if ($coach) {
+    $coach_result = [true, $coach->coach_id];
+  } else {
+    $coach_result = CoachesDatabase::insert_coach(
+      $coach_id,
+      $pending_team->tournament_id,
+      $coach_user->user_name,
+      $coach_user->user_contact,
+      $coach_user->user_city,
+      $coach_user->user_state,
+      $coach_user->user_country,
+    );
+  }
 
   if (!$coach_result[0]) {
     wp_send_json_error(['message' => 'No se pudo registrar el coach.']);

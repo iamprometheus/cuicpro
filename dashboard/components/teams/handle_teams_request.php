@@ -168,8 +168,7 @@ function create_players_data($coach_id) {
 
   $teams = TeamsDatabase::get_teams_by_coach($coach_id);
   if (empty($teams))  return $html;
-    
-  $players = PlayersDatabase::get_players_by_team($teams[0]->team_id);
+  $players = PlayersDatabase::get_players_by_team($teams[0]->teams_team_id);
     // add players data to table
   foreach ($players as $player) {
     $html .= "<div class='table-row' id='player-$player->player_id'>";
@@ -228,7 +227,16 @@ function delete_team() {
     wp_send_json_error(['message' => 'No se pudo eliminar el equipo']);
   }
   $team_id = intval($_POST['team_id']);
+  $team = TeamsDatabase::get_team_by_id($team_id);
+  $tournament_id = $team->tournament_id;
+  $tournament_started = TournamentsDatabase::is_tournament_started($tournament_id);
+
+  if ($tournament_started) {
+    wp_send_json_error(['message' => 'No se pudo eliminar el equipo, el torneo ha comenzado']);
+  }
+
   TeamsDatabase::delete_team($team_id);
+  TeamsUserDatabase::update_team_is_registered($team->teams_team_id, false);
   wp_send_json_success(['message' => 'Equipo eliminado correctamente']);
 }
 
@@ -255,7 +263,7 @@ function update_team() {
     if ($team->team_mode != $team_mode || $team->team_category != $team_category) {
       TeamsDatabase::update_team_division($team_id, null);
     }
-    wp_send_json_success(['message' => 'Equipo actualizado correctamente', 'coachData' => create_coach_data($team->coach_id), 'coachID' => $team->coach_id]);
+    wp_send_json_success(['message' => 'Equipo actualizado correctamente', 'coachData' => create_coach_data($team->coach_id, $team->tournament_id), 'coachID' => $team->coach_id]);
   }
   wp_send_json_error(['message' => 'Equipo no actualizado, equipo ya existe']);
 }

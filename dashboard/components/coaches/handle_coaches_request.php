@@ -19,10 +19,19 @@ function delete_coach() {
   if (!isset($_POST['coach_id'])) {
     wp_send_json_error(['message' => 'No se pudo eliminar el entrenador']);
   }
-  if (TeamsDatabase::get_teams_by_coach(intval($_POST['coach_id']))) {
+
+  $coach_id = intval($_POST['coach_id']);
+  
+  $tournament_id = CoachesDatabase::get_coach_by_id($coach_id)->tournament_id;
+  $tournament_started = TournamentsDatabase::is_tournament_started($tournament_id);
+
+  if ($tournament_started) {
+    wp_send_json_error(['message' => 'No se pudo eliminar el entrenador, el torneo ha comenzado']);
+  }
+
+  if (TeamsDatabase::get_teams_by_coach($coach_id)) {
     wp_send_json_error(['message' => 'No se pudo eliminar el entrenador, hay equipos asociados']);
   }
-  $coach_id = intval($_POST['coach_id']);
   CoachesDatabase::delete_coach($coach_id);
   wp_send_json_success(['message' => 'Entrenador eliminado correctamente']);
 }
