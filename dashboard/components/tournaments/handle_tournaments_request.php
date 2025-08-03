@@ -41,7 +41,7 @@ function generate_match_links($brackets) {
 }
 
 function generate_match_link_multibracket($brackets) {
-  foreach ($brackets as $bracket) {
+  foreach ($brackets as $index => $bracket) {
     $playoffs_matches = PendingMatchesDatabase::get_matches_by_type(2, intval($bracket["bracket_id"]));
     $playoff_id = 1;
     foreach ($bracket['matches_single_elimination'] as $playoff) {
@@ -50,19 +50,19 @@ function generate_match_link_multibracket($brackets) {
         return $match->playoff_id == $playoff_id;
       });
 
-      $playoff_matches = array_values($playoff_matches);
-
       if (count($playoff_matches) == 0) {
         $playoff_id++;
         continue;
       }
+
+      $playoff_matches = array_values($playoff_matches);
 
       $rounds = array_unique(array_map(function($match) {
         return $match->bracket_round;
       }, $playoff_matches));
 
       $total_matches = count($playoff_matches) - 1;
-      $counter = $playoff_matches[$total_matches]->bracket_match - 1;
+      $counter = $total_matches - 1;
       for ($round = count($rounds) - 1; $round > 0; $round--) {
         $matches = array_filter($playoff_matches, function($match) use ($round) {
           return $match->bracket_round == $round;
@@ -72,21 +72,20 @@ function generate_match_link_multibracket($brackets) {
 
         for ($index = 0; $index < $matches_this_round; $index++) {
           if ($matches[$index]->team_id_1 == null && $matches[$index]->team_id_2 == null) {
-            $match_link_2 = $counter--;
-            $match_link_1 = $counter;
+            $match_link_2 = $playoff_matches[$counter--]->bracket_match;
+            $match_link_1 = $playoff_matches[$counter]->bracket_match;
             $match_id = $matches[$index]->match_id;
 
             PendingMatchesDatabase::update_match_link($match_id, $match_link_1, $match_link_2);
             $counter--;
           } elseif ($matches[$index]->team_id_1 == null || $matches[$index]->team_id_2 == null) {
             if ($matches[$index]->team_id_1 == null) {
-              PendingMatchesDatabase::update_match_link($matches[$index]->match_id, $counter, null);
+              PendingMatchesDatabase::update_match_link($matches[$index]->match_id, $playoff_matches[$counter]->bracket_match, null);
             } else {
-              PendingMatchesDatabase::update_match_link($matches[$index]->match_id, null, $counter);
+              PendingMatchesDatabase::update_match_link($matches[$index]->match_id, null, $playoff_matches[$counter]->bracket_match);
             }
             $counter--;
           }
-          
           $total_matches--;
         }
       }
@@ -442,6 +441,18 @@ function on_add_tournament($tournament) {
       <span class='tournament-table-cell'>" . esc_html($tournament->tournament_name) . "</span>
     </div>
     <div class='tournament-table-row'>
+      <span class='tournament-table-cell-header'>Lugar de los partidos:</span>
+      <div class='tournament-table-cell'>
+        <span class='tournament-table-cell'>" . esc_html($tournament->tournament_address) . "</span>
+      </div>
+    </div>
+    <div class='tournament-table-row'>
+      <span class='tournament-table-cell-header'>Ubicación:</span>
+      <div class='tournament-table-cell'>
+        <span class='tournament-table-cell'>" . esc_html($tournament->tournament_city) . ", " . esc_html($tournament->tournament_state) . ", " . esc_html($tournament->tournament_country) . "</span>
+      </div>
+    </div>
+    <div class='tournament-table-row'>
       <span class='tournament-table-cell-header'>Calendario:</span>
       <div class='tournament-table-cell'>
         <input type='text' id='tournament-selected-days' readonly value='$tournament_days'>
@@ -544,9 +555,13 @@ function add_tournament() {
   $tournament_fields_7v7 = intval($_POST['tournament_fields_7v7']);
   $tournament_creation_date = date('Y-m-d');
   $tournament_organizer = intval($_POST['tournament_organizer']);
+  $tournament_address = sanitize_text_field($_POST['tournament_address']);
+  $tournament_city = sanitize_text_field($_POST['tournament_city']);
+  $tournament_state = sanitize_text_field($_POST['tournament_state']);
+  $tournament_country = sanitize_text_field($_POST['tournament_country']);
   if ($tournament_organizer === 0) $tournament_organizer = null;
 
-  $result = TournamentsDatabase::insert_tournament($tournament_name, $tournament_days, $tournament_fields_5v5, $tournament_fields_7v7, $tournament_creation_date, $tournament_organizer );
+  $result = TournamentsDatabase::insert_tournament($tournament_name, $tournament_days, $tournament_fields_5v5, $tournament_fields_7v7, $tournament_creation_date, $tournament_organizer, $tournament_address, $tournament_city, $tournament_state, $tournament_country );
   if ($result['success']) {
     $days = explode(',', $tournament_days);
     $days = array_map('trim', $days);
@@ -586,8 +601,12 @@ function update_tournament() {
   $tournament_hours = $_POST['tournament_hours'];
   $tournament_fields_5v5 = intval($_POST['tournament_fields_5v5']);
   $tournament_fields_7v7 = intval($_POST['tournament_fields_7v7']);
+  $tournament_address = sanitize_text_field($_POST['tournament_address']);
+  $tournament_city = sanitize_text_field($_POST['tournament_city']);
+  $tournament_state = sanitize_text_field($_POST['tournament_state']);
+  $tournament_country = sanitize_text_field($_POST['tournament_country']);
 
-  $result = TournamentsDatabase::update_tournament($tournament_id, $tournament_name, $tournament_days, $tournament_fields_5v5, $tournament_fields_7v7);
+  $result = TournamentsDatabase::update_tournament($tournament_id, $tournament_name, $tournament_days, $tournament_fields_5v5, $tournament_fields_7v7, $tournament_address, $tournament_city, $tournament_state, $tournament_country);
   if ($result['success']) {
     TournamentHoursDatabase::delete_tournament_hours_by_tournament($tournament_id);
     $days = explode(',', $tournament_days);
@@ -600,6 +619,23 @@ function update_tournament() {
     wp_send_json_success(['message' => 'Torneo actualizado correctamente', 'html' => on_add_tournament($tournament)]);
   }
   wp_send_json_error(['message' => 'Torneo no actualizado, torneo ya existe']);
+}
+
+function end_tournament() {
+  if (!isset($_POST['tournament_id'])) {
+    wp_send_json_error(['message' => 'No se pudo finalizar el torneo']);
+  }
+  $tournament_id = intval($_POST['tournament_id']);
+  $tournament = TournamentsDatabase::get_tournament_by_id($tournament_id);
+  if (!$tournament) {
+    wp_send_json_error(['message' => 'No se pudo encontrar el torneo seleccionado.']);
+  }
+
+  $result = TournamentsDatabase::end_tournament($tournament_id);
+  if ($result) {
+    wp_send_json_success(['message' => 'Torneo finalizado correctamente']);
+  }
+  wp_send_json_error(['message' => 'Torneo no finalizado, torneo ya finalizado']);
 }
 
 function switch_selected_tournament() {
@@ -779,6 +815,8 @@ function assign_organizer() {
   wp_send_json_success(['message' => 'Administrador asignado correctamente']);
 }
 
+add_action('wp_ajax_end_tournament', 'end_tournament');
+add_action('wp_ajax_nopriv_end_tournament', 'end_tournament');
 add_action('wp_ajax_assign_organizer', 'assign_organizer');
 add_action('wp_ajax_nopriv_assign_organizer', 'assign_organizer');
 add_action('wp_ajax_create_general_tournament', 'create_general_tournament');

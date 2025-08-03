@@ -510,10 +510,13 @@ function update_match_winner_single_elimination() {
   
   if ($total_matches != $match_link) { 
     $match_link_data = PendingMatchesDatabase::get_match_by_match_link($bracket_id, $match_link);
-    if ($match_link_data->match_link_1 == $match_link) {
-      PendingMatchesDatabase::update_match_team_1($match_link_data->match_id, $match_winner);
-    } else {
-      PendingMatchesDatabase::update_match_team_2($match_link_data->match_id, $match_winner);
+    
+    if ($match_link_data !== null) {
+      if ($match_link_data->match_link_1 == $match_link) {
+        PendingMatchesDatabase::update_match_team_1($match_link_data->match_id, $match_winner);
+      } else {
+        PendingMatchesDatabase::update_match_team_2($match_link_data->match_id, $match_winner);
+      }
     }
   }
   
@@ -544,13 +547,6 @@ function update_match_winner_single_elimination() {
 
     wp_send_json_success(['message' => 'Ganador actualizado correctamente', 'html' => $html]);
   }
-
-  // if(!$result) {
-  //   $match_id = MatchesDatabase::get_match_by_bracket_match($prev_match_info->bracket_match, $prev_match_info->bracket_id)->match_id;
-  //   $result = MatchesDatabase::update_match_winner(
-  //     $match_id, 
-  //     $team_id);
-  // }
 
   wp_send_json_success(['message' => 'Ganador actualizado correctamente']);
 }

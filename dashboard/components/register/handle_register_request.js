@@ -1,6 +1,6 @@
 jQuery(document).on(
 	"click",
-	"#tournaments-selector-register .tournament-item",
+	"#tournaments-selector-schedule .tournament-item",
 	function () {
 		const selectedTournament = jQuery(this);
 		const tournamentID = selectedTournament[0].id.replace("tournament-", "");
@@ -36,7 +36,7 @@ jQuery(document).on(
 	"#divisions-selector-register .tournament-item",
 	function () {
 		const selectedTournament = jQuery(
-			"#tournaments-selector-register .tournament-item",
+			"#tournaments-selector-schedule .tournament-item",
 		).filter("[selected]");
 		const tournamentID = selectedTournament[0].id.replace("tournament-", "");
 		const selectedDivision = jQuery(this);

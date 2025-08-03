@@ -100,6 +100,12 @@ Class PendingMatchesDatabase {
         return $matches;
     }
 
+    public static function get_all_matches_by_team(int $team_id, int $tournament_id) {
+        global $wpdb;
+        $matches = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_pending_matches WHERE (team_id_1 = $team_id OR team_id_2 = $team_id) AND tournament_id = $tournament_id" );
+        return $matches;
+    }
+
     public static function get_match_by_id(int $match_id) {
         global $wpdb;
         $match = $wpdb->get_row( "SELECT * FROM {$wpdb->prefix}cuicpro_pending_matches WHERE match_id = $match_id" );

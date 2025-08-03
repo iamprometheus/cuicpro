@@ -843,6 +843,7 @@ class TournamentScheduler {
           }
           $playoff_id++;
         }
+        $division['bracket_match'] = $bracket_match;
       }
     }
     return $brackets;

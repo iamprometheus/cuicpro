@@ -235,8 +235,7 @@ jQuery(document).on("click", "#update-division-button", function (e) {
 	const divisionCategory = jQuery("#division-category").val();
 	const divisionPreferredDays = jQuery("#division-preferred-days")
 		.val()
-		.replaceAll(", ", ",")
-		.split(",");
+		.replaceAll(", ", ",");
 
 	if (divisionPreferredDays.length < 2) {
 		jQuery("#division-result-table")

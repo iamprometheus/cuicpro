@@ -1,5 +1,6 @@
 #matches-schedule-container {
 	overflow: auto;
+	width: 90%;
 }
 
 #matches-schedule-container table {

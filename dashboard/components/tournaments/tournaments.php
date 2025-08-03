@@ -14,6 +14,34 @@ function create_tournament_fields() {
             </div>";
 
   $html .= "<div class='tournament-table-row'>
+              <span class='tournament-table-cell-header'>Lugar de los partidos:</span>
+              <div class='tournament-table-cell'>
+                <input type='text' id='tournament-address' placeholder='Lugar'>
+              </div>
+            </div>";
+
+  $html .= "<div class='tournament-table-row'>
+              <span class='tournament-table-cell-header'>Ciudad:</span>
+              <div class='tournament-table-cell'>
+                <input type='text' id='tournament-city' placeholder='Ciudad'>
+              </div>
+            </div>";
+
+  $html .= "<div class='tournament-table-row'>
+              <span class='tournament-table-cell-header'>Estado:</span>
+              <div class='tournament-table-cell'>
+                <input type='text' id='tournament-state' placeholder='Estado'>
+              </div>
+            </div>";
+
+  $html .= "<div class='tournament-table-row'>
+              <span class='tournament-table-cell-header'>Pais:</span>
+              <div class='tournament-table-cell'>
+                <input type='text' id='tournament-country' placeholder='Pais'>
+              </div>
+            </div>";
+
+  $html .= "<div class='tournament-table-row'>
               <span class='tournament-table-cell-header'>Dias de juego:</span>
               <div class='tournament-table-cell'>
                 <input type='text' id='tournament-days' readonly placeholder='Dias de juego'>
@@ -128,6 +156,18 @@ function create_tournament_table($tournament, $has_matches, $has_officials_assig
   <div class='tournament-table-row'>
     <span class='tournament-table-cell-header'>Torneo:</span>
     <span class='tournament-table-cell'>" . esc_html($tournament->tournament_name) . "</span>
+  </div>
+  <div class='tournament-table-row'>
+    <span class='tournament-table-cell-header'>Lugar de los partidos:</span>
+    <div class='tournament-table-cell'>
+      <span class='tournament-table-cell'>" . esc_html($tournament->tournament_address) . "</span>
+    </div>
+  </div>
+  <div class='tournament-table-row'>
+    <span class='tournament-table-cell-header'>Ubicación:</span>
+    <div class='tournament-table-cell'>
+      <span class='tournament-table-cell'>" . esc_html($tournament->tournament_city) . ", " . esc_html($tournament->tournament_state) . ", " . esc_html($tournament->tournament_country) . "</span>
+    </div>
   </div>
   <div class='tournament-table-row'>
     <span class='tournament-table-cell-header'>Calendario:</span>
@@ -283,6 +323,7 @@ function enqueue_tournaments_scripts() {
 			'ajax_url' => admin_url('admin-ajax.php')
 	));
 }
+
 add_action('admin_enqueue_scripts', 'enqueue_tournaments_scripts');
 
 require_once __DIR__ . '/handle_tournaments_request.php';
