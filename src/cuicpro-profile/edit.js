@@ -33,8 +33,8 @@ export default function Edit() {
 	return (
 		<p {...useBlockProps()}>
 			{__(
-				"Cuicpro Register, this component displays the team register",
-				"cuicpro-block",
+				"Bloque de perfil. Este bloque muestras la informacion del perfil del usuario actual.",
+				"cuicpro-profile",
 			)}
 		</p>
 	);

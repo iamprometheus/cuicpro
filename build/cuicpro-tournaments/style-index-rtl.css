@@ -1,0 +1,155 @@
+/*!***********************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/cuicpro-tournaments/style.scss ***!
+  \***********************************************************************************************************************************************************************************************************************************************************/
+/**
+ * The following styles get applied both on the front of your site
+ * and in the editor.
+ *
+ * Replace them with your own styles or remove the file completely.
+ */
+.wp-block-cuicpro-cuicpro-leagues {
+  font-size: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.wp-block-cuicpro-cuicpro-leagues .tournaments-list-container {
+  display: flex;
+  gap: 20px;
+}
+.wp-block-cuicpro-cuicpro-leagues .tournament-item {
+  display: flex;
+  background: #555555;
+  padding: 10px;
+  border-radius: 15px;
+  border: 1px solid black;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
+.wp-block-cuicpro-cuicpro-leagues .tournament-item:hover {
+  background: #90dffc;
+}
+.wp-block-cuicpro-cuicpro-leagues .tournament-item[selected] {
+  background: #f58400;
+  color: black;
+  font-weight: 600;
+}
+.wp-block-cuicpro-cuicpro-leagues .tournament-item-header {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  text-align: center;
+}
+.wp-block-cuicpro-cuicpro-leagues .tournament-item-name {
+  font-size: 14px;
+  text-align: center;
+}
+.wp-block-cuicpro-cuicpro-leagues .divisions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+.wp-block-cuicpro-cuicpro-leagues .division-container {
+  background-color: #a8e0fa;
+  border-radius: 10px;
+  border: 1px solid #a8e0fa;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.wp-block-cuicpro-cuicpro-leagues .division-title {
+  height: 70px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+.wp-block-cuicpro-cuicpro-leagues .division-title:hover {
+  background-color: #3dc2ff;
+}
+.wp-block-cuicpro-cuicpro-leagues .division-container span {
+  display: flex;
+  justify-content: center;
+  font-weight: bold;
+}
+.wp-block-cuicpro-cuicpro-leagues .teams-container {
+  border-radius: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  background-color: #fff;
+  padding: 1em;
+}
+.wp-block-cuicpro-cuicpro-leagues .teams-container[hidden] {
+  display: none;
+}
+.wp-block-cuicpro-cuicpro-leagues .team-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.wp-block-cuicpro-cuicpro-leagues .team-container p {
+  color: black;
+  font-size: 16px;
+  font-weight: bold;
+}
+.wp-block-cuicpro-cuicpro-leagues .division-matches-title {
+  background-color: #e2ff5e;
+  align-items: center;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+}
+.wp-block-cuicpro-cuicpro-leagues .division-matches-title:hover {
+  background-color: #89a800;
+}
+.wp-block-cuicpro-cuicpro-leagues .matches-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  background-color: #fff;
+  padding: 20px;
+  gap: 20px;
+}
+.wp-block-cuicpro-cuicpro-leagues .matches-container[hidden] {
+  display: none;
+}
+.wp-block-cuicpro-cuicpro-leagues .match-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #a8e0fa;
+  border-radius: 10px;
+  padding: 10px;
+}
+.wp-block-cuicpro-cuicpro-leagues .match-teams {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  justify-content: space-evenly;
+}
+.wp-block-cuicpro-cuicpro-leagues .match-teams span {
+  font-weight: bold;
+  font-size: 16px;
+}
+.wp-block-cuicpro-cuicpro-leagues .match-info {
+  display: flex;
+  justify-content: space-around;
+  gap: 1em;
+}
+.wp-block-cuicpro-cuicpro-leagues .match-date {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.wp-block-cuicpro-cuicpro-leagues .match-date span {
+  font-weight: bold;
+  font-size: 14px;
+  width: -moz-max-content;
+  width: max-content;
+}
+.wp-block-cuicpro-cuicpro-leagues .match-game span {
+  display: block;
+  font-weight: bold;
+  font-size: 14px;
+  text-align: left;
+}

@@ -26,11 +26,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 function cuicpro_init() {
 	$blocks = array(
-		array( 'name' => 'cuicpro-leagues' ),
-		array( 'name' => 'cuicpro-teams' ),
-		array( 'name' => 'cuicpro-brackets' ),
-		array( 'name' => 'cuicpro-register' ),
+		array( 'name' => 'cuicpro-tournaments' ),
 		array( 'name' => 'cuicpro-profile' ),
+		array( 'name' => 'cuicpro-schedule' ),
+		array( 'name' => 'cuicpro-playoffs' ),
+		array( 'name' => 'cuicpro-standings' ),
 	);
 
 	foreach ( $blocks as $block ) {
@@ -82,11 +82,13 @@ require_once __DIR__ . '/dashboard/components/register/register.php';
 require_once __DIR__ . '/dashboard/components/tournaments/tournaments_list.php';
 
 // Frontend components
-require_once __DIR__ . '/frontend/register_form/register_form.php';
+// require_once __DIR__ . '/frontend/register_form/register_form.php';
 require_once __DIR__ . '/frontend/tournaments/tournaments_frontend.php';
-require_once __DIR__ . '/frontend/teams/teams_frontend.php';
-require_once __DIR__ . '/frontend/brackets/brackets_frontend.php';
+require_once __DIR__ . '/frontend/schedule/schedule_frontend.php';
+// require_once __DIR__ . '/frontend/brackets/brackets_frontend.php';
 require_once __DIR__ . '/frontend/profile/profile_frontend.php';
+require_once __DIR__ . '/frontend/playoffs/playoffs.php';
+require_once __DIR__ . '/frontend/standings/standings.php';
 
 // Initialize database tables if they don't exist
 function cuicpro_databases() {

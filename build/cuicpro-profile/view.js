@@ -95,28 +95,10 @@ __webpack_require__.r(__webpack_exports__);
 
 const {
   state
-} = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.store)("cuicpro-register", {
-  state: {
-    get isOpen() {
-      return state.isOpen;
-    },
-    isOpen: true
-  },
-  actions: {
-    toggleOpen() {
-      const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
-      context.isOpen = !context.isOpen;
-    },
-    toggleMatches() {
-      const context = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.getContext)();
-      context.isOpen = !context.isOpen;
-    }
-  },
-  callbacks: {
-    logIsOpen: () => {
-      console.log("toggleOpen");
-    }
-  }
+} = (0,_wordpress_interactivity__WEBPACK_IMPORTED_MODULE_0__.store)("cuicpro-profile", {
+  state: {},
+  actions: {},
+  callbacks: {}
 });
 })();
 

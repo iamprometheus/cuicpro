@@ -51,28 +51,28 @@ jQuery(document).ready(function ($) {
 		});
 	});
 
-	$("#tournament-select").change(function () {
-		const tournamentID = $(this).val();
+	// $("#tournament-select").change(function () {
+	// 	const tournamentID = $(this).val();
 
-		$.ajax({
-			url: cuicpro.ajax_url,
-			type: "POST",
-			data: {
-				action: "fetch_tournament_divisions",
-				tournament_id: tournamentID,
-			},
-			success: function (response) {
-				if (response.success) {
-					$("#division-select").html(response.data.html);
-				} else {
-					console.log(response.data);
-				}
-			},
-			error: function (xhr, status, error) {
-				console.error("Error:", error);
-			},
-		});
-	});
+	// 	$.ajax({
+	// 		url: cuicpro.ajax_url,
+	// 		type: "POST",
+	// 		data: {
+	// 			action: "fetch_tournament_divisions",
+	// 			tournament_id: tournamentID,
+	// 		},
+	// 		success: function (response) {
+	// 			if (response.success) {
+	// 				$("#division-select").html(response.data.html);
+	// 			} else {
+	// 				console.log(response.data);
+	// 			}
+	// 		},
+	// 		error: function (xhr, status, error) {
+	// 			console.error("Error:", error);
+	// 		},
+	// 	});
+	// });
 
 	$("#add-player").click(function () {
 		$("#players-container").append(

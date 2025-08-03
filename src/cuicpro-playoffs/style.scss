@@ -1,0 +1,330 @@
+/**
+ * The following styles get applied both on the front of your site
+ * and in the editor.
+ *
+ * Replace them with your own styles or remove the file completely.
+ */
+
+.wp-block-cuicpro-cuicpro-playoffs {
+	* {
+		box-sizing: border-box;
+	}
+	body {
+		display: grid;
+		place-items: center;
+		min-height: 100vh;
+		background: linear-gradient(35deg, red, purple);
+	}
+	/* <select> styles */
+	select {
+		/* Reset */
+		appearance: none;
+		border: 0;
+		outline: 0;
+		font: inherit;
+		/* Personalize */
+		width: 20rem;
+		padding: 1rem 4rem 1rem 1rem;
+		background:
+			url(https://upload.wikimedia.org/wikipedia/commons/9/9d/Caret_down_font_awesome_whitevariation.svg)
+				no-repeat right 0.8em center/1.4em,
+			linear-gradient(to left, rgba(0, 0, 0, 0.28) 3em, rgb(255, 235, 67) 3em);
+		color: rgb(0, 0, 0);
+		border-radius: 0.25em;
+		box-shadow: 0 0 1em 0 rgba(0, 0, 0, 0.2);
+		cursor: pointer;
+		/* Remove IE arrow */
+		&::-ms-expand {
+			display: none;
+		}
+		/* Remove focus outline */
+		&:focus {
+			outline: none;
+		}
+		/* <option> colors */
+		option {
+			color: inherit;
+			background-color: rgba(255, 255, 255, 0.2);
+		}
+	}
+
+	select:hover {
+		transform: scale(1.1);
+		transition: transform 0.2s ease-in-out;
+	}
+
+	select:focus {
+		transform: scale(1.1);
+		transition: transform 0.2s ease-in-out;
+	}
+
+	.schedules-container {
+		display: flex;
+		flex-direction: column;
+		gap: 25px;
+		justify-content: center;
+	}
+
+	.selectors {
+		display: flex;
+		gap: 25px;
+		justify-content: center;
+	}
+
+	.team-schedules {
+		display: flex;
+		align-items: center;
+		gap: 30px;
+	}
+
+	#team-schedule-table {
+		text-align: center;
+		font-size: 26px;
+
+		th {
+			padding: 10px;
+		}
+
+		.match {
+			background-color: yellow;
+		}
+	}
+
+	.team-matches-container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: space-around;
+		gap: 30px;
+	}
+
+	.team-matches {
+		display: flex;
+		gap: 30px;
+		flex-wrap: wrap;
+	}
+
+	.playoffs-container {
+		display: flex;
+		flex-direction: column;
+		padding: 10px;
+		gap: 15px;
+	}
+
+	.rounds-container {
+		display: flex;
+		justify-content: space-between;
+		min-height: inherit;
+		padding: 20px;
+		overflow: auto;
+	}
+
+	.bracket-round {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-around;
+		gap: 50px;
+		min-width: 350px;
+		min-height: inherit;
+	}
+
+	.bracket-match-container {
+		display: flex;
+		flex-direction: column;
+		border: 2px solid #979797;
+		width: 250px;
+		height: fit-content;
+		position: relative;
+	}
+
+	.bracket-match-container hr {
+		background-color: black;
+		height: 1px;
+		width: 100%;
+		margin: 0;
+	}
+
+	.bracket-match-container-empty {
+		width: 250px;
+	}
+
+	.bracket-match {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		flex-direction: column;
+	}
+
+	.bracket-match span {
+		font-size: 18px;
+		font-weight: bold;
+		text-wrap: wrap;
+		width: 100%;
+		text-align: center;
+	}
+
+	.match-data-container {
+		display: flex;
+		justify-content: space-between;
+		padding: 5px;
+	}
+
+	.match-data {
+		display: flex;
+		flex-direction: column;
+		gap: 5px;
+	}
+
+	.match-data span {
+		font-size: 14px;
+	}
+
+	.match-data-end-data {
+		display: flex;
+		flex-direction: column;
+		gap: 5px;
+		text-align: center;
+		font-weight: bold;
+		font-size: 16px;
+		padding: 5px;
+	}
+
+	.match-winner {
+		background-color: #00ff00;
+	}
+
+	.text-right {
+		text-align: right;
+	}
+
+	@media screen and (max-width: 768px) {
+		.selectors {
+			flex-direction: column;
+			align-items: center;
+		}
+
+		#team-schedule-table {
+			font-size: 20px;
+
+			th {
+				padding: 5px;
+			}
+		}
+	}
+
+	@media screen and (max-width: 1100px) {
+		.user-data-container {
+			max-width: 72%;
+		}
+
+		hr.hidden {
+			display: none;
+		}
+
+		.playoffs-container {
+			padding: 0;
+		}
+
+		.user-matches {
+			justify-content: center;
+		}
+
+		.active-tournaments {
+			justify-content: center;
+		}
+
+		.info-header {
+			flex-direction: row-reverse;
+			padding: 10px 20px;
+			gap: 20px;
+		}
+
+		.match-item {
+			grid-template-rows: auto auto auto;
+			grid-template-columns: 1fr;
+			font-size: 20px;
+			gap: 20px;
+		}
+
+		.match-data-container {
+			flex-direction: column;
+			padding: 5px 10px;
+		}
+
+		.match-data {
+			gap: 3px;
+		}
+
+		.text-right {
+			text-align: left;
+		}
+
+		.match-team-container {
+			display: flex;
+		}
+
+		.match-info-left,
+		.match-info-right {
+			text-align: center;
+		}
+
+		.match-results {
+			gap: 20px;
+		}
+
+		.left-team {
+			justify-content: flex-end !important;
+		}
+
+		.left-team div {
+			flex-direction: column;
+		}
+
+		.right-team div {
+			flex-direction: column-reverse;
+			justify-content: flex-start !important;
+		}
+
+		.white-space {
+			flex: 1;
+		}
+
+		.rounds-container {
+			padding: 10px 0;
+		}
+
+		// cant be less than 201px due to LeaderLine bug with scroll and line.position()
+		.bracket-round {
+			min-width: 201px;
+		}
+
+		.bracket-match-container {
+			width: 140px;
+		}
+
+		.bracket-match {
+			flex-direction: column;
+			text-align: center;
+		}
+
+		.match-info {
+			font-size: 14px;
+			position: absolute;
+			z-index: 10;
+			top: 100%;
+			left: 0;
+			background-color: white;
+			border: 1px solid;
+			margin: 0px -2px;
+		}
+
+		.match-info[hidden] {
+			display: none;
+		}
+
+		.match-data-end-data {
+			gap: 5px;
+			font-size: 12px;
+		}
+	}
+}

@@ -1,0 +1,277 @@
+/**
+ * The following styles get applied both on the front of your site
+ * and in the editor.
+ *
+ * Replace them with your own styles or remove the file completely.
+ */
+
+.wp-block-cuicpro-cuicpro-standings {
+	* {
+		box-sizing: border-box;
+	}
+	/* <select> styles */
+	select {
+		/* Reset */
+		appearance: none;
+		border: 0;
+		outline: 0;
+		font: inherit;
+		/* Personalize */
+		width: 20rem;
+		padding: 1rem 4rem 1rem 1rem;
+		background:
+			url(https://upload.wikimedia.org/wikipedia/commons/9/9d/Caret_down_font_awesome_whitevariation.svg)
+				no-repeat right 0.8em center/1.4em,
+			linear-gradient(to left, rgb(0, 0, 0) 3em, rgb(255, 235, 67) 3em);
+		color: rgb(0, 0, 0);
+		border-radius: 0.25em;
+		box-shadow: 0 0 1em 0 rgba(0, 0, 0, 0.2);
+		cursor: pointer;
+		/* Remove IE arrow */
+		&::-ms-expand {
+			display: none;
+		}
+		/* Remove focus outline */
+		&:focus {
+			outline: none;
+		}
+		/* <option> colors */
+		option {
+			color: inherit;
+			background-color: rgba(255, 255, 255, 0.2);
+		}
+	}
+
+	select:hover {
+		transform: scale(1.1);
+		transition: transform 0.2s ease-in-out;
+	}
+
+	select:focus {
+		transform: scale(1.1);
+		transition: transform 0.2s ease-in-out;
+	}
+
+	.schedules-container {
+		display: flex;
+		flex-direction: column;
+		gap: 25px;
+		justify-content: center;
+	}
+
+	.selectors {
+		display: flex;
+		gap: 25px;
+		justify-content: center;
+	}
+
+	.team-results-container {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		padding: 20px;
+	}
+
+	.user-tournaments {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 20px;
+		padding: 20px;
+		align-items: center;
+	}
+
+	.team-results {
+		display: flex;
+		gap: 20px;
+	}
+
+	.team-results div {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		justify-content: center;
+	}
+
+	.team-logo {
+		width: 150px;
+		height: 150px;
+		object-fit: contain;
+		border-radius: 10px;
+	}
+
+	// matches played results
+	.left-team div {
+		justify-content: flex-end;
+	}
+
+	.matches-results-container {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.matches-results-container hr {
+		border: 1px solid #696969;
+		width: 100%;
+	}
+
+	.match-item {
+		display: grid;
+		grid-template-columns: 1fr 70% 1fr;
+		font-size: 16px;
+	}
+
+	.match-results {
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		align-items: center;
+		gap: 10px;
+	}
+
+	.match-team-container {
+		font-size: 16px;
+		color: #414141;
+	}
+
+	.team-name {
+		font-size: 16px;
+		color: #414141;
+		align-items: center;
+		display: flex;
+		gap: 10px;
+	}
+
+	.match-info-left {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	.match-info-right {
+		text-align: right;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	.winner {
+		color: #000;
+		font-weight: bold;
+	}
+
+	.winner span {
+		background-color: #00ff00;
+		border-radius: 5px;
+		padding: 5px;
+	}
+
+	.match-scoreboard {
+		background-color: #4d4d4d;
+		padding: 7px;
+		border-radius: 5px;
+		font-size: 18px;
+		font-weight: 600;
+		color: white;
+		min-width: fit-content;
+		text-wrap: nowrap;
+	}
+
+	.leaderboard-container {
+		overflow: auto;
+	}
+
+	.leaderboard-table {
+		border-collapse: collapse;
+		min-width: 50%;
+	}
+
+	.leaderboard-table th {
+		padding: 8px;
+		font-size: 15px;
+		font-weight: bold;
+	}
+
+	.leaderboard-table td {
+		padding: 8px;
+		text-align: center;
+		font-size: 16px;
+		font-weight: bold;
+	}
+
+	.leaderboard-table .odd-row {
+		background-color: #b7b7b7;
+	}
+
+	.match-info[hidden] {
+		display: block;
+	}
+
+	@media screen and (max-width: 1100px) {
+		hr.hidden {
+			display: none;
+		}
+
+		.match-item {
+			grid-template-rows: auto auto auto;
+			grid-template-columns: 1fr;
+			font-size: 20px;
+			gap: 20px;
+		}
+
+		.match-data-container {
+			flex-direction: column;
+			padding: 5px 10px;
+		}
+
+		.match-data {
+			gap: 3px;
+		}
+
+		.text-right {
+			text-align: left;
+		}
+
+		.match-team-container {
+			display: flex;
+		}
+
+		.match-info-left,
+		.match-info-right {
+			text-align: center;
+		}
+
+		.match-results {
+			gap: 20px;
+		}
+
+		.left-team {
+			justify-content: flex-end !important;
+		}
+
+		.left-team div {
+			flex-direction: column;
+		}
+
+		.right-team div {
+			flex-direction: column-reverse;
+			justify-content: flex-start !important;
+		}
+
+		.white-space {
+			flex: 1;
+		}
+	}
+
+	@media screen and (max-width: 768px) {
+		.selectors {
+			flex-direction: column;
+			align-items: center;
+		}
+
+		.leaderboard-table {
+			th {
+				padding: 5px;
+			}
+		}
+	}
+}

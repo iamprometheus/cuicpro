@@ -1,44 +1,22 @@
 <?php
 // This file is generated. Do not modify it manually.
 return array(
-	'cuicpro-brackets' => array(
+	'cuicpro-playoffs' => array(
 		'$schema' => 'https://schemas.wp.org/trunk/block.json',
 		'apiVersion' => 3,
-		'name' => 'cuicpro/cuicpro-brackets',
+		'name' => 'cuicpro/cuicpro-playoffs',
 		'version' => '0.1.0',
-		'title' => 'Cuicpro Brackets',
+		'title' => 'Cuicpro Playoffs',
 		'category' => 'widgets',
 		'icon' => 'smiley',
-		'description' => 'Cuicpro Brackets Block',
+		'description' => 'Cuicpro Playoffs Block',
 		'example' => array(
 			
 		),
 		'supports' => array(
 			'interactivity' => true
 		),
-		'textdomain' => 'cuicpro-brackets',
-		'editorScript' => 'file:./index.js',
-		'editorStyle' => 'file:./index.css',
-		'style' => 'file:./style-index.css',
-		'render' => 'file:./render.php',
-		'viewScript' => 'file:./view.js'
-	),
-	'cuicpro-leagues' => array(
-		'$schema' => 'https://schemas.wp.org/trunk/block.json',
-		'apiVersion' => 3,
-		'name' => 'cuicpro/cuicpro-leagues',
-		'version' => '0.1.0',
-		'title' => 'Cuicpro Leagues',
-		'category' => 'widgets',
-		'icon' => 'smiley',
-		'description' => 'Cuicpro Leagues Block',
-		'example' => array(
-			
-		),
-		'supports' => array(
-			'interactivity' => true
-		),
-		'textdomain' => 'cuicpro-leagues',
+		'textdomain' => 'cuicpro-playoffs',
 		'editorScript' => 'file:./index.js',
 		'editorStyle' => 'file:./index.css',
 		'style' => 'file:./style-index.css',
@@ -67,44 +45,66 @@ return array(
 		'render' => 'file:./render.php',
 		'viewScript' => 'file:./view.js'
 	),
-	'cuicpro-register' => array(
+	'cuicpro-schedule' => array(
 		'$schema' => 'https://schemas.wp.org/trunk/block.json',
 		'apiVersion' => 3,
-		'name' => 'cuicpro/cuicpro-register',
+		'name' => 'cuicpro/cuicpro-schedule',
 		'version' => '0.1.0',
-		'title' => 'Cuicpro Register',
+		'title' => 'Cuicpro Schedule',
 		'category' => 'widgets',
 		'icon' => 'smiley',
-		'description' => 'Cuicpro Register Block',
+		'description' => 'Cuicpro Schedule Block',
 		'example' => array(
 			
 		),
 		'supports' => array(
 			'interactivity' => true
 		),
-		'textdomain' => 'cuicpro-register',
+		'textdomain' => 'cuicpro-schedule',
 		'editorScript' => 'file:./index.js',
 		'editorStyle' => 'file:./index.css',
 		'style' => 'file:./style-index.css',
 		'render' => 'file:./render.php',
 		'viewScript' => 'file:./view.js'
 	),
-	'cuicpro-teams' => array(
+	'cuicpro-standings' => array(
 		'$schema' => 'https://schemas.wp.org/trunk/block.json',
 		'apiVersion' => 3,
-		'name' => 'cuicpro/cuicpro-teams',
+		'name' => 'cuicpro/cuicpro-standings',
 		'version' => '0.1.0',
-		'title' => 'Cuicpro Teams',
+		'title' => 'Cuicpro Standings',
 		'category' => 'widgets',
 		'icon' => 'smiley',
-		'description' => 'Cuicpro Teams Block',
+		'description' => 'Cuicpro Standings Block',
 		'example' => array(
 			
 		),
 		'supports' => array(
 			'interactivity' => true
 		),
-		'textdomain' => 'cuicpro-teams',
+		'textdomain' => 'cuicpro-standings',
+		'editorScript' => 'file:./index.js',
+		'editorStyle' => 'file:./index.css',
+		'style' => 'file:./style-index.css',
+		'render' => 'file:./render.php',
+		'viewScript' => 'file:./view.js'
+	),
+	'cuicpro-tournaments' => array(
+		'$schema' => 'https://schemas.wp.org/trunk/block.json',
+		'apiVersion' => 3,
+		'name' => 'cuicpro/cuicpro-tournaments',
+		'version' => '0.1.0',
+		'title' => 'Cuicpro Tournaments',
+		'category' => 'widgets',
+		'icon' => 'smiley',
+		'description' => 'Cuicpro Tournaments Block',
+		'example' => array(
+			
+		),
+		'supports' => array(
+			'interactivity' => true
+		),
+		'textdomain' => 'cuicpro-tournaments',
 		'editorScript' => 'file:./index.js',
 		'editorStyle' => 'file:./index.css',
 		'style' => 'file:./style-index.css',

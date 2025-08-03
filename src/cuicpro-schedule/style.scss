@@ -1,0 +1,164 @@
+/**
+ * The following styles get applied both on the front of your site
+ * and in the editor.
+ *
+ * Replace them with your own styles or remove the file completely.
+ */
+
+.wp-block-cuicpro-cuicpro-schedule {
+	* {
+		box-sizing: border-box;
+	}
+	body {
+		display: grid;
+		place-items: center;
+		min-height: 100vh;
+		background: linear-gradient(35deg, red, purple);
+	}
+	/* <select> styles */
+	select {
+		/* Reset */
+		appearance: none;
+		border: 0;
+		outline: 0;
+		font: inherit;
+		/* Personalize */
+		width: 20rem;
+		padding: 1rem 4rem 1rem 1rem;
+		background:
+			url(https://upload.wikimedia.org/wikipedia/commons/9/9d/Caret_down_font_awesome_whitevariation.svg)
+				no-repeat right 0.8em center/1.4em,
+			linear-gradient(to left, rgb(0, 0, 0) 3em, rgb(255, 235, 67) 3em);
+		color: rgb(0, 0, 0);
+		border-radius: 0.25em;
+		box-shadow: 0 0 1em 0 rgba(0, 0, 0, 0.2);
+		cursor: pointer;
+		/* Remove IE arrow */
+		&::-ms-expand {
+			display: none;
+		}
+		/* Remove focus outline */
+		&:focus {
+			outline: none;
+		}
+		/* <option> colors */
+		option {
+			color: inherit;
+			background-color: rgba(255, 255, 255, 0.2);
+		}
+	}
+
+	select:hover {
+		transform: scale(1.1);
+		transition: transform 0.2s ease-in-out;
+	}
+
+	select:focus {
+		transform: scale(1.1);
+		transition: transform 0.2s ease-in-out;
+	}
+
+	.schedules-container {
+		display: flex;
+		flex-direction: column;
+		gap: 25px;
+		justify-content: center;
+	}
+
+	.selectors {
+		display: flex;
+		gap: 25px;
+		justify-content: center;
+	}
+
+	.team-schedules {
+		display: flex;
+		align-items: center;
+		gap: 30px;
+	}
+
+	#team-schedule-table {
+		text-align: center;
+		font-size: 26px;
+
+		th {
+			padding: 10px;
+		}
+
+		.match {
+			background-color: yellow;
+		}
+	}
+
+	.team-matches-container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: space-around;
+		gap: 30px;
+	}
+
+	.team-matches {
+		display: flex;
+		gap: 30px;
+		flex-wrap: wrap;
+	}
+
+	.bracket-match-container {
+		display: flex;
+		flex-direction: column;
+		border: 1px solid #000000;
+		padding: 20px;
+		border-radius: 10px;
+		gap: 10px;
+		width: 300px;
+		height: fit-content;
+	}
+
+	.bracket-match {
+		display: flex;
+		justify-content: space-between;
+		gap: 10px;
+		align-items: center;
+	}
+
+	.bracket-match span {
+		font-size: 18px;
+		font-weight: bold;
+		text-wrap: wrap;
+	}
+
+	.match-data-container {
+		display: flex;
+		justify-content: space-between;
+	}
+
+	.match-data {
+		display: flex;
+		flex-direction: column;
+		gap: 5px;
+	}
+
+	.match-data span {
+		font-size: 14px;
+	}
+
+	.text-right {
+		text-align: right;
+	}
+
+	@media screen and (max-width: 768px) {
+		.selectors {
+			flex-direction: column;
+			align-items: center;
+		}
+
+		#team-schedule-table {
+			font-size: 20px;
+
+			th {
+				padding: 5px;
+			}
+		}
+	}
+}

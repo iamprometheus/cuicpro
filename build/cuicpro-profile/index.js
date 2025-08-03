@@ -64,7 +64,7 @@ __webpack_require__.r(__webpack_exports__);
 function Edit() {
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {
     ...(0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.useBlockProps)(),
-    children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)("Cuicpro Register, this component displays the team register", "cuicpro-block")
+    children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)("Bloque de perfil. Este bloque muestras la informacion del perfil del usuario actual.", "cuicpro-profile")
   });
 }
 
