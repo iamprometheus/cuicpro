@@ -80,14 +80,22 @@ function render_teams_for_matches() {
 }
 
 function render_matches_by_team($team_id) {
-  $team = TeamsDatabase::get_team_by_teams_team_id($team_id);
-  $matches = PendingMatchesDatabase::get_matches_by_team($team->team_id, $team->tournament_id);
-
 	$html = "<div class='info-header'>
 						<span id='back-button' data-screen='user-teams-matches' data-team-id='" . esc_attr($team_id) . "'>Volver</span>
 						<h2>Partidos</h2>
 					</div>";
-	$html .= "<div class='user-matches'>";
+          
+  $team = TeamsDatabase::get_team_by_teams_team_id($team_id);
+  if (!$team) {
+    $html .= "<div>";
+    $html .= "<span>Este equipo no se encuentra registrado en ningun torneo.</span>";
+    $html .= "</div>";
+    return $html;
+  }
+
+  $matches = PendingMatchesDatabase::get_matches_by_team($team->team_id, $team->tournament_id);     
+  
+  $html .= "<div class='user-matches'>";
 	foreach ($matches as $match) {
     $html .= "<div class='bracket-match-container'>";
     $html .= render_team_match($match);
