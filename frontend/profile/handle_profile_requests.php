@@ -378,7 +378,7 @@ function render_team_info($team_id) {
 	$html .= "<form id='team-data-form' class='user-data-form'>
 							<div class='form-group'>
 								<label for='id'>ID:</label>
-								<input name='id' class='form-input' type='text' value='" . $team->team_id . "' disabled/>
+								<input name='id' id='team-id' data-team-id='" . $team->team_id . "' class='form-input' type='text' value='" . $team->team_id . "' disabled/>
 							</div>
 							<div class='form-group'>
 								<label for='name'>Nombre:</label>
@@ -476,6 +476,10 @@ if (!function_exists('render_user_tournaments')) {
 			$html .= "<button id='join-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "'>Registrar equipo</button>";
 			$html .= "</div>";
     }
+
+		if (empty($tournaments)) {
+			$html .= "<h2>No hay torneos activos para registrar equipos</h2>";
+		}
     $html .= "</div>";
 		return $html;
 	}
@@ -581,7 +585,9 @@ function render_coach_teams_in_tournament($tournament_id) {
 	}
 	
 	$html .= "<div class='user-teams'>";
+	
 	foreach ($teams as $team) {
+		if (!$team->division_id) continue;
 		$division_name = DivisionsDatabase::get_division_by_id($team->division_id)->division_name;
 		$html .= "<div data-team-id='" . esc_attr($team->team_id) . "' id='team-item-results' class='team-item-results'>";
 		$html .= "<img class='team-logo' src='" . wp_get_attachment_image_url($team->logo, 'full') . "' alt='" . $team->team_name . "' />";
@@ -862,7 +868,7 @@ function handle_create_team() {
 	$attachment_id = null;
 	addImageToWordPressMediaLibrary($logo['tmp_name'], $logo['name'], $logo['name'], $attachment_id);
 
-	$result = TeamsUserDatabase::insert_team($team_name, $user_id, strval($attachment_id));
+	$result = TeamsUserDatabase::insert_team($team_name, $user_id, $attachment_id);
 
 	if ($result[0]) {
 		wp_send_json_success(array('message' => 'Equipo creado exitosamente', 'html' => render_user_teams()));
@@ -883,7 +889,7 @@ function handle_add_player() {
 	$attachment_id = null;
 	addImageToWordPressMediaLibrary($logo['tmp_name'], $logo['name'], $logo['name'], $attachment_id);
 
-	$result = PlayersDatabase::insert_player(null, $player_name, $team_id, strval($attachment_id), $coach_id);
+	$result = PlayersDatabase::insert_player(null, $player_name, $team_id, $attachment_id, $coach_id);
 
 	if ($result[0]) {
 		wp_send_json_success(array('message' => 'Jugador creado exitosamente', 'html' => render_team_info($team_id)));
@@ -1167,12 +1173,12 @@ function handle_update_team() {
     }
 
     $team_id = sanitize_text_field($_POST['team_id']);
-    $team_name = sanitize_text_field($_POST['team_name']);
-    $team_photo = $_FILES['logo'];
+    $team_name = sanitize_text_field($_POST['name']);
+    $team_logo = $_FILES['logo'];
 
-    if ($team_photo['name'] != "") {
+		if ($team_logo['name'] != "") {
         $attachment_id = null;
-        addImageToWordPressMediaLibrary($team_photo['tmp_name'], $team_photo['name'], $team_photo['name'], $attachment_id);
+        addImageToWordPressMediaLibrary($team_logo['tmp_name'], $team_logo['name'], $team_logo['name'], $attachment_id);
         TeamsUserDatabase::update_team($team_id, $team_name, $attachment_id);
 				TeamsDatabase::update_teams_name_and_logo($team_id, $team_name, $attachment_id);
     } else {
@@ -1244,7 +1250,20 @@ function handle_back_button() {
     };
 }
 
+function user_logged_in() {
+	if (is_user_logged_in()) {
+			wp_send_json_success(array('message' => 'User is logged in!'));
+	} else {
+			wp_send_json_error(array('message' => 'User is not logged in!'));
+	}
+}
 
+add_action('wp_ajax_handle_delete_team', 'handle_delete_team');
+add_action('wp_ajax_nopriv_handle_delete_team', 'handle_delete_team'); // for non-logged-in users
+add_action('wp_ajax_handle_update_team', 'handle_update_team');
+add_action('wp_ajax_nopriv_handle_update_team', 'handle_update_team'); // for non-logged-in users
+add_action('wp_ajax_user_logged_in', 'user_logged_in');
+add_action('wp_ajax_nopriv_user_logged_in', 'user_logged_in');
 add_action('wp_ajax_handle_results_for_team', 'handle_results_for_team');
 add_action('wp_ajax_nopriv_handle_results_for_team', 'handle_results_for_team'); // for non-logged-in users
 add_action('wp_ajax_handle_coach_teams_in_tournament', 'handle_coach_teams_in_tournament');

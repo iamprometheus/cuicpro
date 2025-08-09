@@ -552,6 +552,35 @@ jQuery(document).ready(function ($) {
 		});
 	});
 
+	$(document).on("submit", "#team-data-form", function (e) {
+		e.preventDefault();
+		const teamID = $("#team-id").data("team-id");
+		const formData = new FormData(this);
+		formData.append("action", "handle_update_team");
+		formData.append("team_id", teamID);
+
+		$.ajax({
+			url: cuicpro.ajax_url,
+			type: "POST",
+			data: formData,
+			processData: false,
+			contentType: false,
+			success: function (response) {
+				if (response.success) {
+					alert("Equipo actualizado exitosamente.");
+					$(".user-data-container").html(response.data.html);
+				} else {
+					alert(
+						"Error al actualizar equipo, si el problema persiste contacta al administrador.",
+					);
+				}
+			},
+			error: function (xhr, status, error) {
+				console.error("Error:", error);
+			},
+		});
+	});
+
 	$(document).on("submit", "#add-player-form", function (e) {
 		e.preventDefault();
 		const teamID = $("#team-id-form").data("team-id");
@@ -705,6 +734,30 @@ jQuery(document).ready(function ($) {
 
 	$(document).on("click", "#confirm-delete-team-button", function (e) {
 		const dialog = document.getElementById("delete-team-dialog");
+
+		const teamID = $(this).data("team-id");
+		$.ajax({
+			url: cuicpro.ajax_url,
+			type: "POST",
+			data: {
+				action: "handle_delete_team",
+				team_id: teamID,
+			},
+			success: function (response) {
+				if (response.success) {
+					alert("Equipo eliminado exitosamente.");
+					$(".user-data-container").html(response.data.html);
+				} else {
+					alert(
+						"Error al eliminar equipo, si el problema persiste contacta al administrador.",
+					);
+				}
+			},
+			error: function (xhr, status, error) {
+				console.error("Error:", error);
+			},
+		});
+
 		dialog.close();
 	});
 

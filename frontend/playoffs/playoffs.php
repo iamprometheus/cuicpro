@@ -9,6 +9,7 @@ function my_enqueue_playoffs_frontend_assets() {
     null, 
     true // load in footer
   );
+  wp_enqueue_script('leader-line', plugin_dir_url(__FILE__) . 'leader-line.min.js');
   
   // Pass the AJAX URL to JavaScript
   wp_localize_script('playoffs-frontend', 'cuicpro', array(

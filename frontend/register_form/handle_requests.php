@@ -75,16 +75,6 @@
 //     wp_send_json_success(array('message' => 'Divisions fetched successfully!', 'html' => $html));
 // }
 
-function user_logged_in() {
-    if (is_user_logged_in()) {
-        wp_send_json_success(array('message' => 'User is logged in!'));
-    } else {
-        wp_send_json_error(array('message' => 'User is not logged in!'));
-    }
-}
-
-add_action('wp_ajax_user_logged_in', 'user_logged_in');
-add_action('wp_ajax_nopriv_user_logged_in', 'user_logged_in');
 // add_action('wp_ajax_handle_register_form', 'handle_register_form');
 // add_action('wp_ajax_nopriv_handle_register_form', 'handle_register_form'); // for non-logged-in users
 // add_action('wp_ajax_fetch_tournament_divisions', 'fetch_tournament_divisions');

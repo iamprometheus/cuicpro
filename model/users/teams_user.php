@@ -36,7 +36,7 @@ Class TeamsUserDatabase {
 
     public static function get_teams_by_coach(int $coach_id) {
         global $wpdb;
-        $teams = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_teams_user WHERE coach_id = $coach_id" );
+        $teams = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_teams_user WHERE coach_id = $coach_id AND is_visible = true" );
         return $teams;
     }
 
@@ -54,7 +54,6 @@ Class TeamsUserDatabase {
     }
 
     public static function insert_team(string $team_name, int $coach_id, string $logo ) {
-        
         global $wpdb;
         $result = $wpdb->insert(
             $wpdb->prefix . 'cuicpro_teams_user',
