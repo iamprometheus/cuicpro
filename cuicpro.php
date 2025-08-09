@@ -31,6 +31,8 @@ function cuicpro_init() {
 		array( 'name' => 'cuicpro-schedule' ),
 		array( 'name' => 'cuicpro-playoffs' ),
 		array( 'name' => 'cuicpro-standings' ),
+		array( 'name' => 'cuicpro-home' ),
+
 	);
 
 	foreach ( $blocks as $block ) {

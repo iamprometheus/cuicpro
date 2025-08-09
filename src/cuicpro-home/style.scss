@@ -1,0 +1,178 @@
+/**
+ * The following styles get applied both on the front of your site
+ * and in the editor.
+ *
+ * Replace them with your own styles or remove the file completely.
+ */
+
+.wp-block-cuicpro-cuicpro-leagues {
+	font-size: 1em;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+
+	.tournaments-list-container {
+		display: flex;
+		gap: 20px;
+	}
+
+	.tournament-item {
+		display: flex;
+		background: #555555;
+		padding: 10px;
+		border-radius: 15px;
+		border: 1px solid black;
+		color: #fff;
+		cursor: pointer;
+		font-weight: 600;
+	}
+
+	.tournament-item:hover {
+		background: #90dffc;
+	}
+
+	.tournament-item[selected] {
+		background: #f58400;
+		color: black;
+		font-weight: 600;
+	}
+
+	.tournament-item-header {
+		display: flex;
+		align-items: center;
+		font-size: 14px;
+		text-align: center;
+	}
+
+	.tournament-item-name {
+		font-size: 14px;
+		text-align: center;
+	}
+
+	.divisions-container {
+		display: flex;
+		flex-direction: column;
+		gap: 1em;
+	}
+
+	.division-container {
+		background-color: #a8e0fa;
+		border-radius: 10px;
+		border: 1px solid #a8e0fa;
+		box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	}
+
+	.division-title {
+		height: 70px;
+		align-items: center;
+		display: flex;
+		justify-content: center;
+	}
+
+	.division-title:hover {
+		background-color: #3dc2ff;
+	}
+
+	.division-container span {
+		display: flex;
+		justify-content: center;
+		font-weight: bold;
+	}
+
+	.teams-container {
+		border-radius: 10px;
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+		background-color: #fff;
+		padding: 1em;
+	}
+
+	.teams-container[hidden] {
+		display: none;
+	}
+
+	.team-container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+	}
+
+	.team-container p {
+		color: black;
+		font-size: 16px;
+		font-weight: bold;
+	}
+
+	.division-matches-title {
+		background-color: #e2ff5e;
+		align-items: center;
+		border-radius: 10px;
+		display: flex;
+		justify-content: center;
+	}
+
+	.division-matches-title:hover {
+		background-color: #89a800;
+	}
+
+	.matches-container {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+		background-color: #fff;
+		padding: 20px;
+		gap: 20px;
+	}
+
+	.matches-container[hidden] {
+		display: none;
+	}
+
+	.match-container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		border: 1px solid #a8e0fa;
+		border-radius: 10px;
+		padding: 10px;
+	}
+
+	.match-teams {
+		display: flex;
+		gap: 10px;
+		width: 100%;
+		justify-content: space-evenly;
+	}
+
+	.match-teams span {
+		font-weight: bold;
+		font-size: 16px;
+	}
+
+	.match-info {
+		display: flex;
+		justify-content: space-around;
+		gap: 1em;
+	}
+
+	.match-date {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	.match-date span {
+		font-weight: bold;
+		font-size: 14px;
+		width: max-content;
+	}
+
+	.match-game span {
+		display: block;
+		font-weight: bold;
+		font-size: 14px;
+		text-align: right;
+	}
+}

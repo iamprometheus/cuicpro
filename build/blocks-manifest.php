@@ -1,6 +1,28 @@
 <?php
 // This file is generated. Do not modify it manually.
 return array(
+	'cuicpro-home' => array(
+		'$schema' => 'https://schemas.wp.org/trunk/block.json',
+		'apiVersion' => 3,
+		'name' => 'cuicpro/cuicpro-home',
+		'version' => '0.1.0',
+		'title' => 'Cuicpro Home',
+		'category' => 'widgets',
+		'icon' => 'smiley',
+		'description' => 'Cuicpro Home Block',
+		'example' => array(
+			
+		),
+		'supports' => array(
+			'interactivity' => true
+		),
+		'textdomain' => 'cuicpro-home',
+		'editorScript' => 'file:./index.js',
+		'editorStyle' => 'file:./index.css',
+		'style' => 'file:./style-index.css',
+		'render' => 'file:./render.php',
+		'viewScript' => 'file:./view.js'
+	),
 	'cuicpro-playoffs' => array(
 		'$schema' => 'https://schemas.wp.org/trunk/block.json',
 		'apiVersion' => 3,
