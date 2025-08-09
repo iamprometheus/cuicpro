@@ -42,6 +42,20 @@ function create_tournament_fields() {
             </div>";
 
   $html .= "<div class='tournament-table-row'>
+              <span class='tournament-table-cell-header'>Reglamento:</span>
+              <div class='tournament-table-cell'>
+                <input type='text' id='tournament-rules' placeholder='Reglamento'>
+              </div>
+            </div>";
+  
+  $html .= "<div class='tournament-table-row'>
+              <span class='tournament-table-cell-header'>Categorias:</span>
+              <div class='tournament-table-cell'>
+                <input type='text' id='tournament-categories' placeholder='Categorias'>
+              </div>
+            </div>";
+
+  $html .= "<div class='tournament-table-row'>
               <span class='tournament-table-cell-header'>Dias de juego:</span>
               <div class='tournament-table-cell'>
                 <input type='text' id='tournament-days' readonly placeholder='Dias de juego'>
@@ -96,21 +110,20 @@ function create_tournament_fields() {
               <span class='tournament-table-cell-header'>Resultado:</span>
               <span class='tournament-table-cell' id='tournament-result-table'>Resultado de la accion.</span>
             </div>";
-
-            
-  $html .= "<div class='tournament-table-row'>
-              <span class='tournament-table-cell-header'>Ayuda</span>
-              <div class='tournament-table-cell'>
-                <div style='display: flex; flex-direction: column; gap: 5px; padding: 5px 0;'>
-                  <button id='create-tournament-help-button'>Creacion de torneos</button>
-                  <button id='update-tournament-help-button'>Actualizacion de torneos</button>
-                  <button id='delete-tournament-help-button'>Eliminacion de torneos</button>
-                  <button id='tournament-matches-help-button'>Partidos</button>
-                  <button id='tournament-officials-help-button'>Arbitros</button>
-                  <button id='finish-tournament-help-button'>Finalizacion de torneo</button>
-                </div>
-              </div>
-            </div>";
+          
+  // $html .= "<div class='tournament-table-row'>
+  //             <span class='tournament-table-cell-header'>Ayuda</span>
+  //             <div class='tournament-table-cell'>
+  //               <div style='display: flex; flex-direction: column; gap: 5px; padding: 5px 0;'>
+  //                 <button id='create-tournament-help-button'>Creacion de torneos</button>
+  //                 <button id='update-tournament-help-button'>Actualizacion de torneos</button>
+  //                 <button id='delete-tournament-help-button'>Eliminacion de torneos</button>
+  //                 <button id='tournament-matches-help-button'>Partidos</button>
+  //                 <button id='tournament-officials-help-button'>Arbitros</button>
+  //                 <button id='finish-tournament-help-button'>Finalizacion de torneo</button>
+  //               </div>
+  //             </div>
+  //           </div>";
   $html .= "</div>"; 
   return $html;
 }
@@ -131,6 +144,11 @@ function create_tournament_table($tournament, $has_matches, $has_officials_assig
   $select_bracket_type_disabled = '';
   $delete_matches_disabled = '';
   $finish_tournament_disabled = '';
+  $archive_tournament_disabled = '';
+
+  if (!$tournament->tournament_end_date) {
+    $archive_tournament_disabled = 'disabled';
+  }
 
   if ($has_matches) {
     $select_bracket_type_disabled = 'disabled';
@@ -167,6 +185,18 @@ function create_tournament_table($tournament, $has_matches, $has_officials_assig
     <span class='tournament-table-cell-header'>Ubicación:</span>
     <div class='tournament-table-cell'>
       <span class='tournament-table-cell'>" . esc_html($tournament->tournament_city) . ", " . esc_html($tournament->tournament_state) . ", " . esc_html($tournament->tournament_country) . "</span>
+    </div>
+  </div>
+  <div class='tournament-table-row'>
+    <span class='tournament-table-cell-header'>Reglamento:</span>
+    <div class='tournament-table-cell'>
+      <span class='tournament-table-cell'>" . esc_html($tournament->tournament_rules) . "</span>
+    </div>
+  </div>
+  <div class='tournament-table-row'>
+    <span class='tournament-table-cell-header'>Categorias:</span>
+    <div class='tournament-table-cell'>
+      <span class='tournament-table-cell'>" . esc_html($tournament->tournament_categories) . "</span>
     </div>
   </div>
   <div class='tournament-table-row'>
@@ -207,6 +237,14 @@ function create_tournament_table($tournament, $has_matches, $has_officials_assig
                 </div>
               </div>";
   }
+
+  $html .= "<div class='tournament-table-row'>
+              <span class='tournament-table-cell-header'>Mostrar al publico:</span>
+              <div class='tournament-table-cell-column'>
+                <input type='checkbox' id='tournament-show-on-front' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' " .($tournament->tournament_show_on_front ? "checked" : "") . ">
+              </div>
+            </div>";
+
   $html .= "<div class='tournament-table-row'>
               <span class='tournament-table-cell-header'>Acciones:</span>
               <div class='tournament-table-cell-column'>";
@@ -224,6 +262,7 @@ function create_tournament_table($tournament, $has_matches, $has_officials_assig
       <button class='base-button danger-button' id='finish-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $finish_tournament_disabled>Finalizar Torneo</button>";
   
       if (!$is_organizer) {
+        $html .= "<button class='base-button danger-button' id='archive-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $archive_tournament_disabled>Archivar Torneo</button>";
         $html .= "<button class='base-button danger-button' id='delete-matches-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $delete_matches_disabled>Eliminar Partidos</button>
         <button class='base-button danger-button' id='delete-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' >Eliminar Torneo</button>";
       }

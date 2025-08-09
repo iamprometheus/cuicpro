@@ -641,7 +641,6 @@ class TournamentScheduler {
   
   public function createMatchesForGeneralTournament($divisions) {
     $this->first_part_brackets = $this->initializePartialRoundRobin($divisions);
-    
     $bracket_match = [];
     for ($day = 0 ;$day < count($this->scheduleHours); $day++) {
       // cycle through each division
@@ -868,9 +867,9 @@ class TournamentScheduler {
 
   private function getNextHourAndField($day, $fieldType, &$hour_shift, &$last_assigned_hour, $multiple_matches) {
     foreach ($this->scheduleHours[$day] as $hour => &$fields) {
-      if (!$fields[$fieldType]) continue;
+      if (count($fields[$fieldType]) == 0) continue;
       if ($multiple_matches && $last_assigned_hour && $hour < $last_assigned_hour) continue;
-      if ($multiple_matches && $last_assigned_hour && $hour_shift > 0 && $hour - $last_assigned_hour != $hour_shift) continue;
+      if ($multiple_matches && $last_assigned_hour && $hour_shift > 0 && $hour - $last_assigned_hour < $hour_shift) continue;
       
       $hour_shift = 0;
       $last_assigned_hour = $hour;

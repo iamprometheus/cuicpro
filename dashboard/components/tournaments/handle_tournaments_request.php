@@ -411,6 +411,11 @@ function on_add_tournament($tournament) {
   $select_bracket_type_disabled = '';
   $delete_matches_disabled = '';
   $finish_tournament_disabled = '';
+  $archive_tournament_disabled = '';
+
+  if ($tournament->tournament_end_date) {
+    $archive_tournament_disabled = 'disabled';
+  }
 
   if ($has_matches) {
     $select_bracket_type_disabled = 'disabled';
@@ -453,6 +458,18 @@ function on_add_tournament($tournament) {
       </div>
     </div>
     <div class='tournament-table-row'>
+      <span class='tournament-table-cell-header'>Reglamento:</span>
+      <div class='tournament-table-cell'>
+        <span class='tournament-table-cell'>" . esc_html($tournament->tournament_rules) . ", " . esc_html($tournament->tournament_state) . ", " . esc_html($tournament->tournament_country) . "</span>
+      </div>
+    </div>
+    <div class='tournament-table-row'>
+      <span class='tournament-table-cell-header'>Categorias:</span>
+      <div class='tournament-table-cell'>
+        <span class='tournament-table-cell'>" . esc_html($tournament->tournament_categories) . ", " . esc_html($tournament->tournament_state) . ", " . esc_html($tournament->tournament_country) . "</span>
+      </div>
+    </div>
+    <div class='tournament-table-row'>
       <span class='tournament-table-cell-header'>Calendario:</span>
       <div class='tournament-table-cell'>
         <input type='text' id='tournament-selected-days' readonly value='$tournament_days'>
@@ -488,6 +505,14 @@ function on_add_tournament($tournament) {
     $html .= "</select>
                 </div>
               </div>";
+
+    $html .= "<div class='tournament-table-row'>
+                <span class='tournament-table-cell-header'>Mostrar al publico:</span>
+                <div class='tournament-table-cell-column'>
+                  <input type='checkbox' id='tournament-show-on-front' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' " .($tournament->tournament_show_on_front ? "checked" : "") . ">
+                </div>
+              </div>";
+    
     $html .= "<div class='tournament-table-row'>
       <span class='tournament-table-cell-header'>Acciones:</span>
       <div class='tournament-table-cell-column'>
@@ -500,6 +525,7 @@ function on_add_tournament($tournament) {
         <button class='base-button danger-button' id='unassign-officials-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $unassign_officials_disabled>Desasignar Arbitros</button>
         <hr style='background-color: black; height: 1px; width: 100%; margin: 0;'/>
         <button class='base-button danger-button' id='finish-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $finish_tournament_disabled>Finalizar Torneo</button>
+        <button class='base-button danger-button' id='archive-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $archive_tournament_disabled>Archivar Torneo</button>
         <button class='base-button danger-button' id='delete-matches-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $delete_matches_disabled>Eliminar Partidos</button>
         <button class='base-button danger-button' id='delete-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' >Eliminar Torneo</button>
       </div>
@@ -544,7 +570,7 @@ function delete_tournament() {
 }
 
 function add_tournament() {
-  if (!isset($_POST['tournament_name']) || !isset($_POST['tournament_days']) || !isset($_POST['tournament_hours']) || !isset($_POST['tournament_fields_5v5']) || !isset($_POST['tournament_fields_7v7']) || !isset($_POST['tournament_organizer'])) {
+  if (!isset($_POST['tournament_name']) || !isset($_POST['tournament_days']) || !isset($_POST['tournament_hours']) || !isset($_POST['tournament_fields_5v5']) || !isset($_POST['tournament_fields_7v7']) || !isset($_POST['tournament_organizer']) || !isset($_POST['tournament_address']) || !isset($_POST['tournament_city']) || !isset($_POST['tournament_state']) || !isset($_POST['tournament_country']) || !isset($_POST['tournament_rules']) || !isset($_POST['tournament_categories'])) {
     wp_send_json_error(['message' => 'Faltan datos']);
   }
 
@@ -559,9 +585,11 @@ function add_tournament() {
   $tournament_city = sanitize_text_field($_POST['tournament_city']);
   $tournament_state = sanitize_text_field($_POST['tournament_state']);
   $tournament_country = sanitize_text_field($_POST['tournament_country']);
+  $tournament_rules = sanitize_text_field($_POST['tournament_rules']);
+  $tournament_categories = sanitize_text_field($_POST['tournament_categories']);
   if ($tournament_organizer === 0) $tournament_organizer = null;
 
-  $result = TournamentsDatabase::insert_tournament($tournament_name, $tournament_days, $tournament_fields_5v5, $tournament_fields_7v7, $tournament_creation_date, $tournament_organizer, $tournament_address, $tournament_city, $tournament_state, $tournament_country );
+  $result = TournamentsDatabase::insert_tournament($tournament_name, $tournament_days, $tournament_fields_5v5, $tournament_fields_7v7, $tournament_creation_date, $tournament_organizer, $tournament_address, $tournament_city, $tournament_state, $tournament_country, $tournament_rules, $tournament_categories );
   if ($result['success']) {
     $days = explode(',', $tournament_days);
     $days = array_map('trim', $days);
@@ -591,7 +619,7 @@ function edit_tournament() {
 }
 
 function update_tournament() {
-  if (!isset($_POST['tournament_id']) || !isset($_POST['tournament_name']) || !isset($_POST['tournament_days']) || !isset($_POST['tournament_hours']) || !isset($_POST['tournament_fields_5v5']) || !isset($_POST['tournament_fields_7v7'])) {
+  if (!isset($_POST['tournament_id']) || !isset($_POST['tournament_name']) || !isset($_POST['tournament_days']) || !isset($_POST['tournament_hours']) || !isset($_POST['tournament_fields_5v5']) || !isset($_POST['tournament_fields_7v7']) || !isset($_POST['tournament_address']) || !isset($_POST['tournament_city']) || !isset($_POST['tournament_state']) || !isset($_POST['tournament_country']) || !isset($_POST['tournament_rules']) || !isset($_POST['tournament_categories'])) {
     wp_send_json_error(['message' => 'Faltan datos']);
   }
 
@@ -605,8 +633,10 @@ function update_tournament() {
   $tournament_city = sanitize_text_field($_POST['tournament_city']);
   $tournament_state = sanitize_text_field($_POST['tournament_state']);
   $tournament_country = sanitize_text_field($_POST['tournament_country']);
+  $tournament_rules = sanitize_text_field($_POST['tournament_rules']);
+  $tournament_categories = sanitize_text_field($_POST['tournament_categories']);
 
-  $result = TournamentsDatabase::update_tournament($tournament_id, $tournament_name, $tournament_days, $tournament_fields_5v5, $tournament_fields_7v7, $tournament_address, $tournament_city, $tournament_state, $tournament_country);
+  $result = TournamentsDatabase::update_tournament($tournament_id, $tournament_name, $tournament_days, $tournament_fields_5v5, $tournament_fields_7v7, $tournament_address, $tournament_city, $tournament_state, $tournament_country, $tournament_rules, $tournament_categories);
   if ($result['success']) {
     TournamentHoursDatabase::delete_tournament_hours_by_tournament($tournament_id);
     $days = explode(',', $tournament_days);
@@ -815,6 +845,44 @@ function assign_organizer() {
   wp_send_json_success(['message' => 'Administrador asignado correctamente']);
 }
 
+function update_tournament_show_on_front() {
+  if (!isset($_POST['tournament_id']) || !isset($_POST['show_on_front'])) {
+    wp_send_json_error(['message' => 'No se pudo iniciar el torneo']);
+  }
+  $tournament_id = intval($_POST['tournament_id']);
+  $show_on_front = intval($_POST['show_on_front']);
+  $tournament = TournamentsDatabase::get_tournament_by_id($tournament_id);
+  if (!$tournament) {
+    wp_send_json_error(['message' => 'No se pudo encontrar el torneo seleccionado.']);
+  }
+
+  TournamentsDatabase::update_tournament_show_on_front($tournament_id, $show_on_front);
+
+  if ($show_on_front) {
+    wp_send_json_success(['message' => 'Torneo mostrado correctamente']);
+  }
+  wp_send_json_success(['message' => 'Torneo ocultado correctamente']);
+}
+
+function archive_tournament() {
+  if (!isset($_POST['tournament_id'])) {
+    wp_send_json_error(['message' => 'No se pudo iniciar el torneo']);
+  }
+  $tournament_id = intval($_POST['tournament_id']);
+  $tournament = TournamentsDatabase::get_tournament_by_id($tournament_id);
+  if (!$tournament) {
+    wp_send_json_error(['message' => 'No se pudo encontrar el torneo seleccionado.']);
+  }
+
+  $result = TournamentsDatabase::archive_tournament($tournament_id);
+  if ($result) {
+    wp_send_json_success(['message' => 'Torneo archivado correctamente']);
+  }
+  wp_send_json_error(['message' => 'No se pudo archivar el torneo']);
+}
+
+add_action('wp_ajax_update_tournament_show_on_front', 'update_tournament_show_on_front');
+add_action('wp_ajax_nopriv_update_tournament_show_on_front', 'update_tournament_show_on_front');
 add_action('wp_ajax_end_tournament', 'end_tournament');
 add_action('wp_ajax_nopriv_end_tournament', 'end_tournament');
 add_action('wp_ajax_assign_organizer', 'assign_organizer');
