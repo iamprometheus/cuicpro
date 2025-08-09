@@ -241,7 +241,7 @@ function delete_team() {
 }
 
 function update_team() {
-  if (!isset($_POST['team_id']) || !isset($_POST['team_name']) || !isset($_POST['team_category']) || !isset($_POST['team_mode']) || !isset($_POST['coach_id']) || !isset($_POST['logo'])) {
+  if (!isset($_POST['team_id']) || !isset($_POST['team_name']) || !isset($_POST['team_category']) || !isset($_POST['team_mode']) || !isset($_POST['coach_id'])) {
     wp_send_json_error(['message' => 'Faltan datos']);
   }
 
@@ -250,14 +250,18 @@ function update_team() {
   $coach_id = intval($_POST['coach_id']);
   $team_category = intval($_POST['team_category']);
   $team_mode = intval($_POST['team_mode']);
-  $logo = sanitize_text_field($_POST['logo']);
-  if ($logo === "") {
-    $team_logo = TeamsDatabase::get_team_by_id($team_id)->logo;
-    $logo = $team_logo;
-  }
+  $logo = $_FILES['logo'];
   $visible = true;
+  $attachment_id = null;
 
-  $result = TeamsDatabase::update_team($team_id, $team_name, $team_category, $team_mode, $coach_id, $logo, $visible);
+  // if logo didnt change then replace attachment id to current logo, else add new logo
+  if ($logo['name'] === "") {
+    $attachment_id = TeamsDatabase::get_team_by_id($team_id)->logo;
+  } else {
+    addImageToWordPressMediaLibrary($logo['tmp_name'], $logo['name'], $logo['name'], $attachment_id);
+  }
+
+  $result = TeamsDatabase::update_team($team_id, $team_name, $team_category, $team_mode, $coach_id, $attachment_id, $visible);
   if ($result) {
     $team = TeamsDatabase::get_team_by_id($team_id);
     if ($team->team_mode != $team_mode || $team->team_category != $team_category) {
@@ -308,7 +312,20 @@ function update_team_enrolled() {
 
 function addImageToWordPressMediaLibrary(string $path_to_file, string $image, string $title, &$attachment_id = null): bool { 
   $file_array = ["name" => $image, "tmp_name" => $path_to_file, "title" => $title]; // Add image to Media Library 
-  $attachment_id = media_handle_sideload($file_array , 0, ''); 
+  $post_array = array(
+    'post_title' => $title
+  );
+  global $wpdb;
+  $attachment = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}posts WHERE post_title = %s AND post_type = 'attachment' AND post_mime_type = 'image/jpeg'", $title));
+  
+  // check if exists in media library, if exists return attachment id
+  if ($attachment) {
+    $attachment_id = $attachment->ID;
+    return true;
+  }
+  
+  // otherwise add to media library
+  $attachment_id = media_handle_sideload($file_array , 0, '', $post_array); 
   if(!is_numeric($attachment_id )){ 
     return false;
   } 

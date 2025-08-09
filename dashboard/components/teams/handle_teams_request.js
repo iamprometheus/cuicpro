@@ -172,7 +172,7 @@ jQuery(document).ready(function ($) {
 		const teamCategory = $("#team-category-table").val();
 		const teamMode = $("#team-mode-table").val();
 		const rawLogo = $("#team-logo-input");
-		let logo = "";
+		let logo = { name: "" };
 
 		if (rawLogo[0].files.length > 0) {
 			logo = rawLogo[0].files[0];
@@ -194,8 +194,6 @@ jQuery(document).ready(function ($) {
 		form.append("team_mode", teamMode);
 		form.append("coach_id", coachID);
 		form.append("logo", logo);
-
-		console.log(form);
 
 		$.ajax({
 			type: "POST",
