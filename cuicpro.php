@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       CUICPRO
  * Description:       CUICPRO Extension for data management
- * Version:           1.0.0
+ * Version:           1.0.3
  * Requires at least: 6.7
  * Requires PHP:      8.2
  * Author:            Aly Castro
@@ -32,6 +32,7 @@ function cuicpro_init() {
 		array( 'name' => 'cuicpro-playoffs' ),
 		array( 'name' => 'cuicpro-standings' ),
 		array( 'name' => 'cuicpro-home' ),
+		array( 'name' => 'cuicpro-maps' ),
 
 	);
 
@@ -44,7 +45,7 @@ function cuicpro_init() {
 }
 
 // hooks up your code to initialize and register the blocks
-add_action( 'init', 'cuicpro_init' ); 
+add_action( 'init', 'cuicpro_init' );
 
 // Models
 require_once __DIR__ . '/model/base/teams.php';
@@ -105,7 +106,7 @@ function cuicpro_databases() {
 	OfficialsHoursDatabase::init();
 	DivisionsDatabase::init();
 	MatchesDatabase::init();
-	BracketsDatabase::init();	
+	BracketsDatabase::init();
 	PendingMatchesDatabase::init();
 	TeamRegisterQueueDatabase::init();
 	PendingPlayersDatabase::init();
@@ -161,7 +162,7 @@ function cuicpro_roles() {
 		'publish_posts' => false,
 		'delete_posts' => false,
 	));
-	
+
 	add_role('tournament-organizer', 'Admin de Torneo', array(
 		'read' => true,
 		'edit_posts' => false,

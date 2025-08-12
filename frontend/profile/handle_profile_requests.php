@@ -464,9 +464,7 @@ function render_user_create_team() {
 
 if (!function_exists('render_user_tournaments')) {
 	function render_user_tournaments() {
-		// $user_id = get_current_user_id();
-		// $teams = TeamsDatabase::get_teams_by_coach($user_id);
-		$tournaments = TournamentsDatabase::get_active_tournaments_not_started(get_current_user_id());
+		$tournaments = TournamentsDatabase::get_active_tournaments_not_started();
 
 		$html = "<h2 style='text-align: center;'>Torneos</h2>";
     $html .= "<div class='active-tournaments'>";
@@ -706,16 +704,22 @@ function render_team_and_division_results($team_id) {
 
 	$html .= "<span style='font-weight: bold; font-size: 24px; text-align: center;'>Resultados del bracket</span>";
 	$html .= "<div class='bracket-results'>";
-	$html .= render_leaderboard_table($bracket->bracket_id);
-	$html .= "<hr/>";
 
-	$playoffs = render_playoffs_results($bracket->bracket_id);
+	$elements = [];
+	if ($bracket) {
+		$html .= render_leaderboard_table($bracket->bracket_id);
+		$html .= "<hr/>";
+		$playoffs = render_playoffs_results($bracket->bracket_id);
+		$html .= $playoffs['html'];
+		$elements = $playoffs['elements'];
+	} else {
+		$html .= "<span style='text-align: center;'>Aun resultados que mostrar</span>";
+	}
 
-	$html .= $playoffs['html'];
 	$html .= "</div>";
 	$html .= "</div>";
 	$html .= "</div>";
-	return ['html' => $html, 'elements' => $playoffs['elements']];
+	return ['html' => $html, 'elements' => $elements];
 }
 
 function render_playoffs_results(int $bracket_id) {

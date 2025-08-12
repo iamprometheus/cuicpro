@@ -1,10 +1,10 @@
 {
 	"name": "cuicpro",
-	"version": "0.8.0",
+	"version": "1.0.3",
 	"description": "CUICPRO Extension for data management",
 	"author": "Aly Castro",
 	"license": "GPL-2.0-or-later",
-	"main": "build/index.js",
+	"main": "cuicpro.php",
 	"scripts": {
 		"build": "wp-scripts build --webpack-copy-php --blocks-manifest",
 		"format": "wp-scripts format",
@@ -12,7 +12,8 @@
 		"lint:js": "wp-scripts lint-js",
 		"packages-update": "wp-scripts packages-update",
 		"plugin-zip": "wp-scripts plugin-zip",
-		"start": "wp-scripts start --webpack-copy-php --blocks-manifest"
+		"start": "wp-scripts start --webpack-copy-php --blocks-manifest",
+		"release": "npm run build && sh release.sh && sh zip-it.sh"
 	},
 	"files": [
 		"[^.]*"

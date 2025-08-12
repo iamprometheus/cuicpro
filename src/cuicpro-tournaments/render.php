@@ -124,7 +124,7 @@ if (!function_exists('render_sections')) {
 	function render_sections() {
 		global $wpdb;
 
-		$tournaments = TournamentsDatabase::get_active_tournaments();
+		$tournaments = TournamentsDatabase::get_active_tournaments_frontend();
 		$post_title = empty($tournaments) ? 'tabla-de-secciones-parcial' : 'tabla-de-secciones-completa';
 
 		// Example: Get all published post titles

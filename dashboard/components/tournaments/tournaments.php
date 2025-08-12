@@ -20,6 +20,13 @@ function create_tournament_fields() {
               </div>
             </div>";
 
+	$html .= "<div class='tournament-table-row'>
+							<span class='tournament-table-cell-header'>Coordenadas:</span>
+							<div class='tournament-table-cell'>
+								<input type='text' id='tournament-coordinates' placeholder='Coordenadas'>
+							</div>
+						</div>";
+
   $html .= "<div class='tournament-table-row'>
               <span class='tournament-table-cell-header'>Ciudad:</span>
               <div class='tournament-table-cell'>
@@ -47,7 +54,7 @@ function create_tournament_fields() {
                 <input type='text' id='tournament-rules' placeholder='Reglamento'>
               </div>
             </div>";
-  
+
   $html .= "<div class='tournament-table-row'>
               <span class='tournament-table-cell-header'>Categorias:</span>
               <div class='tournament-table-cell'>
@@ -65,7 +72,7 @@ function create_tournament_fields() {
   $html .= "<div class='tournament-table-row'>
               <span class='tournament-table-cell-header'>Horarios:</span>
               <div id='hours-container' class='tournament-table-cell'>
-                
+
               </div>
             </div>";
 
@@ -110,7 +117,7 @@ function create_tournament_fields() {
               <span class='tournament-table-cell-header'>Resultado:</span>
               <span class='tournament-table-cell' id='tournament-result-table'>Resultado de la accion.</span>
             </div>";
-          
+
   // $html .= "<div class='tournament-table-row'>
   //             <span class='tournament-table-cell-header'>Ayuda</span>
   //             <div class='tournament-table-cell'>
@@ -124,7 +131,7 @@ function create_tournament_fields() {
   //               </div>
   //             </div>
   //           </div>";
-  $html .= "</div>"; 
+  $html .= "</div>";
   return $html;
 }
 
@@ -179,6 +186,12 @@ function create_tournament_table($tournament, $has_matches, $has_officials_assig
     <span class='tournament-table-cell-header'>Lugar de los partidos:</span>
     <div class='tournament-table-cell'>
       <span class='tournament-table-cell'>" . esc_html($tournament->tournament_address) . "</span>
+    </div>
+  </div>
+  <div class='tournament-table-row'>
+    <span class='tournament-table-cell-header'>Coordenadas:</span>
+    <div class='tournament-table-cell'>
+      <span class='tournament-table-cell'>" . esc_html($tournament->tournament_coordinates) . "</span>
     </div>
   </div>
   <div class='tournament-table-row'>
@@ -248,7 +261,7 @@ function create_tournament_table($tournament, $has_matches, $has_officials_assig
   $html .= "<div class='tournament-table-row'>
               <span class='tournament-table-cell-header'>Acciones:</span>
               <div class='tournament-table-cell-column'>";
-  
+
   if (!$is_organizer) {
     $html .= "<button class='base-button pending-button' id='edit-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $select_bracket_type_disabled>Editar torneo</button>
     <hr style='background-color: black; height: 1px; width: 100%; margin: 0;'/>";
@@ -260,7 +273,7 @@ function create_tournament_table($tournament, $has_matches, $has_officials_assig
       <button class='base-button danger-button' id='unassign-officials-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $unassign_officials_disabled>Desasignar Arbitros</button>
       <hr style='background-color: black; height: 1px; width: 100%; margin: 0;'/>
       <button class='base-button danger-button' id='finish-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $finish_tournament_disabled>Finalizar Torneo</button>";
-  
+
       if (!$is_organizer) {
         $html .= "<button class='base-button danger-button' id='archive-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $archive_tournament_disabled>Archivar Torneo</button>";
         $html .= "<button class='base-button danger-button' id='delete-matches-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' $delete_matches_disabled>Eliminar Partidos</button>
@@ -278,12 +291,12 @@ function create_tournament_table($tournament, $has_matches, $has_officials_assig
 }
 
 function user_tournament_viewer() {
-  $html = "<div style='display: flex; flex-direction: column;'>"; 
+  $html = "<div style='display: flex; flex-direction: column;'>";
   $html .= "<div id='tournament-input-container' style='margin-bottom: 15px; font-size: 20px;'>
               <span style='font-weight: bold; '>Mis Torneos:</span>
             </div>";
   $tournaments = TournamentsDatabase::get_active_tournaments_by_organizer(get_current_user_id());
-  
+
   $html .= "<div class='tournaments-container' id='tournaments-container'>";
   if (empty($tournaments)) {
     $html .= "<h2>No tienes torneos asignados, contacta al administrador.</h2>";
@@ -292,7 +305,7 @@ function user_tournament_viewer() {
     return $html;
   }
   foreach ($tournaments as $tournament) {
-    
+
     $brackets = BracketsDatabase::get_brackets_by_tournament($tournament->tournament_id);
     $pending_matches = PendingMatchesDatabase::get_pending_matches_by_tournament($tournament->tournament_id);
     $has_matches = empty($brackets) ? false : true;
@@ -312,24 +325,24 @@ function user_tournament_viewer() {
 function cuicpro_tournament_viewer() {
 
   $html = "<div class='tournaments-container'>";
-  
+
   if (!current_user_can('cuicpro_administrate_tournaments')) {
     $html .= user_tournament_viewer();
     echo $html;
     return;
   }
-  
+
   $html .= create_tournament_fields();
-  $html .= "<div style='display: flex; flex-direction: column;'>"; 
+  $html .= "<div style='display: flex; flex-direction: column;'>";
   $html .= "<div id='tournament-input-container' style='margin-bottom: 15px; font-size: 20px;'>
               <span style='font-weight: bold; '>Torneos Activos:</span>
             </div>";
 
   $tournaments = TournamentsDatabase::get_active_tournaments();
-  
+
   $html .= "<div class='tournaments-container' id='tournaments-container'>";
   foreach ($tournaments as $tournament) {
-    
+
     $brackets = BracketsDatabase::get_brackets_by_tournament($tournament->tournament_id);
     $pending_matches = PendingMatchesDatabase::get_pending_matches_by_tournament($tournament->tournament_id);
     $has_matches = empty($brackets) ? false : true;

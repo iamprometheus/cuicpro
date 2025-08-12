@@ -10,7 +10,7 @@ function generate_match_links($brackets) {
     for ($round = count($bracket['scheduled_matches']) -1; $round > 0; $round--) {
       $matches_this_round = count($bracket['scheduled_matches'][$round]);
       $counter = $total_matches - $matches_this_round;
-      
+
       $matches = array_reverse($bracket['scheduled_matches'][$round]);
       for ($index = 0; $index < $matches_this_round; $index++) {
         if ($matches[$index]["team_id_1"] == "TBD" && $matches[$index]["team_id_2"] == "TBD") {
@@ -30,11 +30,11 @@ function generate_match_links($brackets) {
           }
         	$counter --;
       	}
-        
+
         $total_matches --;
       }
     }
-    
+
   }
 
   //return $links;
@@ -101,7 +101,7 @@ function create_brackets() {
 
   // verify if tournament is active
   $tournament_id = intval($_POST['tournament_id']);
- 
+
   data_checks($tournament_id);
 
   // start tournament with single elimination type
@@ -126,17 +126,17 @@ function create_brackets() {
   $tournament_days = $tournament->tournament_days;
 
   $tournament_hours = TournamentHoursDatabase::get_tournament_hours($tournament_id);
-  
+
   $hours = [];
   for ($i = 8; $i <= 20; $i++) {
     $hours[] = intval($i);
   }
-  
+
   $days = explode(',', $tournament_days);
 
   // clean whitespaces from days
   $days = array_map('trim', $days);
-  
+
   $scheduleHours = [];
   foreach ($days as $index => $day) {
     $hours = [];
@@ -158,9 +158,9 @@ function create_brackets() {
   for ($i = $tournament_fields5v5 + 1; $i <= $tournament_fields7v7 + $tournament_fields5v5; $i++) {
     $fields7v7[] = intval($i);
   }
-  
+
   $divisions_data = DivisionsDatabase::get_active_divisions_by_tournament($tournament_id);
-  
+
   $divisions = [];
   foreach ($divisions_data as $division) {
     $bracket_id = BracketsDatabase::get_bracket_by_division($division->division_id, $tournament_id)->bracket_id;
@@ -173,13 +173,13 @@ function create_brackets() {
     }
     $divisions[] = [ "id"=> $division->division_id, "teams"=> $teams, "division_mode"=> $division->division_mode, "bracket_id"=> $bracket_id];
   }
-  
+
   // create matches for each bracket
   $Tournament_Scheduler = new TournamentScheduler($scheduleHours, $fields5v5, $fields7v7, intval($tournament_id), $days);
   $Tournament_Scheduler->createMatchesForBrackets($divisions);
   $brackets = $Tournament_Scheduler->getBrackets();
   generate_match_links($brackets);
-  
+
   $brackets_dropdown = generate_brackets_dropdown($tournament);
   wp_send_json_success(['message' => 'Brackets creados correctamente', 'brackets_dropdown' => $brackets_dropdown, 'brackets' => $brackets]);
 }
@@ -191,9 +191,9 @@ function create_round_robin() {
   $tournament_id = intval($_POST['tournament_id']);
 
   data_checks($tournament_id);
-  
+
   TournamentsDatabase::start_tournament($tournament_id, 2);
-  
+
   $divisions = DivisionsDatabase::get_active_divisions_by_tournament($tournament_id);
   // create brackets for each division
   foreach ($divisions as $division) {
@@ -202,7 +202,7 @@ function create_round_robin() {
       BracketsDatabase::insert_bracket($tournament_id, $division->division_id);
     }
   }
-  
+
   $tournament = TournamentsDatabase::get_tournament_by_id($tournament_id);
   // prepare tournament data for scheduler
   $tournament_id = $tournament->tournament_id;
@@ -221,9 +221,9 @@ function create_round_robin() {
   for ($i = $tournament_fields5v5 + 1; $i <= $tournament_fields7v7 + $tournament_fields5v5; $i++) {
     $fields7v7[] = intval($i);
   }
-  
+
   $divisions_data = DivisionsDatabase::get_active_divisions_by_tournament($tournament_id);
-  
+
   $divisions = [];
   foreach ($divisions_data as $division) {
     $bracket_id = BracketsDatabase::get_bracket_by_division($division->division_id, $tournament_id)->bracket_id;
@@ -253,9 +253,9 @@ function create_general_tournament() {
   $tournament_id = intval($_POST['tournament_id']);
 
   data_checks($tournament_id);
-  
+
   TournamentsDatabase::start_tournament($tournament_id, 3);
-  
+
   $divisions = DivisionsDatabase::get_active_divisions_by_tournament($tournament_id);
   // create brackets for each division
   foreach ($divisions as $division) {
@@ -264,7 +264,7 @@ function create_general_tournament() {
       BracketsDatabase::insert_bracket($tournament_id, $division->division_id);
     }
   }
-  
+
   $tournament = TournamentsDatabase::get_tournament_by_id($tournament_id);
   // prepare tournament data for scheduler
   $tournament_id = $tournament->tournament_id;
@@ -283,9 +283,9 @@ function create_general_tournament() {
   for ($i = $tournament_fields5v5 + 1; $i <= $tournament_fields7v7 + $tournament_fields5v5; $i++) {
     $fields7v7[] = intval($i);
   }
-  
+
   $divisions_data = DivisionsDatabase::get_active_divisions_by_tournament($tournament_id);
-  
+
   $divisions = [];
   foreach ($divisions_data as $division) {
     $bracket_id = BracketsDatabase::get_bracket_by_division($division->division_id, $tournament_id)->bracket_id;
@@ -298,11 +298,11 @@ function create_general_tournament() {
       }
     }
     shuffle($teams);
-    $divisions[] = [ 
-      "id"=> $division->division_id, 
-      "teams"=> $teams, 
-      "division_mode"=> $division->division_mode, 
-      "bracket_id"=> $bracket_id, 
+    $divisions[] = [
+      "id"=> $division->division_id,
+      "teams"=> $teams,
+      "division_mode"=> $division->division_mode,
+      "bracket_id"=> $bracket_id,
       "preferred_days"=> $preferred_days
     ];
   }
@@ -319,17 +319,17 @@ function create_general_tournament() {
 
 function create_hours_schedule($tournament_id, $tournament_days){
   $tournament_hours = TournamentHoursDatabase::get_tournament_hours($tournament_id);
-  
+
   $hours = [];
   for ($i = 8; $i <= 20; $i++) {
     $hours[] = intval($i);
   }
-  
+
   $days = explode(',', $tournament_days);
 
   // clean whitespaces from days
   $days = array_map('trim', $days);
-  
+
   $scheduleHours = [];
   foreach ($days as $index => $day) {
     $hours = [];
@@ -394,7 +394,7 @@ function delete_brackets() {
   TournamentsDatabase::reset_tournament($tournament_id);
 
   if ($result && $pending_matches && $matches && $has_officials) {
-    wp_send_json_success(['message' => 'Brackets eliminados correctamente']); 
+    wp_send_json_success(['message' => 'Brackets eliminados correctamente']);
   }
   wp_send_json_error(['message' => 'No se pudo eliminar el torneo']);
 }
@@ -452,6 +452,12 @@ function on_add_tournament($tournament) {
       </div>
     </div>
     <div class='tournament-table-row'>
+      <span class='tournament-table-cell-header'>Coordenadas:</span>
+      <div class='tournament-table-cell'>
+        <span class='tournament-table-cell'>" . esc_html($tournament->tournament_coordinates) . "</span>
+      </div>
+    </div>
+    <div class='tournament-table-row'>
       <span class='tournament-table-cell-header'>Ubicación:</span>
       <div class='tournament-table-cell'>
         <span class='tournament-table-cell'>" . esc_html($tournament->tournament_city) . ", " . esc_html($tournament->tournament_state) . ", " . esc_html($tournament->tournament_country) . "</span>
@@ -460,13 +466,13 @@ function on_add_tournament($tournament) {
     <div class='tournament-table-row'>
       <span class='tournament-table-cell-header'>Reglamento:</span>
       <div class='tournament-table-cell'>
-        <span class='tournament-table-cell'>" . esc_html($tournament->tournament_rules) . ", " . esc_html($tournament->tournament_state) . ", " . esc_html($tournament->tournament_country) . "</span>
+        <span class='tournament-table-cell'>" . esc_html($tournament->tournament_rules) . "</span>
       </div>
     </div>
     <div class='tournament-table-row'>
       <span class='tournament-table-cell-header'>Categorias:</span>
       <div class='tournament-table-cell'>
-        <span class='tournament-table-cell'>" . esc_html($tournament->tournament_categories) . ", " . esc_html($tournament->tournament_state) . ", " . esc_html($tournament->tournament_country) . "</span>
+        <span class='tournament-table-cell'>" . esc_html($tournament->tournament_categories) . "</span>
       </div>
     </div>
     <div class='tournament-table-row'>
@@ -512,7 +518,7 @@ function on_add_tournament($tournament) {
                   <input type='checkbox' id='tournament-show-on-front' data-tournament-id='" . esc_attr($tournament->tournament_id) . "' " .($tournament->tournament_show_on_front ? "checked" : "") . ">
                 </div>
               </div>";
-    
+
     $html .= "<div class='tournament-table-row'>
       <span class='tournament-table-cell-header'>Acciones:</span>
       <div class='tournament-table-cell-column'>
@@ -564,13 +570,13 @@ function delete_tournament() {
     BracketsDatabase::delete_brackets_by_tournament($tournament_id);
     TournamentHoursDatabase::delete_tournament_hours_by_tournament($tournament_id);
 
-    wp_send_json_success(['message' => 'Torneo eliminado correctamente']); 
+    wp_send_json_success(['message' => 'Torneo eliminado correctamente']);
   }
   wp_send_json_error(['message' => 'No se pudo eliminar el torneo']);
 }
 
 function add_tournament() {
-  if (!isset($_POST['tournament_name']) || !isset($_POST['tournament_days']) || !isset($_POST['tournament_hours']) || !isset($_POST['tournament_fields_5v5']) || !isset($_POST['tournament_fields_7v7']) || !isset($_POST['tournament_organizer']) || !isset($_POST['tournament_address']) || !isset($_POST['tournament_city']) || !isset($_POST['tournament_state']) || !isset($_POST['tournament_country']) || !isset($_POST['tournament_rules']) || !isset($_POST['tournament_categories'])) {
+  if (!isset($_POST['tournament_name']) || !isset($_POST['tournament_days']) || !isset($_POST['tournament_hours']) || !isset($_POST['tournament_fields_5v5']) || !isset($_POST['tournament_fields_7v7']) || !isset($_POST['tournament_organizer']) || !isset($_POST['tournament_address']) || !isset($_POST['tournament_city']) || !isset($_POST['tournament_state']) || !isset($_POST['tournament_country']) || !isset($_POST['tournament_rules']) || !isset($_POST['tournament_categories']) || !isset($_POST['tournament_coordinates'])) {
     wp_send_json_error(['message' => 'Faltan datos']);
   }
 
@@ -587,9 +593,10 @@ function add_tournament() {
   $tournament_country = sanitize_text_field($_POST['tournament_country']);
   $tournament_rules = sanitize_text_field($_POST['tournament_rules']);
   $tournament_categories = sanitize_text_field($_POST['tournament_categories']);
+  $tournament_coordinates = sanitize_text_field($_POST['tournament_coordinates']);
   if ($tournament_organizer === 0) $tournament_organizer = null;
 
-  $result = TournamentsDatabase::insert_tournament($tournament_name, $tournament_days, $tournament_fields_5v5, $tournament_fields_7v7, $tournament_creation_date, $tournament_organizer, $tournament_address, $tournament_city, $tournament_state, $tournament_country, $tournament_rules, $tournament_categories );
+  $result = TournamentsDatabase::insert_tournament($tournament_name, $tournament_days, $tournament_fields_5v5, $tournament_fields_7v7, $tournament_creation_date, $tournament_organizer, $tournament_address, $tournament_city, $tournament_state, $tournament_country, $tournament_rules, $tournament_categories, $tournament_coordinates );
   if ($result['success']) {
     $days = explode(',', $tournament_days);
     $days = array_map('trim', $days);
@@ -598,7 +605,7 @@ function add_tournament() {
       $hours = $tournament_hours[$index];
       TournamentHoursDatabase::insert_tournament_hours($tournament->tournament_id, $day, intval($hours[0]), intval($hours[1]));
     }
-    
+
     wp_send_json_success(['message' => 'Torneo agregado correctamente', 'html' => on_add_tournament($tournament), 'tournament_entry' => on_add_tournament_entry($tournament)]);
   }
   wp_send_json_error(['message' => 'Torneo no agregado, torneo con ese nombre ya existe']);
@@ -619,7 +626,7 @@ function edit_tournament() {
 }
 
 function update_tournament() {
-  if (!isset($_POST['tournament_id']) || !isset($_POST['tournament_name']) || !isset($_POST['tournament_days']) || !isset($_POST['tournament_hours']) || !isset($_POST['tournament_fields_5v5']) || !isset($_POST['tournament_fields_7v7']) || !isset($_POST['tournament_address']) || !isset($_POST['tournament_city']) || !isset($_POST['tournament_state']) || !isset($_POST['tournament_country']) || !isset($_POST['tournament_rules']) || !isset($_POST['tournament_categories'])) {
+  if (!isset($_POST['tournament_id']) || !isset($_POST['tournament_name']) || !isset($_POST['tournament_days']) || !isset($_POST['tournament_hours']) || !isset($_POST['tournament_fields_5v5']) || !isset($_POST['tournament_fields_7v7']) || !isset($_POST['tournament_address']) || !isset($_POST['tournament_city']) || !isset($_POST['tournament_state']) || !isset($_POST['tournament_country']) || !isset($_POST['tournament_rules']) || !isset($_POST['tournament_categories']) || !isset($_POST['tournament_coordinates'])) {
     wp_send_json_error(['message' => 'Faltan datos']);
   }
 
@@ -635,8 +642,9 @@ function update_tournament() {
   $tournament_country = sanitize_text_field($_POST['tournament_country']);
   $tournament_rules = sanitize_text_field($_POST['tournament_rules']);
   $tournament_categories = sanitize_text_field($_POST['tournament_categories']);
+  $tournament_coordinates = sanitize_text_field($_POST['tournament_coordinates']);
 
-  $result = TournamentsDatabase::update_tournament($tournament_id, $tournament_name, $tournament_days, $tournament_fields_5v5, $tournament_fields_7v7, $tournament_address, $tournament_city, $tournament_state, $tournament_country, $tournament_rules, $tournament_categories);
+  $result = TournamentsDatabase::update_tournament($tournament_id, $tournament_name, $tournament_days, $tournament_fields_5v5, $tournament_fields_7v7, $tournament_address, $tournament_city, $tournament_state, $tournament_country, $tournament_rules, $tournament_categories, $tournament_coordinates);
   if ($result['success']) {
     TournamentHoursDatabase::delete_tournament_hours_by_tournament($tournament_id);
     $days = explode(',', $tournament_days);
@@ -679,9 +687,9 @@ function switch_selected_tournament() {
     wp_send_json_error(['message' => 'No se pudo encontrar el torneo seleccionado.']);
   }
   wp_send_json_success([
-    'message' => 'Torneo seleccionado correctamente', 
-    'divisions' => cuicpro_divisions($tournament), 
-    'coaches' => cuicpro_coaches_table($tournament), 
+    'message' => 'Torneo seleccionado correctamente',
+    'divisions' => cuicpro_divisions($tournament),
+    'coaches' => cuicpro_coaches_table($tournament),
     'brackets' => generate_brackets_dropdown($tournament),
     'officials' => render_officials($tournament),
     'teams' => cuicpro_teams_by_coach($tournament) . cuicpro_players_by_team(),
@@ -708,7 +716,7 @@ function set_officials_to_matches($tournament_id){
   $uncertified_officials = array_filter($officials, function($official) {
     return !$official->official_is_certified;
   });
-  
+
   shuffle($certified_officials);
   shuffle($uncertified_officials);
 
@@ -716,15 +724,15 @@ function set_officials_to_matches($tournament_id){
     $mode = DivisionsDatabase::get_division_by_id($match->division_id)->division_mode;
     // If official is already assigned, skip
     if ($match->official_id) continue;
-    
+
     $is_assigned = false;
-    
+
     foreach ($certified_officials as $official) {
       // if tournament mode is not the same as official mode, skip
       if ($official->official_mode != $mode && $official->official_mode != 3) {
-        continue; 
+        continue;
       }
-      
+
       $match_time = $match->match_time;
       $match_date = $match->match_date;
       $official_hours = OfficialsHoursDatabase::get_official_hours_by_day($official->official_id, $match_date);
@@ -738,13 +746,13 @@ function set_officials_to_matches($tournament_id){
         continue;
       }
 
-      
+
       $new_official_hours = explode(',', $official_hours->official_available_hours);
       $new_official_hours = array_filter($new_official_hours, function($hour) use ($match_time) {
         return $hour != $match_time;
       });
       $new_official_hours = implode(',', $new_official_hours);
-      
+
       PendingMatchesDatabase::update_match_official($match->match_id, $official->official_id);
       OfficialsHoursDatabase::update_official_available_hours($official_hours->official_hours_id, $new_official_hours);
       $is_assigned = true;
@@ -755,9 +763,9 @@ function set_officials_to_matches($tournament_id){
       foreach ($uncertified_officials as $official) {
         // if tournament mode is not the same as official mode, skip
         if ($official->official_mode != $mode && $official->official_mode != 3) {
-          continue; 
+          continue;
         }
-        
+
         $match_time = $match->match_time;
         $match_date = $match->match_date;
         $official_hours = OfficialsHoursDatabase::get_official_hours_by_day($official->official_id, $match_date);
@@ -776,7 +784,7 @@ function set_officials_to_matches($tournament_id){
           return $hour != $match_time;
         });
         $new_official_hours = implode(',', $new_official_hours);
-        
+
         PendingMatchesDatabase::update_match_official($match->match_id, $official->official_id);
         OfficialsHoursDatabase::update_official_available_hours($official_hours->official_hours_id, $new_official_hours);
         break;

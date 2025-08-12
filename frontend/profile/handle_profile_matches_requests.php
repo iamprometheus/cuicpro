@@ -114,8 +114,8 @@ function render_matches_by_team($team_id) {
   }
 
   if (empty($matches)) {
-    $html .= "<div class='bracket-match-container'>";
-    $html .= "<span>No hay partidos pendientes para este equipo</span>";
+    $html .= "<div>";
+    $html .= "<h3>No hay partidos pendientes para este equipo</h3>";
     $html .= "</div>";
   }
 

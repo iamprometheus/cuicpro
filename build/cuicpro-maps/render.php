@@ -12,35 +12,23 @@
 
 // Generates a unique id for aria-controls.
 
-if (!function_exists('render_tournament_home_blocks')) {
-	function render_tournament_home_blocks() {
-		global $wpdb;
-
-		$tournaments = TournamentsDatabase::get_active_tournaments_not_started();
+if (!function_exists('render_tournament_map_blocks')) {
+	function render_tournament_map_blocks() {
+		$tournaments = TournamentsDatabase::get_active_tournaments_frontend();
 		if (empty($tournaments)) {
 			echo apply_filters('the_content', "");
 		}
 
-		// Example: Get all published post titles
-
 		$blocks = "<!-- wp:group {\"layout\":{\"type\":\"constrained\"}} -->\n<div class=\"wp-block-group\">";
-		foreach ($tournaments as $index => $tournament) {
-			$location = match(strtolower($tournament->tournament_state)) {
-				'chihuahua' => 'cuu',
-				'cuu' => 'cuu',
-				'madrid' => 'mad',
-				'texas' => 'elp',
-				'el paso' => 'elp',
-				default => 'cuu',
-			};
-
-			$post_title = 'torneo-' . $location;
-			if ($index % 2 == 1) {
-				$post_title .= "-inverso";
+		foreach ($tournaments as $tournament) {
+			if ($tournament->tournament_coordinates == "") {
+				continue;
 			}
-
-			$post = $wpdb->get_row( "SELECT post_content FROM {$wpdb->posts} WHERE post_status = 'publish' AND post_type = 'wp_block' AND post_name = '$post_title'" );
-			$blocks .= $post->post_content;
+			$blocks .= "<h2 style='text-align: center; padding: 20px'>" . $tournament->tournament_name . ", ubicación de los campos</h2>";
+			$blocks .= "<div style='width: 100%'>
+										<iframe width='100%' height='600' frameborder='0' scrolling='no' marginheight='0' marginwidth='0' src='https://maps.google.com/maps?width=100%25&amp;height=600&amp;hl=es&amp;q=" . $tournament->tournament_coordinates . "+(Deportiva%20Sur)&amp;t=k&amp;z=18&amp;ie=UTF8&amp;iwloc=B&amp;output=embed'>
+										</iframe>
+									</div>";
 		}
 		$blocks .= "</div>\n<!-- /wp:group -->";
 
@@ -52,13 +40,13 @@ if (!function_exists('render_tournament_home_blocks')) {
 
 <div
 	<?php echo get_block_wrapper_attributes(); ?>
-	data-wp-interactive="cuicpro-home"
+	data-wp-interactive="cuicpro-maps"
 	>
 	<div class="divisions-container"
 	>
 		<?php
-			echo render_tournament_home_blocks();
+			echo render_tournament_map_blocks();
 		?>
 	</div>
-	
+
 </div>

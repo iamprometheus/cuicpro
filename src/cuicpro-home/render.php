@@ -16,7 +16,7 @@ if (!function_exists('render_tournament_home_blocks')) {
 	function render_tournament_home_blocks() {
 		global $wpdb;
 
-		$tournaments = TournamentsDatabase::get_active_tournaments();
+		$tournaments = TournamentsDatabase::get_active_tournaments_not_started();
 		if (empty($tournaments)) {
 			echo apply_filters('the_content', "");
 		}

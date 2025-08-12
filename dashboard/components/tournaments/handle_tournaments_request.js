@@ -8,6 +8,7 @@ jQuery(document).on("click", "#add-tournament-button", function (e) {
 	const tournamentCountry = jQuery("#tournament-country").val();
 	const tournamentRules = jQuery("#tournament-rules").val();
 	const tournamentCategories = jQuery("#tournament-categories").val();
+	const tournamentCoordinates = jQuery("#tournament-coordinates").val();
 	const tournamentDays =
 		jQuery("#tournament-days").multiDatesPicker("getDates");
 
@@ -86,6 +87,27 @@ jQuery(document).on("click", "#add-tournament-button", function (e) {
 		return;
 	}
 
+	if (tournamentCoordinates === "") {
+		jQuery("#tournament-result-table")
+			.removeClass("success")
+			.addClass("error")
+			.html("Agregar Coordenadas");
+		return;
+	}
+
+	const coordinateRegex =
+		/([+-]?(?=\.\d|\d)(?:\d+)?(?:\.?\d*))(?:[Ee]([+-]?\d+))?,([+-]?(?=\.\d|\d)(?:\d+)?(?:\.?\d*))(?:[Ee]([+-]?\d+))?/i;
+
+	if (!coordinateRegex.test(tournamentCoordinates)) {
+		jQuery("#tournament-result-table")
+			.removeClass("success")
+			.addClass("error")
+			.html("Formato de coordenada no valido (ejemplo: 28.4194,-106.139397)");
+		return;
+	}
+
+	const coordinates = tournamentCoordinates.replace(" ", "");
+
 	jQuery.ajax({
 		type: "POST",
 		url: cuicpro.ajax_url,
@@ -103,6 +125,7 @@ jQuery(document).on("click", "#add-tournament-button", function (e) {
 			tournament_country: tournamentCountry,
 			tournament_rules: tournamentRules,
 			tournament_categories: tournamentCategories,
+			tournament_coordinates: coordinates,
 		},
 		success: function (response) {
 			if (response.success) {
@@ -133,6 +156,7 @@ jQuery(document).on("click", "#add-tournament-button", function (e) {
 				jQuery("#tournament-country").val("");
 				jQuery("#tournament-rules").val("");
 				jQuery("#tournament-categories").val("");
+				jQuery("#tournament-coordinates").val("");
 
 				jQuery("#tournament-result-table")
 					.removeClass("error")
@@ -195,6 +219,9 @@ jQuery(document).on("click", "#edit-tournament-button", function (e) {
 				);
 				jQuery("#tournament-categories").val(
 					response.data.tournament.tournament_categories,
+				);
+				jQuery("#tournament-coordinates").val(
+					response.data.tournament.tournament_coordinates,
 				);
 
 				const days = response.data.tournament.tournament_days.split(",");
@@ -268,6 +295,7 @@ jQuery(document).on("click", "#update-tournament-button", function (e) {
 	const tournamentCountry = jQuery("#tournament-country").val();
 	const tournamentRules = jQuery("#tournament-rules").val();
 	const tournamentCategories = jQuery("#tournament-categories").val();
+	const tournamentCoordinates = jQuery("#tournament-coordinates").val();
 	const tournamentDays =
 		jQuery("#tournament-days").multiDatesPicker("getDates");
 
@@ -345,6 +373,27 @@ jQuery(document).on("click", "#update-tournament-button", function (e) {
 		return;
 	}
 
+	if (tournamentCoordinates === "") {
+		jQuery("#tournament-result-table")
+			.removeClass("success")
+			.addClass("error")
+			.html("Agregar Coordenadas");
+		return;
+	}
+
+	const coordinateRegex =
+		/([+-]?(?=\.\d|\d)(?:\d+)?(?:\.?\d*))(?:[Ee]([+-]?\d+))?,([+-]?(?=\.\d|\d)(?:\d+)?(?:\.?\d*))(?:[Ee]([+-]?\d+))?/i;
+
+	if (!coordinateRegex.test(tournamentCoordinates)) {
+		jQuery("#tournament-result-table")
+			.removeClass("success")
+			.addClass("error")
+			.html("Formato de coordenada no valido (ejemplo: 28.4194,-106.139397)");
+		return;
+	}
+
+	const coordinates = tournamentCoordinates.replace(" ", "");
+
 	jQuery.ajax({
 		type: "POST",
 		url: cuicpro.ajax_url,
@@ -358,6 +407,7 @@ jQuery(document).on("click", "#update-tournament-button", function (e) {
 			tournament_country: tournamentCountry,
 			tournament_rules: tournamentRules,
 			tournament_categories: tournamentCategories,
+			tournament_coordinates: coordinates,
 			tournament_days: tournamentDays.join(","),
 			tournament_hours: tournamentHours,
 			tournament_fields_5v5: tournamentFields5v5,
@@ -385,6 +435,7 @@ jQuery(document).on("click", "#update-tournament-button", function (e) {
 				jQuery("#tournament-country").val("");
 				jQuery("#tournament-rules").val("");
 				jQuery("#tournament-categories").val("");
+				jQuery("#tournament-coordinates").val("");
 
 				jQuery("#add-tournament-button").removeClass("hidden");
 				jQuery("#update-tournament-button").addClass("hidden");
@@ -421,6 +472,7 @@ jQuery(document).on("click", "#cancel-tournament-button", function (e) {
 	jQuery("#tournament-country").val("");
 	jQuery("#tournament-rules").val("");
 	jQuery("#tournament-categories").val("");
+	jQuery("#tournament-coordinates").val("");
 
 	jQuery("#add-tournament-button").removeClass("hidden");
 	jQuery("#update-tournament-button").addClass("hidden");
@@ -641,7 +693,6 @@ jQuery(document).on("click", "#create-general-tournament-button", function (e) {
 			tournament_id: tournamentID,
 		},
 		success: function (response) {
-			console.log(response.data);
 			if (response.success) {
 				toggleButtonsWhenSelectedTypeOfTournament(buttonsContainer);
 
