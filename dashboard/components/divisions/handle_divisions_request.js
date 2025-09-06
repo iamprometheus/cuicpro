@@ -11,6 +11,7 @@ jQuery(document).on("click", "#add-division-button", function (e) {
 		.replaceAll(" ", "");
 
 	const tournaments = jQuery(".tournament-item[selected]");
+
 	if (tournaments.length === 0) {
 		jQuery("#division-result-table")
 			.removeClass("success")
@@ -60,6 +61,22 @@ jQuery(document).on("click", "#add-division-button", function (e) {
 			.removeClass("success")
 			.addClass("error")
 			.html("Agregar al menos dos dias preferidos");
+		return;
+	}
+
+	const tournament_days = jQuery("#tournament-" + tournamentID)
+		.find("#tournament-selected-days")
+		.val();
+
+	if (
+		divisionPreferredDays
+			.split(",")
+			.some((day) => !tournament_days.includes(day))
+	) {
+		jQuery("#division-result-table")
+			.removeClass("success")
+			.addClass("error")
+			.html("Los dias seleccionados no estan registrados en el torneo!");
 		return;
 	}
 
@@ -250,6 +267,36 @@ jQuery(document).on("click", "#update-division-button", function (e) {
 			.removeClass("success")
 			.addClass("error")
 			.html("Agregar todos los datos de la division, faltantes: Nombre");
+		return;
+	}
+
+	const tournaments = jQuery(".tournament-item[selected]");
+
+	if (tournaments.length === 0) {
+		jQuery("#division-result-table")
+			.removeClass("success")
+			.addClass("error")
+			.html(
+				"No hay torneos disponibles, agrega un torneo para agregar divisiones.",
+			);
+		return;
+	}
+
+	const tournamentID = tournaments[0].id.replace("tournament-", "");
+
+	const tournament_days = jQuery("#tournament-" + tournamentID)
+		.find("#tournament-selected-days")
+		.val();
+
+	if (
+		divisionPreferredDays
+			.split(",")
+			.some((day) => !tournament_days.includes(day))
+	) {
+		jQuery("#division-result-table")
+			.removeClass("success")
+			.addClass("error")
+			.html("Los dias seleccionados no estan registrados en el torneo!");
 		return;
 	}
 

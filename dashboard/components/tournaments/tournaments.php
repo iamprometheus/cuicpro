@@ -21,7 +21,7 @@ function create_tournament_fields() {
             </div>";
 
 	$html .= "<div class='tournament-table-row'>
-							<span class='tournament-table-cell-header'>Coordenadas:</span>
+							<span class='tournament-table-cell-header'>Coordenadas: (mapa)</span>
 							<div class='tournament-table-cell'>
 								<input type='text' id='tournament-coordinates' placeholder='Coordenadas'>
 							</div>

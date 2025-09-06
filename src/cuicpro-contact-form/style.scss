@@ -1,0 +1,48 @@
+/**
+ * The following styles get applied both on the front of your site
+ * and in the editor.
+ *
+ * Replace them with your own styles or remove the file completely.
+ */
+
+.wp-block-cuicpro-cuicpro-contact-form {
+	.contact-form {
+		display: flex;
+		flex-direction: column;
+		gap: 5px;
+	}
+
+	.form-contact-group {
+		display: flex;
+		gap: 10px;
+	}
+
+	.form-contact-group-field {
+		display: flex;
+		flex-direction: column;
+		gap: 3px;
+		width: 100%;
+	}
+
+	.form-contact-group-field input {
+		height: 35px;
+		font-size: 16px;
+		padding-left: 10px;
+	}
+
+	button {
+		height: 40px;
+		font-size: 16px;
+		margin-top: 15px;
+		padding-left: 10px;
+		border-radius: 1px;
+		border: 1px solid #444444;
+		background-color: #fed400;
+	}
+
+	button:hover {
+		background-color: #444444;
+		color: #fed400;
+		border-color: #fed400;
+	}
+}

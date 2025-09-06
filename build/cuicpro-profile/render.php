@@ -56,6 +56,24 @@ add_action('wp_enqueue_scripts', function() {
 	wp_enqueue_script('jquery');
 });
 
+if (!function_exists('render_profile')) {
+	function render_profile() {
+		$html = "";
+		$roles = ["coach", "player", "official"];
+
+		$user = wp_get_current_user();
+		$user_role = $user->roles;
+
+		$has_profile = false;
+		if (count(array_intersect($user_role, $roles)) >= 1) {
+			$has_profile = true;
+		}
+
+		$html = render_complete_profile_form($has_profile);
+		return $html;
+	}
+}
+
 ?>
 
 <div
@@ -63,7 +81,7 @@ add_action('wp_enqueue_scripts', function() {
 	data-wp-interactive="cuicpro-profile"
 	id="cuicpro-profile"
 >
-	<div class="profile-container">
-		
-	</div>
+	<?php
+		echo render_profile();
+	?>
 </div>

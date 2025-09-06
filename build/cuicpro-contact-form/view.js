@@ -1,0 +1,1 @@
+(()=>{"use strict";const t=window.wp.interactivity,{state:c}=(0,t.store)("cuicpro-contact-form",{state:{},actions:{},callbacks:{}})})();

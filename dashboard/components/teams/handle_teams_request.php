@@ -56,6 +56,7 @@ function fetch_division_data() {
             <div class='table-row'>
               <span class='table-cell'>Equipo: </span>
               <span class='table-cell'>Entrenador: </span>
+              <span class='table-cell'>Inscrito: </span>
               <span class='table-cell'>Logo: </span>
             </div>
             ";
@@ -63,9 +64,13 @@ function fetch_division_data() {
   // add team data to table
   foreach ($teams as $team) {
     $coach_name = CoachesDatabase::get_coach_by_id($team->coach_id)->coach_name;
+    $checked_enrolled = $team->is_enrolled ? 'checked' : '';
     $html .= "<div class='table-row' id='team-$team->team_id'>";
     $html .= "<span class='table-cell'>" . esc_html($team->team_name) . "</span>";
     $html .= "<span class='table-cell'>" . esc_html($coach_name) . "</span>";
+    $html .= "<div class='table-cell'>
+                <input type='checkbox' id='enrolled-team-button' data-team-id=$team->team_id $checked_enrolled>
+              </div>";
     $html .= "<div class='table-cell'>
                 <img src='" . wp_get_attachment_image_url($team->logo, 'full') . "'>
               </div>";
@@ -86,15 +91,15 @@ function fetch_team_players_data() {
   $html = "<div class='table-wrapper'>
             <div class='table-row'>
               <span class='table-cell'>Jugador: </span>
-              <span class='table-cell'>Foto: </span>
-            </div>
-            ";
+              </div>
+              ";
+              // <span class='table-cell'>Foto: </span>
 
   // add player data to table
   foreach ($players as $player) {
     $html .= "<div class='table-row' id='player-$player->player_id'>";
     $html .= "<span class='table-cell'>" . esc_html($player->player_name) . "</span>";
-    $html .= "<span class='table-cell'>" . "<img src='" . wp_get_attachment_image_url($player->player_photo, 'full') . "'>" . "</span>";
+    // $html .= "<span class='table-cell'>" . "<img src='" . wp_get_attachment_image_url($player->player_photo, 'full') . "'>" . "</span>";
     $html .= "</div>";
   }
 
@@ -162,9 +167,9 @@ function create_players_data($coach_id) {
   $html = "<div class='table-wrapper' id='players-coach-data'>
             <div class='table-row'>
               <span class='table-cell'>Jugador: </span>
-              <span class='table-cell'>Foto: </span>
-            </div>
-            ";
+              </div>
+              ";
+              //<span class='table-cell'>Foto: </span>
 
   $teams = TeamsDatabase::get_teams_by_coach($coach_id);
   if (empty($teams))  return $html;

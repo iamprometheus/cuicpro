@@ -124,6 +124,23 @@ Class TeamsUserDatabase {
         return "Team not updated";
     }
 
+    public static function free_teams_registered_in_tournament(int $tournament_id ) {
+        global $wpdb;
+        $result = $wpdb->update(
+            $wpdb->prefix . 'cuicpro_teams_user',
+            array(
+                'is_registered' => false,
+            ),
+            array(
+                'tournament_id' => $tournament_id,
+            )
+        );
+        if ( $result ) {
+            return "Teams unregistered successfully";
+        }
+        return "Teams not unregistered";
+    }
+
     public static function delete_team(int $team_id ) {
         global $wpdb;
         $result = $wpdb->update(

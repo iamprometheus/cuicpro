@@ -100,11 +100,11 @@ jQuery(document).ready(function ($) {
 			contentType: false,
 			success: function (response) {
 				if (response.success) {
-					alert("Equipo unido exitosamente");
+					alert("Unido a equipo exitosamente");
 					$(".user-data-container").html(response.data.html);
 				} else {
 					alert(
-						"Error al unir equipo, si el problema persiste contacta al administrador.",
+						"Error al unirte a equipo, si el problema persiste contacta al administrador.",
 					);
 				}
 			},
@@ -126,7 +126,7 @@ jQuery(document).ready(function ($) {
 			},
 			success: function (response) {
 				if (response.success) {
-					jQuery(".profile-container").html(response.data.html);
+					//jQuery(".profile-container").html(response.data.html);
 				} else {
 					window.location.replace("https://cuic.pro/wp-login.php");
 				}
@@ -145,7 +145,13 @@ jQuery(document).ready(function ($) {
 		},
 		success: function (response) {
 			if (response.success) {
-				jQuery(".wp-block-navigation-link")[4].remove();
+				jQuery(".wp-block-navigation-link")[3].remove();
+			} else {
+				if (window.location.href.includes("registro")) {
+					window.location.replace(
+						"https://cuic.pro/wp-login.php?action=register",
+					);
+				}
 			}
 		},
 		error: function (xhr, status, error) {
@@ -153,14 +159,38 @@ jQuery(document).ready(function ($) {
 		},
 	});
 
-	$(document).on("change", "#coach_dropdown_id", function (e) {
-		const coachID = $(this).val();
+	$(document).on("change", "#tournament_dropdown_id", function (e) {
+		const tournamentID = $(this).val();
 		$.ajax({
 			url: cuicpro.ajax_url,
 			type: "POST",
 			data: {
-				action: "fetch_teams_by_coach",
-				coach_id: coachID,
+				action: "fetch_divisions_by_tournament_profile",
+				tournament_id: tournamentID,
+			},
+			success: function (response) {
+				if (response.success) {
+					$("#division_dropdown_id").html(response.data.html);
+				} else {
+					alert(
+						"Error al obtener divisiones, si el problema persiste contacta al administrador.",
+					);
+				}
+			},
+			error: function (xhr, status, error) {
+				console.error("Error:", error);
+			},
+		});
+	});
+
+	$(document).on("change", "#division_dropdown_id", function (e) {
+		const divisionID = $(this).val();
+		$.ajax({
+			url: cuicpro.ajax_url,
+			type: "POST",
+			data: {
+				action: "fetch_teams_by_divisions_profile",
+				division_id: divisionID,
 			},
 			success: function (response) {
 				if (response.success) {
@@ -203,6 +233,10 @@ jQuery(document).ready(function ($) {
 						});
 					$(e.currentTarget).addClass("active");
 				} else {
+					if (menu === "logout") {
+						window.location.replace("https://cuic.pro");
+						return;
+					}
 					alert(
 						"Error al cambiar de menu, si el problema persiste contacta al administrador.",
 					);
@@ -227,6 +261,120 @@ jQuery(document).ready(function ($) {
 			success: function (response) {
 				if (response.success) {
 					$(".user-data-container").html(response.data.html);
+				} else {
+					alert(
+						"Error al acceder a los equipos, si el problema persiste contacta al administrador.",
+					);
+				}
+			},
+			error: function (xhr, status, error) {
+				console.error("Error:", error);
+			},
+		});
+	});
+
+	$(document).on("click", "#tournament-played-player", function (e) {
+		e.preventDefault();
+		const tournamentID = $(this).data("tournament-id");
+		const teamID = $(this).data("team-id");
+		$.ajax({
+			url: cuicpro.ajax_url,
+			type: "POST",
+			data: {
+				action: "handle_results_for_player_team",
+				team_id: teamID,
+				tournament_id: tournamentID,
+			},
+			success: function (response) {
+				if (response.success) {
+					$(".user-data-container").html(response.data.html);
+
+					const elements = response.data.elements;
+
+					if (elements !== null) {
+						for (let playoff in elements) {
+							const container = jQuery(`#playoff_${playoff} .rounds-container`);
+							container.off("scroll");
+							for (let i = elements[playoff].length - 1; i > 0; i--) {
+								for (let match in elements[playoff][i]) {
+									for (let j = 0; j < elements[playoff][i][match].length; j++) {
+										const startElement = document.getElementById(
+											elements[playoff][i][match][j],
+										);
+										const endElement = document.getElementById(match);
+
+										const line = new LeaderLine(startElement, endElement, {
+											color: "#000000",
+											size: 2,
+											endPlug: "behind",
+											endPlugSize: 2,
+											path: "grid",
+											endSocket: "left",
+											startSocket: "right",
+										});
+
+										container.on("scroll", () => {
+											line.position();
+										});
+									}
+								}
+							}
+
+							let lines = jQuery(".leader-line");
+							const containerRect = container[0].getBoundingClientRect();
+
+							// filter lines not belonging to current container
+							lines = lines.filter((line) => {
+								const lineEl = lines[line];
+								const lineRect = lineEl.getBoundingClientRect();
+
+								const isOutside =
+									lineRect.top < containerRect.top ||
+									lineRect.bottom > containerRect.bottom;
+
+								return !isOutside;
+							});
+
+							lines.each(function (line) {
+								lines[line].style.removeProperty("display");
+								const lineEl = lines[line];
+								const lineRect = lineEl.getBoundingClientRect();
+								const lineBox = lineEl.getAttribute("viewBox").split(" ");
+
+								const isOutside =
+									lineRect.right > containerRect.right ||
+									lineRect.left < containerRect.left;
+
+								if (isOutside) {
+									lineEl.style.setProperty("display", "none");
+								} else {
+									lineEl.style.removeProperty("display");
+								}
+							});
+
+							jQuery(`#playoff_${playoff} .rounds-container`).on(
+								"scroll",
+								function () {
+									lines.each(function (index) {
+										lines[index].style.removeProperty("display");
+										const lineEl = lines[index];
+										const lineRect = lineEl.getBoundingClientRect();
+										const lineBox = lineEl.getAttribute("viewBox").split(" ");
+
+										const isOutside =
+											lineRect.right > containerRect.right ||
+											lineRect.left < containerRect.left;
+
+										if (isOutside) {
+											lineEl.style.setProperty("display", "none");
+										} else {
+											lineEl.style.removeProperty("display");
+										}
+									});
+								},
+							);
+						}
+					}
 				} else {
 					alert(
 						"Error al acceder a los equipos, si el problema persiste contacta al administrador.",
@@ -761,24 +909,48 @@ jQuery(document).ready(function ($) {
 		dialog.close();
 	});
 
+	$(document).on("click", "#show-leave-team-dialog", function (e) {
+		const dialog = document.getElementById("leave-team-dialog");
+		dialog.showModal();
+	});
+
+	$(document).on("click", "#confirm-leave-team-button", function (e) {
+		const dialog = document.getElementById("leave-team-dialog");
+
+		$.ajax({
+			url: cuicpro.ajax_url,
+			type: "POST",
+			data: {
+				action: "handle_leave_team",
+			},
+			success: function (response) {
+				if (response.success) {
+					alert("Saliste del equipo exitosamente.");
+					$(".user-data-container").html(response.data.html);
+				} else {
+					alert(
+						"Error al salir del equipo, si el problema persiste contacta al administrador.",
+					);
+				}
+			},
+			error: function (xhr, status, error) {
+				console.error("Error:", error);
+			},
+		});
+		dialog.close();
+	});
+
+	$(document).on("click", "#cancel-leave-team-button", function (e) {
+		const dialog = document.getElementById("leave-team-dialog");
+		dialog.close();
+	});
+
 	function readURL(input, id) {
 		if (input.files && input.files[0]) {
 			var reader = new FileReader();
 
 			reader.onload = function (e) {
 				jQuery("#" + id).attr("src", e.target.result);
-			};
-
-			reader.readAsDataURL(input.files[0]);
-		}
-	}
-
-	function readURL2(input, element) {
-		if (input.files && input.files[0]) {
-			var reader = new FileReader();
-
-			reader.onload = function (e) {
-				element.attr("src", e.target.result);
 			};
 
 			reader.readAsDataURL(input.files[0]);

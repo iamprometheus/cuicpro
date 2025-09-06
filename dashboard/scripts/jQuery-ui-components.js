@@ -16,7 +16,7 @@ jQuery(function ($) {
 	});
 
 	jQuery("#tournament-days").multiDatesPicker({
-		minDate: 0,
+		// minDate: 0,
 		dateFormat: "d/m/y",
 		onSelect: function (dateText, inst) {
 			const days = inst.input.val().split(",");
@@ -90,8 +90,8 @@ jQuery(function ($) {
 	const date2 = new Date(rawDate2);
 
 	jQuery("#official-schedule").multiDatesPicker({
-		minDate: date1,
-		maxDate: date2,
+		// minDate: date1,
+		// maxDate: date2,
 		dateFormat: "d/m/y",
 		onSelect: function (dateText, inst) {
 			const searchID = `#official-day-${dateText}`.replaceAll("/", "-");
@@ -123,8 +123,8 @@ jQuery(function ($) {
 	const date4 = new Date(rawDate4);
 
 	jQuery("#division-preferred-days").multiDatesPicker({
-		minDate: date3,
-		maxDate: date4,
+		// minDate: date3,
+		// maxDate: date4,
 		dateFormat: "d/m/y",
 	});
 

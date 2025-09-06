@@ -1,6 +1,28 @@
 <?php
 // This file is generated. Do not modify it manually.
 return array(
+	'cuicpro-contact-form' => array(
+		'$schema' => 'https://schemas.wp.org/trunk/block.json',
+		'apiVersion' => 3,
+		'name' => 'cuicpro/cuicpro-contact-form',
+		'version' => '0.1.0',
+		'title' => 'Cuicpro Contact Form',
+		'category' => 'widgets',
+		'icon' => 'smiley',
+		'description' => 'Cuicpro Formulario de Contacto',
+		'example' => array(
+			
+		),
+		'supports' => array(
+			'interactivity' => true
+		),
+		'textdomain' => 'cuicpro-contact-form',
+		'editorScript' => 'file:./index.js',
+		'editorStyle' => 'file:./index.css',
+		'style' => 'file:./style-index.css',
+		'render' => 'file:./render.php',
+		'viewScript' => 'file:./view.js'
+	),
 	'cuicpro-home' => array(
 		'$schema' => 'https://schemas.wp.org/trunk/block.json',
 		'apiVersion' => 3,
@@ -83,6 +105,28 @@ return array(
 			'interactivity' => true
 		),
 		'textdomain' => 'cuicpro-profile',
+		'editorScript' => 'file:./index.js',
+		'editorStyle' => 'file:./index.css',
+		'style' => 'file:./style-index.css',
+		'render' => 'file:./render.php',
+		'viewScript' => 'file:./view.js'
+	),
+	'cuicpro-registration' => array(
+		'$schema' => 'https://schemas.wp.org/trunk/block.json',
+		'apiVersion' => 3,
+		'name' => 'cuicpro/cuicpro-registration',
+		'version' => '0.1.0',
+		'title' => 'Cuicpro Registration',
+		'category' => 'widgets',
+		'icon' => 'smiley',
+		'description' => 'Cuicpro Registration',
+		'example' => array(
+			
+		),
+		'supports' => array(
+			'interactivity' => true
+		),
+		'textdomain' => 'cuicpro-registration',
 		'editorScript' => 'file:./index.js',
 		'editorStyle' => 'file:./index.css',
 		'style' => 'file:./style-index.css',

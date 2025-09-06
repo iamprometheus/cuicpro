@@ -70,7 +70,7 @@ if (!function_exists('get_next_content')) {
     );
 
 		$date_formatted_1 = esc_html(strtoupper($formatter->format($date_start) . " al " . $formatter2->format($date_end)));
-		$date_formatted_2 = esc_html(strtoupper($formatter4 ->format($date_end) . ". " . $formatter3->format($date_start) . "-" . $formatter3->format($date_end)));
+		$date_formatted_2 = esc_html(strtoupper($formatter4 ->format($date_end) . " " . $formatter3->format($date_start) . "-" . $formatter3->format($date_end)));
 
 		global $wpdb;
 

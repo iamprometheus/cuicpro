@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       CUICPRO
  * Description:       CUICPRO Extension for data management
- * Version:           1.0.3
+ * Version:           1.1.1
  * Requires at least: 6.7
  * Requires PHP:      8.2
  * Author:            Aly Castro
@@ -33,6 +33,8 @@ function cuicpro_init() {
 		array( 'name' => 'cuicpro-standings' ),
 		array( 'name' => 'cuicpro-home' ),
 		array( 'name' => 'cuicpro-maps' ),
+		array( 'name' => 'cuicpro-contact-form' ),
+		array( 'name' => 'cuicpro-registration' ),
 
 	);
 
@@ -83,6 +85,7 @@ require_once __DIR__ . '/dashboard/components/officials_schedule/officials_sched
 require_once __DIR__ . '/dashboard/components/matches_schedule/matches_schedule.php';
 require_once __DIR__ . '/dashboard/components/register/register.php';
 require_once __DIR__ . '/dashboard/components/tournaments/tournaments_list.php';
+require_once __DIR__ . '/dashboard/components/players/players.php';
 
 // Frontend components
 // require_once __DIR__ . '/frontend/register_form/register_form.php';
@@ -92,6 +95,8 @@ require_once __DIR__ . '/frontend/schedule/schedule_frontend.php';
 require_once __DIR__ . '/frontend/profile/profile_frontend.php';
 require_once __DIR__ . '/frontend/playoffs/playoffs.php';
 require_once __DIR__ . '/frontend/standings/standings.php';
+require_once __DIR__ . '/frontend/contact/contact-form.php';
+require_once __DIR__ . '/frontend/registration/registration.php';
 
 // Initialize database tables if they don't exist
 function cuicpro_databases() {
@@ -173,15 +178,15 @@ function cuicpro_roles() {
 		'cuicpro_manage_tournament' => true,
 	));
 
-	remove_role('player');
-	// add_role('player', 'Jugador', array(
-	// 	'read' => true,
-	// 	'edit_posts' => false,
-	// 	'upload_files' => false,
-	// 	'edit_others_posts' => false,
-	// 	'publish_posts' => false,
-	// 	'delete_posts' => false,
-	// ));
+	add_role('player', 'Jugador', array(
+		'read' => true,
+		'edit_posts' => false,
+		'upload_files' => false,
+		'edit_others_posts' => false,
+		'publish_posts' => false,
+		'delete_posts' => false,
+	));
+	
 	remove_role('official');
 	// add_role('official', 'Arbitro', array(
 	// 	'read' => true,

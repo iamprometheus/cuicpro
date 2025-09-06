@@ -79,6 +79,20 @@ jQuery(document).on("click", "#add-official-button", function (e) {
 		return;
 	}
 
+	const tournament_days = jQuery("#tournament-" + tournamentID)
+		.find("#tournament-selected-days")
+		.val();
+
+	if (
+		officialSchedule.split(",").some((day) => !tournament_days.includes(day))
+	) {
+		jQuery("#official-result-table")
+			.removeClass("success")
+			.addClass("error")
+			.html("Los dias seleccionados no estan registrados en el torneo!");
+		return;
+	}
+
 	if (officialCity === "" || officialState === "" || officialCountry === "") {
 		jQuery("#official-result-table")
 			.removeClass("success")
@@ -390,6 +404,25 @@ jQuery(document).on("click", "#update-official-button", function (e) {
 			.removeClass("success")
 			.addClass("error")
 			.html("Agregar al menos un dia al arbitro");
+		return;
+	}
+
+	const tournamentID = jQuery(".tournament-item[selected]")[0].id.replace(
+		"tournament-",
+		"",
+	);
+
+	const tournament_days = jQuery("#tournament-" + tournamentID)
+		.find("#tournament-selected-days")
+		.val();
+
+	if (
+		officialSchedule.split(",").some((day) => !tournament_days.includes(day))
+	) {
+		jQuery("#official-result-table")
+			.removeClass("success")
+			.addClass("error")
+			.html("Los dias seleccionados no estan registrados en el torneo!");
 		return;
 	}
 

@@ -21,6 +21,7 @@ Class PlayersUserDatabase {
             user_city VARCHAR(255) NOT NULL,
             user_state VARCHAR(255) NOT NULL,
             user_country VARCHAR(255) NOT NULL,
+            user_photo VARCHAR(255) NOT NULL,
             user_has_team BOOLEAN NOT NULL DEFAULT FALSE,
             PRIMARY KEY (user_id)
         ) $charset_collate;";
@@ -46,7 +47,7 @@ Class PlayersUserDatabase {
         return $player;
     }
 
-    public static function insert_player( int $user_id, string $player_name, string $player_contact, string $player_city, string $player_state, string $player_country ) {
+    public static function insert_player( int $user_id, string $player_name, string $player_contact, string $player_city, string $player_state, string $player_country, string $player_photo ) {
         global $wpdb;
         if (self::player_exists($user_id)) {
             return [false, null];
@@ -61,6 +62,7 @@ Class PlayersUserDatabase {
                 'user_city' => $player_city,
                 'user_state' => $player_state,
                 'user_country' => $player_country,
+                'user_photo' => $player_photo,
                 'user_has_team' => false,
             )
         );
@@ -71,7 +73,7 @@ Class PlayersUserDatabase {
         return [false, null];
     }
 
-    public static function update_player(int $user_id, string $player_name, string $player_contact, string $player_city, string $player_state, string $player_country ) {
+    public static function update_player(int $user_id, string $player_name, string $player_contact, string $player_city, string $player_state, string $player_country, string $player_photo ) {
         global $wpdb;
         $result = $wpdb->update(
             $wpdb->prefix . 'cuicpro_players_user',
@@ -80,7 +82,8 @@ Class PlayersUserDatabase {
                 'user_contact' => $player_contact,
                 'user_city' => $player_city,
                 'user_state' => $player_state,
-                'user_country' => $player_country
+                'user_country' => $player_country,
+                'user_photo' => $player_photo
             ),
             array(
                 'user_id' => $user_id,
@@ -107,6 +110,23 @@ Class PlayersUserDatabase {
             return "Player has team updated successfully";
         }
         return "Player has team not updated";
+    }
+
+    public static function update_player_photo(int $user_id, string $player_photo ) {
+        global $wpdb;
+        $result = $wpdb->update(
+            $wpdb->prefix . 'cuicpro_players_user',
+            array(
+                'user_photo' => $player_photo
+            ),
+            array(
+                'user_id' => $user_id,
+            )
+        );
+        if ( $result ) {
+            return "Player photo updated successfully";
+        }
+        return "Player photo not updated";
     }
 
     public static function delete_player(int $user_id ) {

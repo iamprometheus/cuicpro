@@ -132,6 +132,20 @@ Class PlayersDatabase {
         return "Player name not updated";
     }
 
+    public static function delete_player_by_user_id(int $user_id ) {
+        global $wpdb;
+        $result = $wpdb->delete(
+            $wpdb->prefix . 'cuicpro_players',
+            array(
+                'player_user_id' => $user_id,
+            )
+        );
+        if ( $result ) {
+            return "Player deleted successfully";
+        }
+        return "Player not deleted or player not found";
+    }
+
     public static function delete_player(int $player_id ) {
         global $wpdb;
         $result = $wpdb->update(

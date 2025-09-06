@@ -12,7 +12,8 @@
 	.profile-container {
 		display: flex;
 		gap: 20px;
-		width: 100%;
+		width: 90%;
+		padding: 30px;
 	}
 
 	.complete-profile-container {
@@ -776,6 +777,233 @@
 
 		.profile-menu-item {
 			width: 140px;
+		}
+	}
+
+	.account-type-selection {
+		display: flex;
+		height: 90vh;
+	}
+
+	.account-type-selection div {
+		position: relative;
+		width: 50%;
+		height: 100%;
+		overflow: hidden;
+	}
+
+	.account-type-selection img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+	}
+
+	.account-type-selection p {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		color: rgb(53, 53, 53); /* or black, depending on the image */
+		font-size: 1.5em;
+		font-weight: bold;
+		text-align: center;
+		padding: 20px;
+		border: 1px solid black;
+		background-color: #fed400;
+	}
+
+	.account-type-selection p:hover {
+		background-color: black;
+		border: 1px solid #fed400;
+		color: #fed400;
+	}
+
+	.coach-registration,
+	.player-registration {
+		height: 90vh;
+		overflow: hidden;
+	}
+
+	.coach-registration img,
+	.player-registration img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+		object-position: center center;
+	}
+
+	.coach-registration form {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		padding: 20px;
+		border: 1px solid black;
+		background-color: #ffffff;
+		gap: 10px;
+		display: flex;
+		flex-direction: column;
+	}
+	.coach-registration .title {
+		text-align: center;
+		font-size: 2em;
+		font-weight: bold;
+		margin-bottom: 20px;
+	}
+
+	.form-contact-group {
+		display: flex;
+		gap: 10px;
+	}
+
+	.form-contact-group-field {
+		display: flex;
+		flex-direction: column;
+		gap: 3px;
+		width: 100%;
+	}
+
+	.form-contact-group-field input {
+		height: 35px;
+		font-size: 16px;
+		background: lightgray;
+		border: 1px solid gray;
+	}
+
+	.form-contact-group-field-logo {
+		display: flex;
+		flex-direction: column;
+		gap: 3px;
+		width: 40%;
+		height: 100px;
+	}
+
+	.form-contact-group-field-logo label {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background-color: #f0f0f0;
+		border: 2px dashed #ccc;
+		color: #666;
+		font-size: 16px;
+		cursor: pointer;
+		background-size: cover;
+		background-position: center;
+		overflow: hidden;
+		transition: border 0.3s ease;
+	}
+	.form-contact-group-field-logo label:hover {
+		border-color: #fed400;
+	}
+	.form-contact-group-field-logo input {
+		height: 100px;
+	}
+
+	#team-logo {
+		display: none;
+	}
+
+	.player-registration {
+		background-color: gray;
+	}
+
+	.player-registration img {
+		opacity: 0.3;
+	}
+
+	.player-registration .form-contact-group-field {
+		max-width: 500px;
+	}
+
+	.player-registration input,
+	.player-registration select {
+		height: 35px;
+		font-size: 16px;
+		background: white;
+		border: 1px solid gray;
+		opacity: 0.8;
+	}
+
+	.player-registration form {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		gap: 10px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.player-registration .title {
+		text-align: center;
+		font-size: 4em;
+		font-weight: bold;
+		margin-bottom: 20px;
+		color: white;
+		font-family: arial black;
+	}
+
+	.player-registration label {
+		font-size: 16px;
+		font-weight: bold;
+		color: white;
+		text-shadow: 2px 2px 4px #000000;
+	}
+
+	button {
+		height: 40px;
+		font-size: 16px;
+		padding-left: 10px;
+		border-radius: 1px;
+		border: 1px solid #444444;
+		background-color: #fed400;
+		width: 100%;
+	}
+
+	.player-registration button {
+		max-width: 500px;
+	}
+
+	button:hover {
+		background-color: #444444;
+		color: #fed400;
+		border-color: #fed400;
+	}
+
+	.hidden {
+		display: none;
+	}
+
+	@media (max-width: 768px) {
+		.account-type-selection {
+			flex-direction: column;
+		}
+
+		.account-type-selection div {
+			width: 100%;
+		}
+
+		.coach-registration {
+			flex-direction: column;
+		}
+
+		.coach-registration div {
+			width: 100%;
+		}
+
+		.form-contact-group {
+			flex-wrap: wrap;
+		}
+	}
+
+	@media (max-width: 972px) {
+		.player-registration .title {
+			font-size: 2em;
 		}
 	}
 }

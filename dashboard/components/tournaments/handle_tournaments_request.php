@@ -452,7 +452,7 @@ function on_add_tournament($tournament) {
       </div>
     </div>
     <div class='tournament-table-row'>
-      <span class='tournament-table-cell-header'>Coordenadas:</span>
+      <span class='tournament-table-cell-header'>Coordenadas (mapa):</span>
       <div class='tournament-table-cell'>
         <span class='tournament-table-cell'>" . esc_html($tournament->tournament_coordinates) . "</span>
       </div>
@@ -605,10 +605,42 @@ function add_tournament() {
       $hours = $tournament_hours[$index];
       TournamentHoursDatabase::insert_tournament_hours($tournament->tournament_id, $day, intval($hours[0]), intval($hours[1]));
     }
+    add_base_divisions($tournament);
 
     wp_send_json_success(['message' => 'Torneo agregado correctamente', 'html' => on_add_tournament($tournament), 'tournament_entry' => on_add_tournament_entry($tournament)]);
   }
   wp_send_json_error(['message' => 'Torneo no agregado, torneo con ese nombre ya existe']);
+}
+
+function add_base_divisions($tournament) {
+  DivisionsDatabase::insert_division('U8', $tournament->tournament_id, 1, 4, 30, 3, $tournament->tournament_days);
+  DivisionsDatabase::insert_division('U10', $tournament->tournament_id, 1, 4, 30, 3, $tournament->tournament_days);
+  DivisionsDatabase::insert_division('U12', $tournament->tournament_id, 1, 4, 30, 1, $tournament->tournament_days);
+  DivisionsDatabase::insert_division('U12', $tournament->tournament_id, 1, 4, 30, 2, $tournament->tournament_days);
+  DivisionsDatabase::insert_division('U14', $tournament->tournament_id, 1, 4, 30, 1, $tournament->tournament_days);
+  DivisionsDatabase::insert_division('U14', $tournament->tournament_id, 1, 4, 30, 2, $tournament->tournament_days);
+  DivisionsDatabase::insert_division('U16', $tournament->tournament_id, 1, 4, 30, 1, $tournament->tournament_days);
+  DivisionsDatabase::insert_division('U16', $tournament->tournament_id, 1, 4, 30, 2, $tournament->tournament_days);
+  DivisionsDatabase::insert_division('U18', $tournament->tournament_id, 1, 4, 30, 1, $tournament->tournament_days);
+  DivisionsDatabase::insert_division('U18', $tournament->tournament_id, 1, 4, 30, 2, $tournament->tournament_days);
+  DivisionsDatabase::insert_division('College', $tournament->tournament_id, 1, 4, 30, 1, $tournament->tournament_days);
+  DivisionsDatabase::insert_division('College', $tournament->tournament_id, 1, 4, 30, 2, $tournament->tournament_days);
+  DivisionsDatabase::insert_division('Golden', $tournament->tournament_id, 1, 4, 30, 1, $tournament->tournament_days);
+  DivisionsDatabase::insert_division('Golden', $tournament->tournament_id, 1, 4, 30, 3, $tournament->tournament_days);
+  DivisionsDatabase::insert_division('Silver', $tournament->tournament_id, 1, 4, 30, 1, $tournament->tournament_days);
+  DivisionsDatabase::insert_division('Silver', $tournament->tournament_id, 1, 4, 30, 3, $tournament->tournament_days);
+  DivisionsDatabase::insert_division('Recreativo', $tournament->tournament_id, 1, 4, 30, 1, $tournament->tournament_days);
+  DivisionsDatabase::insert_division('Recreativo', $tournament->tournament_id, 1, 4, 30, 2, $tournament->tournament_days);
+  DivisionsDatabase::insert_division('Recreativo', $tournament->tournament_id, 1, 4, 30, 3, $tournament->tournament_days);
+  DivisionsDatabase::insert_division('Master', $tournament->tournament_id, 1, 4, 30, 1, $tournament->tournament_days);
+  DivisionsDatabase::insert_division('Master', $tournament->tournament_id, 1, 4, 30, 2, $tournament->tournament_days);
+  DivisionsDatabase::insert_division('Master', $tournament->tournament_id, 1, 4, 30, 3, $tournament->tournament_days);
+  DivisionsDatabase::insert_division('Golden', $tournament->tournament_id, 2, 4, 30, 1, $tournament->tournament_days);
+  DivisionsDatabase::insert_division('Golden', $tournament->tournament_id, 2, 4, 30, 2, $tournament->tournament_days);
+  DivisionsDatabase::insert_division('Silver', $tournament->tournament_id, 2, 4, 30, 1, $tournament->tournament_days);
+  DivisionsDatabase::insert_division('Silver', $tournament->tournament_id, 2, 4, 30, 2, $tournament->tournament_days);
+  DivisionsDatabase::insert_division('Golden', $tournament->tournament_id, 1, 4, 30, 2, $tournament->tournament_days);
+  DivisionsDatabase::insert_division('Silver', $tournament->tournament_id, 1, 4, 30, 2, $tournament->tournament_days);
 }
 
 function edit_tournament() {
@@ -671,6 +703,7 @@ function end_tournament() {
 
   $result = TournamentsDatabase::end_tournament($tournament_id);
   if ($result) {
+    TeamsUserDatabase::free_teams_registered_in_tournament($tournament_id);
     wp_send_json_success(['message' => 'Torneo finalizado correctamente']);
   }
   wp_send_json_error(['message' => 'Torneo no finalizado, torneo ya finalizado']);

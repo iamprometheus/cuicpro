@@ -20,4 +20,7 @@ fi
 echo "Zipping $FOLDER into $ZIP_FILE..."
 zip -r "$ZIP_FILE" "$FOLDER" > /dev/null
 
+# Delete the folder
+rm -rf "$FOLDER"
+
 echo "✅ Zipping complete: $ZIP_FILE"
