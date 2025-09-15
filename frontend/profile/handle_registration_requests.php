@@ -90,8 +90,8 @@ if (!function_exists('render_player_registration')) {
 					  </div>
   
 					  <div class='form-contact-group-field'>
-						  <label for='tournament-select'>Torneo</label>
-						  <select id='tournament-select' name='tournament-select'>
+						  <label for='tournament-registration-select'>Torneo</label>
+						  <select id='tournament-registration-select' name='tournament-registration-select'>
 							  <option value=''>Selecciona un torneo</option>";
   
 	  foreach ($tournaments as $tournament) {
@@ -101,15 +101,15 @@ if (!function_exists('render_player_registration')) {
 					  </div>
   
 					  <div class='form-contact-group-field'>
-						  <label for='division-select'>Division</label>
-						  <select id='division-select' name='division-select'>
+						  <label for='division-registration-select'>Division</label>
+						  <select id='division-registration-select' name='division-registration-select'>
 							  <option value=''>Selecciona una division</option>
 						  </select>
 					  </div>
   
 					  <div class='form-contact-group-field'>
-						  <label for='team-select'>Equipo</label>
-						  <select id='team-select' name='team-select'>
+						  <label for='team-registration-select'>Equipo</label>
+						  <select id='team-registration-select' name='team-registration-select'>
 							  <option value=''>Selecciona tu equipo</option>
 						  </select>
 					  </div>
@@ -163,5 +163,95 @@ function handle_couch_account_selected() {
 	wp_send_json_error(array('message' => 'Profile not saved'));
 }
 
+function handle_player_account_selected() {
+	if (!isset($_POST['player-name']) || !isset($_POST['team-registration-select'])) {
+		wp_send_json_error(array('message' => 'Faltan datos'));
+		return;
+	}
+	$user_name = sanitize_text_field($_POST['player-name']);
+	$user = wp_get_current_user();
+
+	$result = [false, null];
+
+	$result = PlayersUserDatabase::insert_player(
+		$user->ID, 
+		$user_name,
+		'',
+		'',
+		'',
+		'',
+		''
+	);
+	if ($result[0]) {
+		$user->add_role('player');
+	}
+
+	$team_id = sanitize_text_field($_POST['team-registration-select']);
+	$team = TeamsDatabase::get_team_by_id($team_id);
+	$coach = CoachesDatabase::get_coach_by_id($team->coach_id);
+    // wp_send_json_error(array('message' => $user_id, 'coach' => $coach->coach_id, 'player_name' => $player_name, 'team_id' => $team_id, 'coach_user_id' => $coach->coach_user_id));
+	
+	$result = PlayersDatabase::insert_player(
+		$user->ID, 
+		$user_name, 
+		$team_id, 
+		"", 
+		$coach->coach_id, 
+		$coach->coach_user_id);
+
+	if (!$result[0]) wp_send_json_error(
+		array('message' => $result, 
+		'user_id' => $user->ID, 
+		'coach' => $coach->coach_id, 
+		'player_name' => $user_name, 
+		'team_id' => $team_id, 
+		'coach_user_id' => $coach->coach_user_id));
+		
+	PlayersUserDatabase::update_player_has_team($user->ID, true);
+	
+	wp_send_json_success(array('message' => 'Perfil guardado exitosamente!', 'html' => render_profile_menu()));
+}
+
+function fetch_division_teams_registration() {
+	if (!isset($_POST['division_id'])) {
+	  wp_send_json_error(array('message' => 'Division ID is required!'));
+	}
+  
+	$division_id = $_POST['division_id'];
+	$teams = TeamsDatabase::get_enrolled_teams_by_division($division_id);
+	$html = "";
+	foreach ($teams as $team) {
+	  $html .= "<option value='" . esc_attr($team->team_id) . "'>" . esc_html($team->team_name) . "</option>";
+	}
+
+	if ($html == "") {
+		$html .= "<option value=''>Esta division aun no cuenta con equipos</option>";
+	}
+  
+	wp_send_json_success(array('message' => 'Teams fetched successfully!', 'teams' => $html));
+  }
+  
+  function fetch_tournament_divisions_registration() {
+	  if (!isset($_POST['tournament_id'])) {
+		  wp_send_json_error(array('message' => 'Tournament ID is required!'));
+	  }
+	  
+	  // Your PHP logic here
+	  $tournament_id = $_POST['tournament_id'];
+	  $divisions = DivisionsDatabase::get_active_divisions_by_tournament($tournament_id);
+	  $divisions_html = "";
+	  foreach ($divisions as $division) {
+		  $divisions_html .= "<option value='" . esc_attr($division->division_id) . "'>" . esc_html($division->division_name) . "</option>";
+	  }
+  
+	  wp_send_json_success(array('message' => 'Divisions fetched successfully!', 'divisions' => $divisions_html));
+  }
+
 add_action('wp_ajax_handle_couch_account_selected', 'handle_couch_account_selected');
 add_action('wp_ajax_nopriv_handle_couch_account_selected', 'handle_couch_account_selected');
+add_action('wp_ajax_handle_player_account_selected', 'handle_player_account_selected');
+add_action('wp_ajax_nopriv_handle_player_account_selected', 'handle_player_account_selected');
+add_action('wp_ajax_fetch_division_teams_registration', 'fetch_division_teams_registration');
+add_action('wp_ajax_nopriv_fetch_division_teams_registration', 'fetch_division_teams_registration');
+add_action('wp_ajax_fetch_tournament_divisions_registration', 'fetch_tournament_divisions_registration');
+add_action('wp_ajax_nopriv_fetch_tournament_divisions_registration', 'fetch_tournament_divisions_registration');

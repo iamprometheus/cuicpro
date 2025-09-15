@@ -44,12 +44,81 @@ jQuery(document).ready(function ($) {
 			contentType: false,
 			success: function (response) {
 				if (response.success) {
-					alert("Perfil completado exitosamente");
+					alert("Perfil completado exitosamente, bienvenido a CUIC.");
 					jQuery("#cuicpro-profile").html(response.data.html);
 				} else {
 					alert(
 						"Error al completar perfil, si el problema persiste contacta al administrador.",
 					);
+				}
+			},
+			error: function (xhr, status, error) {
+				console.error("Error:", error);
+			},
+		});
+	});
+
+	$(document).on("submit", "#player-registration-form", function (e) {
+		e.preventDefault();
+		const formData = new FormData(this);
+		formData.append("action", "handle_player_account_selected");
+
+		$.ajax({
+			url: cuicpro.ajax_url,
+			type: "POST",
+			data: formData,
+			processData: false,
+			contentType: false,
+			success: function (response) {
+				if (response.success) {
+					alert("Perfil completado exitosamente, bienvenido a CUIC.");
+					jQuery("#cuicpro-profile").html(response.data.html);
+				} else {
+					alert(
+						"Error al completar perfil, si el problema persiste contacta al administrador.",
+					);
+				}
+			},
+			error: function (xhr, status, error) {
+				console.error("Error:", error);
+			},
+		});
+	});
+
+	jQuery(document).on("change", "#tournament-registration-select", function () {
+		const tournamentID = $("#tournament-registration-select").val();
+		console.log(tournamentID);
+		$.ajax({
+			url: cuicpro.ajax_url,
+			type: "POST",
+			data: {
+				action: "fetch_tournament_divisions_registration",
+				tournament_id: tournamentID,
+			},
+			success: function (response) {
+				console.log(response);
+				if (response.success) {
+					$("#division-registration-select").html(response.data.divisions);
+				}
+			},
+			error: function (xhr, status, error) {
+				console.error("Error:", error);
+			},
+		});
+	});
+
+	jQuery(document).on("change", "#division-registration-select", function () {
+		const divisionID = $("#division-registration-select").val();
+		$.ajax({
+			url: cuicpro.ajax_url,
+			type: "POST",
+			data: {
+				action: "fetch_division_teams_registration",
+				division_id: divisionID,
+			},
+			success: function (response) {
+				if (response.success) {
+					$("#team-registration-select").html(response.data.teams);
 				}
 			},
 			error: function (xhr, status, error) {

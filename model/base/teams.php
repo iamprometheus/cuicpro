@@ -57,6 +57,12 @@ Class TeamsDatabase {
         return $teams;
     }
 
+    public static function get_teams_by_tournament(int $tournament_id) {
+        global $wpdb;
+        $teams = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_teams WHERE tournament_id = $tournament_id" );
+        return $teams;
+    }
+
     public static function get_enrolled_teams_by_division(int $division_id) {
         global $wpdb;
         $teams = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_teams WHERE division_id = $division_id AND is_enrolled = true AND team_visible = true" );

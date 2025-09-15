@@ -125,7 +125,8 @@ function render_matches_by_team($team_id) {
 
 function render_matches_by_team_player() {
   $user = wp_get_current_user();
-  $player = PlayersDatabase::get_player_by_user_id($user->ID);
+  $player_instances = PlayersDatabase::get_player_by_user_id($user->ID);
+  $player = $player_instances[count($player_instances) - 1];
 
   if (!$player->team_id) {
     $html = "<div class='info-header'>
@@ -137,7 +138,7 @@ function render_matches_by_team_player() {
     return $html;
   }
 
-  $team = TeamsDatabase::get_team_by_teams_team_id($player->team_id);
+  $team = TeamsDatabase::get_team_by_id($player->team_id);
   $matches = PendingMatchesDatabase::get_matches_by_team($team->team_id, $team->tournament_id);
 
 	$html = "<div class='info-header'>

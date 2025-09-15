@@ -99,6 +99,7 @@ jQuery(document).ready(function ($) {
 			processData: false,
 			contentType: false,
 			success: function (response) {
+				console.log(response.data);
 				if (response.success) {
 					alert("Unido a equipo exitosamente");
 					$(".user-data-container").html(response.data.html);
@@ -743,6 +744,7 @@ jQuery(document).ready(function ($) {
 			processData: false,
 			contentType: false,
 			success: function (response) {
+				console.log(response.data);
 				if (response.success) {
 					alert("Jugador agregado exitosamente.");
 					$(".user-data-container").html(response.data.html);

@@ -8,7 +8,7 @@ function send_email_from_contact_form() {
     $tournament_location = sanitize_text_field($_POST['tournament_location']);
     $tournament_contact = sanitize_text_field($_POST['tournament_contact']);
 
-    $to = 'aly.berna26@gmail.com';
+    $to = 'contacto@cuic.pro';
     $subject = 'Contacto para nuevo torneo';
     $message = "Nombre: $name\nApellido: $last_name\nNombre del torneo: $tournament_name\nFecha del torneo: $tournament_date\nUbicación: $tournament_location\nEmail: $tournament_contact";
     wp_mail($to, $subject, $message);

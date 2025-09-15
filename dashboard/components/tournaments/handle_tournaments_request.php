@@ -917,6 +917,16 @@ function archive_tournament() {
 
   $result = TournamentsDatabase::archive_tournament($tournament_id);
   if ($result) {
+    // perform cleanup of players active status
+    $teams = TeamsDatabase::get_teams_by_tournament($tournament_id);
+    foreach ($teams as $team) {
+      $players = PlayersDatabase::get_players_by_team($team->team_id);
+      foreach ($players as $player) {
+        if (!$player->player_user_id) continue;
+        PlayersUserDatabase::update_player_has_team($player->player_user_id, false);
+      }
+    }
+
     wp_send_json_success(['message' => 'Torneo archivado correctamente']);
   }
   wp_send_json_error(['message' => 'No se pudo archivar el torneo']);

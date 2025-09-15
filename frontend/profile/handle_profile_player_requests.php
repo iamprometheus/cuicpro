@@ -7,11 +7,12 @@ function render_user_team() {
 		return render_player_join_team();
 	}
 
-	$player = PlayersDatabase::get_player_by_user_id($user_id);
-	$team_id = $player->team_id;
-	$team = TeamsUserDatabase::get_team_by_id($team_id);
-	$is_team_registered = $team->is_registered;
-	$is_pending = TeamRegisterQueueDatabase::is_team_pending($team_id);
+	$player_instances = PlayersDatabase::get_player_by_user_id($user_id);
+	$player = $player_instances[count($player_instances) - 1];
+
+	$team = TeamsDatabase::get_team_by_id($player->team_id);
+	
+	$team_id = $team->team_id;
 
 	$html = "<div class='info-header'>
 						<h2>" . $team->team_name . "</h2>
@@ -22,21 +23,16 @@ function render_user_team() {
 	$html .= "</div>";
 	$html .= "<div class='team-logo-container'>";
 	$html .= "<span>Logo:</span>";
-	$html .= "<img src='" . wp_get_attachment_image_url($team->team_logo, 'full') . "' alt='" . $team->team_name . "' />";
+	$html .= "<img src='" . wp_get_attachment_image_url($team->logo, 'full') . "' alt='" . $team->team_name . "' />";
 	$html .= "</div>";
-
-	$html .= "<div class='team-status-container'>";
-	$html .= "<span>Estatus:</span>";
-	if ($is_team_registered) {
-		$team_tournament = TeamsDatabase::get_team_tournament($team_id);
-		$tournament  = TournamentsDatabase::get_tournament_by_id($team_tournament->tournament_id);
-		$division_name = DivisionsDatabase::get_division_by_id($team_tournament->division_id)->division_name;
-		$html .= "<span id='team-" . esc_attr($team_id) . "'>Registrado en torneo: " . esc_html($tournament->tournament_name) . ", Division: " . esc_html($division_name) . "</span>";
-	} else if ($is_pending) {
-		$html .= "<span id='team-" . esc_attr($team_id) . "'>Por aprobar</span>";
-	} else {
-		$html .= "<span>Pendiente de registro en torneo</span>";
-	}
+	$html .= "<div>";
+	$html .= "<span>Torneo: " . esc_html(TournamentsDatabase::get_tournament_by_id($team->tournament_id)->tournament_name) . "</span>";
+	$html .= "</div>";
+	$html .= "<div>";
+	$html .= "<span>Division: " . esc_html(DivisionsDatabase::get_division_by_id($team->division_id)->division_name) . "</span>";
+	$html .= "</div>";
+	$html .= "<div>";
+	$html .= "<span>Coach: " . esc_html(CoachesDatabase::get_coach_by_id($team->coach_id)->coach_name) . "</span>";
 	$html .= "</div>";
 
 	$players = PlayersDatabase::get_players_by_team($team_id);
@@ -46,7 +42,7 @@ function render_user_team() {
 	$html .= "<div class='user-players'>";
 	foreach ($players as $player) {
 		$html .= "<div data-player-id='" . esc_attr($player->player_id) . "' class='player-item'>";
-		$html .= "<img class='player-photo' src='" . wp_get_attachment_image_url($player->player_photo, 'full') . "' alt='" . $player->player_name . "' />";
+		//$html .= "<img class='player-photo' src='" . wp_get_attachment_image_url($player->player_photo, 'full') . "' alt='" . $player->player_name . "' />";
 		$html .= "<span id='player-" . esc_attr($player->player_id) . "'>" . esc_html($player->player_name) . "</span>";
 		$html .= "</div>";
 	}
@@ -191,30 +187,30 @@ function render_player_results() {
     $html .= "<div class='user-tournaments'>";
 
     $user = wp_get_current_user();
-    $player_instance = PlayersDatabase::get_player_by_user_id($user->ID);
-    if (!$player_instance) {
+    $player_instances = PlayersDatabase::get_player_by_user_id($user->ID);
+    if (empty($player_instances)) {
         $html .= "<h3>Registrate en un equipo para poder ver resultados</h3>";
         return $html;
     }
-    $coach_id = $player_instance->coach_id;
 
-    $coach_instances = CoachesDatabase::get_coaches_by_coach_user($coach_id);
-
-    $coach_instances = array_reverse($coach_instances);
+    $player_instances = array_reverse($player_instances);
     $tournaments = [];
-    foreach ($coach_instances as $coach_instance) {
-        $tournament_id = $coach_instance->tournament_id;
+	$teams = [];
+    foreach ($player_instances as $player_instance) {
+		$team = TeamsDatabase::get_team_by_id($player_instance->team_id);
+        $tournament_id = $team->tournament_id;
         if (in_array($tournament_id, $tournaments)) {
             continue;
         }
         $tournaments[] = $tournament_id;
+		$teams[$tournament_id] = $player_instance->team_id;
     }
 
     foreach ($tournaments as $tournament_id) {
-            $tournament = TournamentsDatabase::get_tournament_by_id($tournament_id);
-            $html .= "<div id='tournament-played-player' data-team-id='" . esc_attr($player_instance->team_id) . "' data-tournament-id='" . esc_attr($tournament_id) . "' class='tournament-item-fe'>";
-            $html .= "<span>" . esc_html($tournament->tournament_name) . "</span>";
-            $html .= "</div>";
+        $tournament = TournamentsDatabase::get_tournament_by_id($tournament_id);
+        $html .= "<div id='tournament-played-player' data-team-id='" . esc_attr($teams[$tournament_id]) . "' data-tournament-id='" . esc_attr($tournament_id) . "' class='tournament-item-fe'>";
+        $html .= "<span>" . esc_html($tournament->tournament_name) . "</span>";
+        $html .= "</div>";
     }
     $html .= "</div>";
     return $html;
@@ -231,20 +227,19 @@ function handle_results_for_player_team() {
     wp_send_json_success(array('html' => $results['html'], 'elements' => $results['elements']));
 }
 
-function render_player_team_and_division_results($team_user_id, $tournament_id) {
+function render_player_team_and_division_results($team_id, $tournament_id) {
 	$html = "";
 	$html .= "<div class='info-header'>
                     <span id='back-button' data-tournament-id='" . esc_attr($tournament_id) . "' data-screen='player-results'>Volver</span>
                     <h2>Resultados del equipo</h2>
                 </div>";
 
-    $team_id = TeamsDatabase::get_team_by_team_user_and_tournament($team_user_id, $tournament_id)->team_id;
+    $team = TeamsDatabase::get_team_by_id($team_id);
 
 	$pending_matches = PendingMatchesDatabase::get_pending_matches_by_team($team_id, $tournament_id);
 	$played_matches = MatchesDatabase::get_matches_by_team($team_id, $tournament_id);
-	$bracket_id = TeamsDatabase::get_team_by_id($team_id)->division_id;
+	$bracket_id = $team->division_id;
 	$bracket = BracketsDatabase::get_bracket_by_division($bracket_id, $tournament_id);
-	$team = TeamsDatabase::get_team_by_id($team_id);
 	$division_name = DivisionsDatabase::get_division_by_id($team->division_id)->division_name;
 
 	$html .= "<div class='team-results-container'>";
@@ -372,24 +367,30 @@ function handle_leave_team() {
 }
 
 function handle_join_team_form() {
-	$coach_id = sanitize_text_field($_POST['coach_id']);
 	$team_id = sanitize_text_field($_POST['team_id']);
-	//$player_photo = $_FILES['logo'];
 
 	$user_id = get_current_user_id();
 	$player_name = PlayersUserDatabase::get_player_by_id($user_id)->user_name;
-
-    wp_send_json_error(array('error' => $player_name, 'user_id' => $user_id, 'team_id' => $team_id, 'coach_id' => $coach_id));
-
-	// $attachment_id = null;
-	// if ($player_photo['name'] != "") {
-	// 	addImageToWordPressMediaLibrary($player_photo['tmp_name'], $player_photo['name'], $player_photo['name'], $attachment_id);
-	// } else {
-	// 	$attachment_id = PlayersUserDatabase::get_player_by_id($user_id)->user_photo;
-	// 	PlayersUserDatabase::update_player_photo($user_id, $attachment_id);
-	// }
+	$team = TeamsDatabase::get_team_by_id($team_id);
+	$coach = CoachesDatabase::get_coach_by_id($team->coach_id);
+    // wp_send_json_error(array('message' => $user_id, 'coach' => $coach->coach_id, 'player_name' => $player_name, 'team_id' => $team_id, 'coach_user_id' => $coach->coach_user_id));
 	
-	PlayersDatabase::insert_player($user_id, $player_name, $team_id, "", $coach_id);
+	$result = PlayersDatabase::insert_player(
+		$user_id, 
+		$player_name, 
+		$team_id, 
+		"", 
+		$coach->coach_id, 
+		$coach->coach_user_id);
+
+	if (!$result[0]) wp_send_json_error(
+		array('message' => $result, 
+		'user_id' => $user_id, 
+		'coach' => $coach->coach_id, 
+		'player_name' => $player_name, 
+		'team_id' => $team_id, 
+		'coach_user_id' => $coach->coach_user_id));
+		
 	PlayersUserDatabase::update_player_has_team($user_id, true);
 
     wp_send_json_success(array('html' => render_user_team()));

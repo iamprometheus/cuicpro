@@ -27,8 +27,9 @@ if (!function_exists('render_user_data')) {
 							<div class='form-group'>
 								<label for='name'>Nombre:</label>
 								<input name='name' class='form-input' type='text' value='" . $user_data->user_name . "' required/>
-							</div>
-							<div class='form-group'>
+							</div>";
+		if (!in_array("player", $user_role)) {
+			$html .="		<div class='form-group'>
 								<label for='phone'>Telefono:</label>
 								<input name='phone' class='form-input' type='text' value='" . $user_data->user_contact . "' required/>
 							</div>
@@ -40,7 +41,7 @@ if (!function_exists('render_user_data')) {
 									<input name='country' class='form-input' type='text' value='" . $user_data->user_country . "' required/>
 								</div>
 							</div>";
-
+		}
 		// if (in_array("player", $user_role)) {
 		// 	$player_instance = PlayersUserDatabase::get_player_by_id($user->ID);
 		// 	$html .= "<div class='form-group'>
@@ -195,16 +196,23 @@ if (!function_exists('render_user_teams')) {
 }
 
 // only coaches
-function render_team_players($team_id) {
-	$players = PlayersDatabase::get_players_by_team($team_id);
-
+function render_team_players($team_entry) {
+	
 	$html = "<div class='team-players'>";
 	$html .= "<h2 style='text-align: center;'>Jugadores</h2>";
+
+	if (!$team_entry) {
+		$html .= "<h3>Registra el equipo a un torneo para agregar jugadores</h3>";
+		$html .= "</div>";
+		return $html;
+	}
+
 	$html .= "<div class='user-players'>";
 	$html .= "<div id='add-player-button' class='add-player-button'>Agregar Jugador</div>";
+	$players = PlayersDatabase::get_players_by_team($team_entry->team_id);
 	foreach ($players as $player) {
 		$html .= "<div data-player-id='" . esc_attr($player->player_id) . "' id='player-data' class='player-item'>";
-		$html .= "<img class='player-photo' src='" . wp_get_attachment_image_url($player->player_photo, 'full') . "' alt='" . $player->player_name . "' />";
+		//$html .= "<img class='player-photo' src='" . wp_get_attachment_image_url($player->player_photo, 'full') . "' alt='" . $player->player_name . "' />";
 		$html .= "<span id='player-" . esc_attr($player->player_id) . "'>" . esc_html($player->player_name) . "</span>";
 		$html .= "</div>";
 	}
@@ -215,9 +223,11 @@ function render_team_players($team_id) {
 
 function render_player_info($player_id) {
 	$player = PlayersDatabase::get_player_by_id($player_id);
+	$team = TeamsDatabase::get_team_by_id($player->team_id);
+	$team_id = $team->teams_team_id;
 
 	$html = "<div class='info-header'>
-						<span id='back-button' data-screen='user-team-info' data-team-id='" . esc_attr($player->team_id) . "'>Volver</span>
+						<span id='back-button' data-screen='user-team-info' data-team-id='" . esc_attr($team_id) . "'>Volver</span>
 						<h2>Actualizar información de jugador</h2>
 					</div>";
 	$html .= "<form id='player-data-form' class='user-data-form'>
@@ -239,7 +249,7 @@ function render_player_info($player_id) {
 	// 						</div>
 	// 					</div>
 	$html .= "					<button type='submit'>Guardar cambios</button>
-						<button id='delete-player-button' type='button' data-player-id='" . esc_attr($player->player_id) . "' data-team-id='" . esc_attr($player->team_id) . "'>Eliminar Jugador</button>
+						<button id='delete-player-button' type='button' data-player-id='" . esc_attr($player->player_id) . "' data-team-id='" . esc_attr($team_id) . "'>Eliminar Jugador</button>
 					</form>";
 	return $html;
 }
@@ -294,7 +304,12 @@ function render_team_info($team_id) {
 							<button type='submit'>Guardar cambios</button>
 						</form>";
 
-	$html .= render_team_players($team_id);
+	// render the players in the current registered tournament
+	$team_entry = null;
+	if ($is_team_registered) {
+		$team_entry = TeamsDatabase::get_team_tournament($team_id);
+	}
+	$html .= render_team_players($team_entry);
 
 	$delete_disabled = "";
 	$cancel_registration_disabled = "";
@@ -805,13 +820,9 @@ function handle_add_player() {
 	}
 	$team_id = sanitize_text_field($_POST['team_id']);
 	$player_name = sanitize_text_field($_POST['player_name']);
-	$logo = $_FILES['logo'];
-	$coach_id = get_current_user_id();
-	// upload image to wordpress and get the attachment id to link to team
-	$attachment_id = null;
-	addImageToWordPressMediaLibrary($logo['tmp_name'], $logo['name'], $logo['name'], $attachment_id);
-
-	$result = PlayersDatabase::insert_player(null, $player_name, $team_id, $attachment_id, $coach_id);
+	
+	$team_in_tournament = TeamsDatabase::get_team_tournament($team_id);
+	$result = PlayersDatabase::insert_player(null, $player_name, $team_in_tournament->team_id, '', $team_in_tournament->coach_id, null);
 
 	if ($result[0]) {
 		wp_send_json_success(array('message' => 'Jugador creado exitosamente', 'html' => render_team_info($team_id)));
@@ -975,35 +986,35 @@ function handle_update_profile() {
 		} 
 	} else if(in_array("player", $user_roles)) {
 
-		$user_photo = $_FILES['logo'];
-		// if logo didnt change then replace attachment id to current logo, else add new logo
-		$attachment_id = null;
-		if ($user_photo['name'] === "") {
-			$attachment_id = PlayersUserDatabase::get_player_by_id($user_id)->user_photo;
-		} else {
-			addImageToWordPressMediaLibrary($user_photo['tmp_name'], $user_photo['name'], $user_photo['name'], $attachment_id);
-		}
+		// $user_photo = $_FILES['logo'];
+		// // if logo didnt change then replace attachment id to current logo, else add new logo
+		// $attachment_id = null;
+		// if ($user_photo['name'] === "") {
+		// 	$attachment_id = PlayersUserDatabase::get_player_by_id($user_id)->user_photo;
+		// } else {
+		// 	addImageToWordPressMediaLibrary($user_photo['tmp_name'], $user_photo['name'], $user_photo['name'], $attachment_id);
+		// }
 
 		$result = PlayersUserDatabase::update_player(
 			$user_id, 
 			$user_name, 
-			$user_contact, 
-			$user_city, 
-			$user_state, 
-			$user_country,
-			$attachment_id
+			"", 
+			"", 
+			"", 
+			"", 
+			"", 
 			);
 
 		if ($result) {
-			$player_instance = PlayersDatabase::get_player_by_user_id($user_id);
+			// $player_instance = PlayersDatabase::get_player_by_user_id($user_id)[0];
 			
-			if ($player_instance) {
-				PlayersDatabase::update_player(
-					$player_instance->player_id, 
-					$user_name, 
-					$attachment_id
-				);
-			}
+			// if ($player_instance) {
+			// 	PlayersDatabase::update_player(
+			// 		$player_instance->player_id, 
+			// 		$user_name, 
+			// 		""
+			// 	);
+			// }
 		
 			wp_send_json_success(array('message' => 'Profile saved successfully!', 'html' => render_user_data()));
 		} 
@@ -1024,8 +1035,9 @@ function handle_coach_teams_in_tournament() {
 	if (in_array("coach", $user_roles)) {
 		wp_send_json_success(array('html' => render_coach_teams_in_tournament($tournament_id)));
 	} else {
-		$player_instance = PlayersDatabase::get_player_by_user_id($user->ID);
-		wp_send_json_success(array('html' => render_team_and_division_results($tournament_id, $player_instance->team_id)));
+		$player_instances = PlayersDatabase::get_player_by_user_id($user->ID);
+		$last_player_instace = $player_instances[count($player_instances) - 1];
+		wp_send_json_success(array('html' => render_team_and_division_results($tournament_id, $last_player_instace->team_id)));
 	}
 }
 
