@@ -133,6 +133,23 @@ Class DivisionsDatabase {
         return "Division active status not updated";
     }
 
+    public static function update_division_preferred_days(int $division_id, string $preferred_days ) {
+        global $wpdb;
+        $result = $wpdb->update(
+            $wpdb->prefix . 'cuicpro_divisions',
+            array(
+                'division_preferred_days' => $preferred_days,
+            ),
+            array(
+                'division_id' => $division_id,
+            )
+        );
+        if ( $result ) {
+            return "Division preferred days updated successfully";
+        }
+        return "Division preferred days not updated";
+    }
+
     public static function delete_division(int $division_id ) {
         global $wpdb;
         $result = $wpdb->update(

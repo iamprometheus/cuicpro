@@ -514,6 +514,9 @@ jQuery(document).on(
 					jQuery(".leader-line").remove();
 					jQuery("#leader-line-defs").remove();
 
+					// assign breaks data for selected tournament
+					jQuery("#breaks-data").html(response.data.breaks);
+
 					// assign divisions data for selected tournament
 					jQuery("#divisions-data").html(response.data.divisions);
 
@@ -562,8 +565,6 @@ jQuery(document).on(
 					const date2 = new Date(rawDate2);
 
 					jQuery("#official-schedule").multiDatesPicker({
-						minDate: date1,
-						maxDate: date2,
 						dateFormat: "d/m/y",
 						onSelect: function (dateText, inst) {
 							const searchID = `#official-day-${dateText}`.replaceAll("/", "-");
@@ -588,8 +589,15 @@ jQuery(document).on(
 					);
 
 					jQuery("#division-preferred-days").multiDatesPicker({
-						minDate: date1,
-						maxDate: date2,
+						dateFormat: "d/m/y",
+					});
+
+					jQuery("#break-preferred-days").multiDatesPicker("destroy");
+					jQuery("#break-preferred-days").val(
+						response.data.tournament_days.replaceAll(",", ", "),
+					);
+
+					jQuery("#break-preferred-days").multiDatesPicker({
 						dateFormat: "d/m/y",
 					});
 

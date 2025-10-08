@@ -1,1 +1,146 @@
-.wp-block-cuicpro-cuicpro-schedule *{box-sizing:border-box}.wp-block-cuicpro-cuicpro-schedule body{background:linear-gradient(-35deg,red,purple);display:grid;min-height:100vh;place-items:center}.wp-block-cuicpro-cuicpro-schedule select{-webkit-appearance:none;-moz-appearance:none;appearance:none;background:url(https://upload.wikimedia.org/wikipedia/commons/9/9d/Caret_down_font_awesome_whitevariation.svg) no-repeat left .8em center/1.4em,linear-gradient(-270deg,#000 3em,#ffeb43 0);border:0;border-radius:.25em;box-shadow:0 0 1em 0 rgba(0,0,0,.2);color:#000;cursor:pointer;font:inherit;outline:0;padding:1rem 1rem 1rem 4rem;width:20rem}.wp-block-cuicpro-cuicpro-schedule select::-ms-expand{display:none}.wp-block-cuicpro-cuicpro-schedule select:focus{outline:none}.wp-block-cuicpro-cuicpro-schedule select option{background-color:hsla(0,0%,100%,.2);color:inherit}.wp-block-cuicpro-cuicpro-schedule select:focus,.wp-block-cuicpro-cuicpro-schedule select:hover{transform:scale(1.1);transition:transform .2s ease-in-out}.wp-block-cuicpro-cuicpro-schedule .schedules-container{display:flex;flex-direction:column;gap:25px;justify-content:center}.wp-block-cuicpro-cuicpro-schedule .selectors{display:flex;gap:25px;justify-content:center}.wp-block-cuicpro-cuicpro-schedule .team-schedules{align-items:center;display:flex;gap:30px}.wp-block-cuicpro-cuicpro-schedule #team-schedule-table{font-size:26px;text-align:center}.wp-block-cuicpro-cuicpro-schedule #team-schedule-table th{padding:10px}.wp-block-cuicpro-cuicpro-schedule #team-schedule-table .match{background-color:#ff0}.wp-block-cuicpro-cuicpro-schedule .team-matches-container{align-items:center;display:flex;flex-direction:column;gap:30px;justify-content:space-around}.wp-block-cuicpro-cuicpro-schedule .team-matches{display:flex;flex-wrap:wrap;gap:30px}.wp-block-cuicpro-cuicpro-schedule .bracket-match-container{border:1px solid #000;border-radius:10px;display:flex;flex-direction:column;gap:10px;height:-moz-fit-content;height:fit-content;padding:20px;width:300px}.wp-block-cuicpro-cuicpro-schedule .bracket-match{align-items:center;display:flex;gap:10px;justify-content:space-between}.wp-block-cuicpro-cuicpro-schedule .bracket-match span{font-size:18px;font-weight:700;text-wrap:wrap}.wp-block-cuicpro-cuicpro-schedule .match-data-container{display:flex;justify-content:space-between}.wp-block-cuicpro-cuicpro-schedule .match-data{display:flex;flex-direction:column;gap:5px}.wp-block-cuicpro-cuicpro-schedule .match-data span{font-size:14px}.wp-block-cuicpro-cuicpro-schedule .text-right{text-align:left}@media screen and (max-width:768px){.wp-block-cuicpro-cuicpro-schedule .selectors{align-items:center;flex-direction:column}.wp-block-cuicpro-cuicpro-schedule #team-schedule-table{font-size:20px}.wp-block-cuicpro-cuicpro-schedule #team-schedule-table th{padding:5px}}
+/*!********************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/cuicpro-schedule/style.scss ***!
+  \********************************************************************************************************************************************************************************************************************************************************/
+/**
+ * The following styles get applied both on the front of your site
+ * and in the editor.
+ *
+ * Replace them with your own styles or remove the file completely.
+ */
+.wp-block-cuicpro-cuicpro-schedule {
+  /* <select> styles */
+}
+.wp-block-cuicpro-cuicpro-schedule * {
+  box-sizing: border-box;
+}
+.wp-block-cuicpro-cuicpro-schedule body {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  background: linear-gradient(-35deg, red, purple);
+}
+.wp-block-cuicpro-cuicpro-schedule select {
+  /* Reset */
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  border: 0;
+  outline: 0;
+  font: inherit;
+  /* Personalize */
+  width: 20rem;
+  padding: 1rem 1rem 1rem 4rem;
+  background: url(https://upload.wikimedia.org/wikipedia/commons/9/9d/Caret_down_font_awesome_whitevariation.svg) no-repeat left 0.8em center/1.4em, linear-gradient(to right, rgb(0, 0, 0) 3em, rgb(255, 235, 67) 3em);
+  color: rgb(0, 0, 0);
+  border-radius: 0.25em;
+  box-shadow: 0 0 1em 0 rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  /* Remove IE arrow */
+  /* Remove focus outline */
+  /* <option> colors */
+}
+.wp-block-cuicpro-cuicpro-schedule select::-ms-expand {
+  display: none;
+}
+.wp-block-cuicpro-cuicpro-schedule select:focus {
+  outline: none;
+}
+.wp-block-cuicpro-cuicpro-schedule select option {
+  color: inherit;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+.wp-block-cuicpro-cuicpro-schedule select:hover {
+  transform: scale(1.1);
+  transition: transform 0.2s ease-in-out;
+}
+.wp-block-cuicpro-cuicpro-schedule select:focus {
+  transform: scale(1.1);
+  transition: transform 0.2s ease-in-out;
+}
+.wp-block-cuicpro-cuicpro-schedule .schedules-container {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  justify-content: center;
+}
+.wp-block-cuicpro-cuicpro-schedule .selectors {
+  display: flex;
+  gap: 25px;
+  justify-content: center;
+}
+.wp-block-cuicpro-cuicpro-schedule .team-schedules {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+.wp-block-cuicpro-cuicpro-schedule #team-schedule-table {
+  text-align: center;
+  font-size: 26px;
+}
+.wp-block-cuicpro-cuicpro-schedule #team-schedule-table th {
+  padding: 10px;
+}
+.wp-block-cuicpro-cuicpro-schedule #team-schedule-table .match {
+  background-color: yellow;
+}
+.wp-block-cuicpro-cuicpro-schedule .team-matches-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  gap: 30px;
+}
+.wp-block-cuicpro-cuicpro-schedule .team-matches {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+.wp-block-cuicpro-cuicpro-schedule .bracket-match-container {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #000000;
+  padding: 20px;
+  border-radius: 10px;
+  gap: 10px;
+  width: 300px;
+  height: -moz-fit-content;
+  height: fit-content;
+}
+.wp-block-cuicpro-cuicpro-schedule .bracket-match {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+}
+.wp-block-cuicpro-cuicpro-schedule .bracket-match span {
+  font-size: 18px;
+  font-weight: bold;
+  text-wrap: wrap;
+}
+.wp-block-cuicpro-cuicpro-schedule .match-data-container {
+  display: flex;
+  justify-content: space-between;
+}
+.wp-block-cuicpro-cuicpro-schedule .match-data {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.wp-block-cuicpro-cuicpro-schedule .match-data span {
+  font-size: 14px;
+}
+.wp-block-cuicpro-cuicpro-schedule .text-right {
+  text-align: left;
+}
+@media screen and (max-width: 768px) {
+  .wp-block-cuicpro-cuicpro-schedule .selectors {
+    flex-direction: column;
+    align-items: center;
+  }
+  .wp-block-cuicpro-cuicpro-schedule #team-schedule-table {
+    font-size: 20px;
+  }
+  .wp-block-cuicpro-cuicpro-schedule #team-schedule-table th {
+    padding: 5px;
+  }
+}

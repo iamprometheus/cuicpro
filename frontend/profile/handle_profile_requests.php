@@ -3,9 +3,11 @@
 require_once __DIR__ . '/handle_profile_matches_requests.php';
 require_once __DIR__ . '/handle_profile_player_requests.php';
 require_once __DIR__ . '/handle_registration_requests.php';
+require_once __DIR__ . '/handle_profile_official_requests.php';
 
 if (!function_exists('render_user_data')) {
-	function render_user_data() {
+	function render_user_data()
+	{
 		$user = wp_get_current_user();
 		$user_role = $user->roles;
 
@@ -20,40 +22,28 @@ if (!function_exists('render_user_data')) {
 
 		$html = "<h2 style='text-align: center;'>Mis Datos</h2>";
 		$html .= "<form id='user-data-form' class='user-data-form'>
-							<div class='form-group'>
-								<label for='name'>ID:</label>
-								<input name='name' class='form-input' type='text' value='" . $user_data->user_id . "' disabled/>
-							</div>
-							<div class='form-group'>
-								<label for='name'>Nombre:</label>
-								<input name='name' class='form-input' type='text' value='" . $user_data->user_name . "' required/>
-							</div>";
+					<div class='form-group'>
+						<label for='name'>ID:</label>
+						<input name='name' class='form-input' type='text' value='" . $user_data->user_id . "' disabled/>
+					</div>
+					<div class='form-group'>
+						<label for='name'>Nombre:</label>
+						<input name='name' class='form-input' type='text' value='" . $user_data->user_name . "' required/>
+					</div>";
 		if (!in_array("player", $user_role)) {
-			$html .="		<div class='form-group'>
-								<label for='phone'>Telefono:</label>
-								<input name='phone' class='form-input' type='text' value='" . $user_data->user_contact . "' required/>
+			$html .= "<div class='form-group'>
+							<label for='phone'>Telefono:</label>
+							<input name='phone' class='form-input' type='text' value='" . $user_data->user_contact . "' required/>
+						</div>
+						<div class='form-group'>
+							<label for='location'>Ubicacion:</label>
+							<div class='multiple-fields-container'>
+								<input name='city' class='form-input' type='text' value='" . $user_data->user_city . "' required/>
+								<input name='state' class='form-input' type='text' value='" . $user_data->user_state . "' required/>
+								<input name='country' class='form-input' type='text' value='" . $user_data->user_country . "' required/>
 							</div>
-							<div class='form-group'>
-								<label for='location'>Ubicacion:</label>
-								<div class='multiple-fields-container'>
-									<input name='city' class='form-input' type='text' value='" . $user_data->user_city . "' required/>
-									<input name='state' class='form-input' type='text' value='" . $user_data->user_state . "' required/>
-									<input name='country' class='form-input' type='text' value='" . $user_data->user_country . "' required/>
-								</div>
-							</div>";
+						</div>";
 		}
-		// if (in_array("player", $user_role)) {
-		// 	$player_instance = PlayersUserDatabase::get_player_by_id($user->ID);
-		// 	$html .= "<div class='form-group'>
-		// 					<label for='photo'>Foto:</label>
-		// 					<div class='logo-container'>
-		// 						<input type='file' id='logo' name='logo'/>
-		// 						<div class='logo-preview'>
-		// 							<img id='logo-preview' src='" . wp_get_attachment_image_url($player_instance->user_photo, 'full') . "' width='100' height='100' alt='Foto' />
-		// 						</div>
-		// 					</div>
-		// 				</div>";
-		// }
 
 		$html .= 			"<button type='submit'>Guardar cambios</button>
 				</form>";
@@ -62,7 +52,8 @@ if (!function_exists('render_user_data')) {
 }
 
 if (!function_exists('render_profile_menu')) {
-	function render_profile_menu() {
+	function render_profile_menu()
+	{
 		$user = wp_get_current_user();
 		$user_roles = $user->roles;
 
@@ -88,8 +79,8 @@ if (!function_exists('render_profile_menu')) {
 								<span>Mis Resultados</span>
 							</div>";
 		}
-		
-		if (in_array("coach", $user_roles) || in_array("official", $user_roles)) {
+
+		if (in_array("coach", $user_roles)) {
 			$html .= "<div class='profile-menu-item' id='matches'>
 								<span>Partidos</span>
 							</div>";
@@ -98,6 +89,15 @@ if (!function_exists('render_profile_menu')) {
 								</div>";
 			$html .= "<div class='profile-menu-item' id='results'>
 							<span>Resultados</span>
+						</div>";
+		}
+
+		if (in_array("official", $user_roles)) {
+			$html .= "<div class='profile-menu-item' id='matches-official'>
+							<span>Partidos</span>
+						</div>";
+			$html .= "<div class='profile-menu-item' id='tournaments-official'>
+							<span>Torneos</span>
 						</div>";
 		}
 		$html .= "<div class='profile-menu-item' id='logout'>
@@ -111,7 +111,8 @@ if (!function_exists('render_profile_menu')) {
 }
 
 if (!function_exists('render_complete_profile_form')) {
-	function render_complete_profile_form($has_profile) {
+	function render_complete_profile_form($has_profile)
+	{
 		if ($has_profile) {
 			return render_profile_menu();
 		}
@@ -121,6 +122,7 @@ if (!function_exists('render_complete_profile_form')) {
 		$html .= render_account_type_selection();
 		$html .= render_coach_registration();
 		$html .= render_player_registration();
+		$html .= render_official_registration();
 		$html .= "</div>";
 
 		// $html = "<div class='complete-profile-container'>";
@@ -167,7 +169,8 @@ if (!function_exists('render_complete_profile_form')) {
 }
 
 if (!function_exists('render_slot')) {
-	function render_slot() {
+	function render_slot()
+	{
 		$html = "";
 		$html .= "<div class='user-data-container'>";
 		$html .= render_user_data();
@@ -177,7 +180,8 @@ if (!function_exists('render_slot')) {
 }
 
 if (!function_exists('render_user_teams')) {
-	function render_user_teams() {
+	function render_user_teams()
+	{
 		$user_id = get_current_user_id();
 		$teams = TeamsUserDatabase::get_teams_by_coach($user_id);
 
@@ -196,8 +200,9 @@ if (!function_exists('render_user_teams')) {
 }
 
 // only coaches
-function render_team_players($team_entry) {
-	
+function render_team_players($team_entry)
+{
+
 	$html = "<div class='team-players'>";
 	$html .= "<h2 style='text-align: center;'>Jugadores</h2>";
 
@@ -221,7 +226,8 @@ function render_team_players($team_entry) {
 	return $html;
 }
 
-function render_player_info($player_id) {
+function render_player_info($player_id)
+{
 	$player = PlayersDatabase::get_player_by_id($player_id);
 	$team = TeamsDatabase::get_team_by_id($player->team_id);
 	$team_id = $team->teams_team_id;
@@ -254,7 +260,8 @@ function render_player_info($player_id) {
 	return $html;
 }
 
-function render_team_info($team_id) {
+function render_team_info($team_id)
+{
 	$team = TeamsUserDatabase::get_team_by_id($team_id);
 	$is_team_registered = $team->is_registered;
 	$is_pending = TeamRegisterQueueDatabase::is_team_pending($team_id);
@@ -345,7 +352,8 @@ function render_team_info($team_id) {
 	return $html;
 }
 
-function render_user_create_team() {
+function render_user_create_team()
+{
 	$html = "<div class='info-header'>
 						<span id='back-button' data-screen='user-teams'>Volver</span>
 						<h2>Crear Equipo</h2>
@@ -369,7 +377,8 @@ function render_user_create_team() {
 	return $html;
 }
 
-function render_user_add_player($team_id) {
+function render_user_add_player($team_id)
+{
 	$team = TeamsUserDatabase::get_team_by_id($team_id);
 	$html = "<div class='info-header'>
 						<span id='back-button' data-screen='user-team-info' data-team-id='" . esc_attr($team_id) . "'>Volver</span>
@@ -396,27 +405,29 @@ function render_user_add_player($team_id) {
 }
 
 if (!function_exists('render_user_tournaments')) {
-	function render_user_tournaments() {
+	function render_user_tournaments()
+	{
 		$tournaments = TournamentsDatabase::get_active_tournaments_not_started();
 
 		$html = "<h2 style='text-align: center;'>Torneos</h2>";
-    $html .= "<div class='active-tournaments'>";
-    foreach ($tournaments as $tournament) {
+		$html .= "<div class='active-tournaments'>";
+		foreach ($tournaments as $tournament) {
 			$html .= "<div id='active-tournament' class='tournament-item-fe'>";
 			$html .= "<span>" . esc_html($tournament->tournament_name) . "</span>";
 			$html .= "<button id='join-tournament-button' data-tournament-id='" . esc_attr($tournament->tournament_id) . "'>Registrar equipo</button>";
 			$html .= "</div>";
-    }
+		}
 
 		if (empty($tournaments)) {
 			$html .= "<h2>No hay torneos activos para registrar equipos</h2>";
 		}
-    $html .= "</div>";
+		$html .= "</div>";
 		return $html;
 	}
 }
 
-function render_user_join_tournament($tournament_id) {
+function render_user_join_tournament($tournament_id)
+{
 	$user_id = get_current_user_id();
 	$teams = TeamsUserDatabase::get_teams_by_coach($user_id);
 	$divisions = DivisionsDatabase::get_divisions_by_tournament($tournament_id);
@@ -448,7 +459,7 @@ function render_user_join_tournament($tournament_id) {
 			continue;
 		}
 		$html .= "<option value='" . esc_attr($team->team_id) . "'>" . esc_html($team->team_name) . "</option>";
-	}	
+	}
 
 	$html .= "</select>
 						</div>
@@ -457,8 +468,8 @@ function render_user_join_tournament($tournament_id) {
 							<select name='division_id' class='form-input' required>
 								<option value=''>Selecciona una division</option>";
 	foreach ($divisions as $division) {
-    $mode = ModesDatabase::get_mode_by_id($division->division_mode);
-    $category = CategoriesDatabase::get_category_by_id($division->division_category);
+		$mode = ModesDatabase::get_mode_by_id($division->division_mode);
+		$category = CategoriesDatabase::get_category_by_id($division->division_category);
 		$html .= "<option value='" . esc_attr($division->division_id) . "'>" . esc_html($division->division_name) . " " . $mode->mode_description . " " . $category->category_description . "</option>";
 	}
 	$html .= "</select>
@@ -470,7 +481,8 @@ function render_user_join_tournament($tournament_id) {
 }
 
 if (!function_exists('render_user_results')) {
-	function render_user_results() {
+	function render_user_results()
+	{
 		$user_id = get_current_user_id();
 		$coach_instances = CoachesDatabase::get_coaches_by_coach_user($user_id);
 
@@ -487,24 +499,25 @@ if (!function_exists('render_user_results')) {
 		$html = "<h2 style='text-align: center;'>Mis Torneos</h2>";
 		$html .= "<div class='user-tournaments'>";
 		foreach ($tournaments as $tournament_id) {
-				$tournament = TournamentsDatabase::get_tournament_by_id($tournament_id);
-				$html .= "<div id='tournament-played' data-tournament-id='" . esc_attr($tournament_id) . "' class='tournament-item-fe'>";
-				$html .= "<span>" . esc_html($tournament->tournament_name) . "</span>";
-				$html .= "</div>";
+			$tournament = TournamentsDatabase::get_tournament_by_id($tournament_id);
+			$html .= "<div id='tournament-played' data-tournament-id='" . esc_attr($tournament_id) . "' class='tournament-item-fe'>";
+			$html .= "<span>" . esc_html($tournament->tournament_name) . "</span>";
+			$html .= "</div>";
 		}
 		$html .= "</div>";
 		return $html;
 	}
 }
 
-function render_coach_teams_in_tournament($tournament_id) {
+function render_coach_teams_in_tournament($tournament_id)
+{
 	$user_id = get_current_user_id();
 
 	$coach = CoachesDatabase::get_coach_by_coach_user_and_tournament($user_id, $tournament_id);
 	$tournament = TournamentsDatabase::get_tournament_by_id($tournament_id);
 	$teams = TeamsDatabase::get_teams_by_coach($coach->coach_id);
 	$html = "";
-	
+
 	$html .= "<div class='info-header'>
 							<span id='back-button' data-screen='user-results'>Volver</span>
 							<h2>Mis Equipos en el torneo: " . esc_html($tournament->tournament_name) . "</h2>
@@ -514,9 +527,9 @@ function render_coach_teams_in_tournament($tournament_id) {
 		$html .= "<h2>No tienes equipos en este torneo</h2>";
 		return $html;
 	}
-	
+
 	$html .= "<div class='user-teams'>";
-	
+
 	foreach ($teams as $team) {
 		if (!$team->division_id) continue;
 		$division_name = DivisionsDatabase::get_division_by_id($team->division_id)->division_name;
@@ -530,7 +543,8 @@ function render_coach_teams_in_tournament($tournament_id) {
 	return $html;
 }
 
-function render_team_and_division_results($team_id) {
+function render_team_and_division_results($team_id)
+{
 	$tournament_id = TeamsDatabase::get_team_by_id($team_id)->tournament_id;
 	$html = "";
 	$html .= "<div class='info-header'>
@@ -564,7 +578,7 @@ function render_team_and_division_results($team_id) {
 	if (empty($played_matches)) {
 		$html .= "<h3 style='text-align: center;'>Este equipo aun no ha jugado partidos</h3>";
 	}
-	
+
 	$html .= "<hr class='match-separator' />";
 
 	foreach ($played_matches as $match) {
@@ -576,7 +590,7 @@ function render_team_and_division_results($team_id) {
 		$team_2_logo = $team_2->logo;
 
 		$division_name = DivisionsDatabase::get_division_by_id($match->division_id)->division_name;
-	
+
 		$official = OfficialsDatabase::get_official_by_id($match->official_id);
 		$official_name = $official ? $official->official_name : "No Asignado";
 
@@ -586,18 +600,18 @@ function render_team_and_division_results($team_id) {
 		} else {
 			$match_winner = "Empate";
 		}
-	
+
 		$match_time = $match->match_time . ":00";
 		$match_winner_class_1 = $match_winner == $team_1_name ? 'winner' : '';
 		$match_winner_class_2 = $match_winner == $team_2_name ? 'winner' : '';
-		
+
 		$html .= "<div class='match-item'>";
 		$html .= "<div class='match-info-left'>";
 		$html .= "<span>Fecha: " . $match->match_date . "</span>";
 		$html .= "<span>Hora: " . $match_time . "</span>";
 		$html .= "<span>Division: " . $division_name . "</span>";
 		$html .= "</div>";
-	
+
 		$html .= "<div class='match-results'>";
 		$html .= "<div class='match-team-container left-team $match_winner_class_1'>
 								<div class='white-space'></div>						
@@ -619,7 +633,7 @@ function render_team_and_division_results($team_id) {
 								<div class='white-space'></div>
 							</div>";
 		$html .= "</div>";
-		
+
 		$html .= "<div class='match-info-right'>";
 		$html .= "<div>";
 		$html .= "<span>Arbitro: </span>";
@@ -631,7 +645,7 @@ function render_team_and_division_results($team_id) {
 		$html .= "</div>";
 		$html .= "</div>";
 		$html .= "</div>";
-		
+
 		$html .= "<hr class='match-separator' />";
 	}
 
@@ -655,80 +669,82 @@ function render_team_and_division_results($team_id) {
 	return ['html' => $html, 'elements' => $elements];
 }
 
-function render_playoffs_results(int $bracket_id) {
-  $matches = PendingMatchesDatabase::get_matches_by_bracket($bracket_id);
+function render_playoffs_results(int $bracket_id)
+{
+	$matches = PendingMatchesDatabase::get_matches_by_bracket($bracket_id);
 
-  $playoffs_id = array_unique(array_map(function($match) {
-    return $match->playoff_id;
-  }, $matches));
+	$playoffs_id = array_unique(array_map(function ($match) {
+		return $match->playoff_id;
+	}, $matches));
 
-  $elements = [];
-  $html = "";
-  $html .= "<div class='playoffs-container'>";
-  $html .= "<hr />";
-  $html .= "<span style='font-weight: bold; font-size: 40px; text-align: center;'>Playoffs</span>";
-  foreach ($playoffs_id as $playoff_id) {
-    if (!$playoff_id) continue;
-    $bracket_matches = array_filter($matches, function($match) use ($playoff_id) {
-      return $match->playoff_id == $playoff_id;
-    });
+	$elements = [];
+	$html = "";
+	$html .= "<div class='playoffs-container'>";
+	$html .= "<hr />";
+	$html .= "<span style='font-weight: bold; font-size: 40px; text-align: center;'>Playoffs</span>";
+	foreach ($playoffs_id as $playoff_id) {
+		if (!$playoff_id) continue;
+		$bracket_matches = array_filter($matches, function ($match) use ($playoff_id) {
+			return $match->playoff_id == $playoff_id;
+		});
 
-    $bracket_rounds = array_unique(array_map(function($match) {
-      return $match->bracket_round;
-    }, $bracket_matches));
+		$bracket_rounds = array_unique(array_map(function ($match) {
+			return $match->bracket_round;
+		}, $bracket_matches));
 
-    $html .= "<div class='bracket-container' id='playoff_" . $playoff_id . "'>";
-    $html .= "<span style='font-weight: bold; font-size: 22px; text-align: center;'>Playoffs #" . $playoff_id . "</span>";
-    $html .= "<hr />";
-    $html .= "<div class='rounds-container'>";
-    $elements[$playoff_id] = [];
-    foreach ($bracket_rounds as $round) {
-      $html .= "<div id='round_" . $round . "' class='bracket-round'>";
+		$html .= "<div class='bracket-container' id='playoff_" . $playoff_id . "'>";
+		$html .= "<span style='font-weight: bold; font-size: 22px; text-align: center;'>Playoffs #" . $playoff_id . "</span>";
+		$html .= "<hr />";
+		$html .= "<div class='rounds-container'>";
+		$elements[$playoff_id] = [];
+		foreach ($bracket_rounds as $round) {
+			$html .= "<div id='round_" . $round . "' class='bracket-round'>";
 
-      $elements[$playoff_id][$round] = [];
-      foreach ($bracket_matches as $match) {
-        if ($match->bracket_round == $round) {
-          $previous_match_1 = $match->match_link_1;
-          $previous_match_2 = $match->match_link_2;
+			$elements[$playoff_id][$round] = [];
+			foreach ($bracket_matches as $match) {
+				if ($match->bracket_round == $round) {
+					$previous_match_1 = $match->match_link_1;
+					$previous_match_2 = $match->match_link_2;
 
-          if ($previous_match_1) {
-            $previous_match_1_info = PendingMatchesDatabase::get_match_by_bracket_match_and_playoff($previous_match_1, $match->bracket_id, $playoff_id);
-            $elements[$playoff_id][$round]["match_playoff_" . $match->match_id][] = "match_playoff_" . $previous_match_1_info->match_id;
-          }
+					if ($previous_match_1) {
+						$previous_match_1_info = PendingMatchesDatabase::get_match_by_bracket_match_and_playoff($previous_match_1, $match->bracket_id, $playoff_id);
+						$elements[$playoff_id][$round]["match_playoff_" . $match->match_id][] = "match_playoff_" . $previous_match_1_info->match_id;
+					}
 
-          if ($previous_match_2) {
-            $previous_match_2_info = PendingMatchesDatabase::get_match_by_bracket_match_and_playoff($previous_match_2, $match->bracket_id, $playoff_id);
-            $elements[$playoff_id][$round]["match_playoff_" . $match->match_id][] = "match_playoff_" . $previous_match_2_info->match_id;
-          }
+					if ($previous_match_2) {
+						$previous_match_2_info = PendingMatchesDatabase::get_match_by_bracket_match_and_playoff($previous_match_2, $match->bracket_id, $playoff_id);
+						$elements[$playoff_id][$round]["match_playoff_" . $match->match_id][] = "match_playoff_" . $previous_match_2_info->match_id;
+					}
 
-          $html .= "<div id='match_playoff_" . $match->match_id . "' class='bracket-match-container'>";
-          $html .= create_bracket_result($match);
-          $html .= "</div>";
-        }
-      }
-      $html .= "</div>";
-    }
-    $html .= "</div>";
-    $html .= "</div>";
-  }
-  $html .= "</div>";
+					$html .= "<div id='match_playoff_" . $match->match_id . "' class='bracket-match-container'>";
+					$html .= create_bracket_result($match);
+					$html .= "</div>";
+				}
+			}
+			$html .= "</div>";
+		}
+		$html .= "</div>";
+		$html .= "</div>";
+	}
+	$html .= "</div>";
 
-  return ['html' => $html, 'elements' => $elements, 'matches' => $matches];
+	return ['html' => $html, 'elements' => $elements, 'matches' => $matches];
 }
 
-function create_bracket_result($match) {
-  $team_1_name = "TBD";
-  $team_2_name = "TBD";
+function create_bracket_result($match)
+{
+	$team_1_name = "TBD";
+	$team_2_name = "TBD";
 
-  if ($match->team_id_1) {
-    $team_1_name = TeamsDatabase::get_team_by_id($match->team_id_1)->team_name;
-  }
+	if ($match->team_id_1) {
+		$team_1_name = TeamsDatabase::get_team_by_id($match->team_id_1)->team_name;
+	}
 
-  if ($match->team_id_2) {
-    $team_2_name = TeamsDatabase::get_team_by_id($match->team_id_2)->team_name;
-  }
+	if ($match->team_id_2) {
+		$team_2_name = TeamsDatabase::get_team_by_id($match->team_id_2)->team_name;
+	}
 
-  $match_time = $match->match_time . ":00";
+	$match_time = $match->match_time . ":00";
 	$official_name = OfficialsDatabase::get_official_by_id($match->official_id)->official_name;
 	if (!$official_name) {
 		$official_name = "Arbitro no asignado";
@@ -745,50 +761,51 @@ function create_bracket_result($match) {
 		}
 	}
 
-  $html = "<div class='bracket-match'>";
-  $html .= "<span class='" . $team_1_winner . "'>" . $team_1_name . "</span>";
+	$html = "<div class='bracket-match'>";
+	$html .= "<span class='" . $team_1_winner . "'>" . $team_1_name . "</span>";
 	$html .= "<hr/>";
-  $html .= "<span class='" . $team_2_winner . "'>" . $team_2_name . "</span>";
-  $html .= "</div>";
-  $html .= "<hr class='hidden' />";
-	$html .= "<div class='match-info' hidden>";
-  $html .= "<div class='match-data-container'>";
-  $html .= "<div class='match-data'>";
-  $html .= "<span>Fecha: " . $match->match_date . "</span>";
-  $html .= "<span>Hora: " . $match_time . "</span>";
-  $html .= "</div>";
-  $html .= "<div class='match-data text-right'>";
-  $html .= "<span>Arbitro: " . $official_name . "</span>";
-  $html .= "<span>Campo: " . $match->field_number . "</span>";
-  $html .= "</div>";
-  $html .= "</div>";
-  
-  $html .= "<hr />";
-
-  if (!$match->match_pending) {
-    $match_info = MatchesDatabase::get_match_by_pending_match_id($match->match_id);
-    $html .= "<div class='match-data-end-data'>";
-    $html .= "<span>Resultados</span>";
-    $html .= "<span> Ganador: " . TeamsDatabase::get_team_by_id($match_info->match_winner)->team_name . " </span>";
-    $html .= "<span> Anotaciones equipo " . TeamsDatabase::get_team_by_id($match_info->team_id_1)->team_name . ": " . $match_info->goals_team_1 . " </span>";
-    $html .= "<span> Anotaciones equipo " . TeamsDatabase::get_team_by_id($match_info->team_id_2)->team_name . ": " . $match_info->goals_team_2 . " </span>";
-    $html .= "</div>";
-		$html .= "</div>";
-    return $html;
-  } else {
-    $html .= "<div class='match-data-end-data'>";
-    $html .= "<span>Resultados</span>";
-    $html .= "<span>Ganador: Por definir </span>";
-    $html .= "</div>";
-		$html .= "</div>";
-    return $html;
-  }
-  
+	$html .= "<span class='" . $team_2_winner . "'>" . $team_2_name . "</span>";
 	$html .= "</div>";
-  return $html;
+	$html .= "<hr class='hidden' />";
+	$html .= "<div class='match-info' hidden>";
+	$html .= "<div class='match-data-container'>";
+	$html .= "<div class='match-data'>";
+	$html .= "<span>Fecha: " . $match->match_date . "</span>";
+	$html .= "<span>Hora: " . $match_time . "</span>";
+	$html .= "</div>";
+	$html .= "<div class='match-data text-right'>";
+	$html .= "<span>Arbitro: " . $official_name . "</span>";
+	$html .= "<span>Campo: " . $match->field_number . "</span>";
+	$html .= "</div>";
+	$html .= "</div>";
+
+	$html .= "<hr />";
+
+	if (!$match->match_pending) {
+		$match_info = MatchesDatabase::get_match_by_pending_match_id($match->match_id);
+		$html .= "<div class='match-data-end-data'>";
+		$html .= "<span>Resultados</span>";
+		$html .= "<span> Ganador: " . TeamsDatabase::get_team_by_id($match_info->match_winner)->team_name . " </span>";
+		$html .= "<span> Anotaciones equipo " . TeamsDatabase::get_team_by_id($match_info->team_id_1)->team_name . ": " . $match_info->goals_team_1 . " </span>";
+		$html .= "<span> Anotaciones equipo " . TeamsDatabase::get_team_by_id($match_info->team_id_2)->team_name . ": " . $match_info->goals_team_2 . " </span>";
+		$html .= "</div>";
+		$html .= "</div>";
+		return $html;
+	} else {
+		$html .= "<div class='match-data-end-data'>";
+		$html .= "<span>Resultados</span>";
+		$html .= "<span>Ganador: Por definir </span>";
+		$html .= "</div>";
+		$html .= "</div>";
+		return $html;
+	}
+
+	$html .= "</div>";
+	return $html;
 }
 
-function handle_fetch_team_info() {
+function handle_fetch_team_info()
+{
 	if (!isset($_POST['team_id'])) {
 		wp_send_json_error(array('message' => 'Faltan datos'));
 		return;
@@ -797,7 +814,8 @@ function handle_fetch_team_info() {
 	wp_send_json_success(array('html' => render_team_info($team_id)));
 }
 
-function handle_create_team() {
+function handle_create_team()
+{
 	$team_name = sanitize_text_field($_POST['team_name']);
 	$logo = $_FILES['logo'];
 	$user_id = get_current_user_id();
@@ -813,14 +831,15 @@ function handle_create_team() {
 	wp_send_json_error(array('message' => 'Equipo no creado'));
 }
 
-function handle_add_player() {
+function handle_add_player()
+{
 	if (!isset($_POST['team_id']) || !isset($_POST['player_name'])) {
 		wp_send_json_error(array('message' => 'Faltan datos'));
 		return;
 	}
 	$team_id = sanitize_text_field($_POST['team_id']);
 	$player_name = sanitize_text_field($_POST['player_name']);
-	
+
 	$team_in_tournament = TeamsDatabase::get_team_tournament($team_id);
 	$result = PlayersDatabase::insert_player(null, $player_name, $team_in_tournament->team_id, '', $team_in_tournament->coach_id, null);
 
@@ -830,11 +849,13 @@ function handle_add_player() {
 	wp_send_json_error(array('message' => 'Jugador no creado'));
 }
 
-function handle_create_team_screen() {
+function handle_create_team_screen()
+{
 	wp_send_json_success(array('html' => render_user_create_team()));
 }
 
-function handle_add_player_screen() {
+function handle_add_player_screen()
+{
 	if (!isset($_POST['team_id'])) {
 		wp_send_json_error(array('message' => 'Faltan datos'));
 		return;
@@ -843,22 +864,25 @@ function handle_add_player_screen() {
 	wp_send_json_success(array('html' => render_user_add_player($team_id)));
 }
 
-function handle_register_team() {
+function handle_register_team()
+{
 	wp_send_json_success(array('html' => render_user_tournaments()));
 }
 
-function handle_join_tournament_form() {
+function handle_join_tournament_form()
+{
 	if (!isset($_POST['tournament_id'])) {
 		wp_send_json_error(array('message' => 'Faltan datos'));
 		return;
 	}
 
 	$tournament_id = sanitize_text_field($_POST['tournament_id']);
-	
+
 	wp_send_json_success(array('html' => render_user_join_tournament($tournament_id)));
 }
 
-function handle_join_tournament() {
+function handle_join_tournament()
+{
 	if (!isset($_POST['tournament_id']) || !isset($_POST['division_id']) || !isset($_POST['team_id'])) {
 		wp_send_json_error(array('message' => 'Faltan datos'));
 		return;
@@ -876,44 +900,44 @@ function handle_join_tournament() {
 	wp_send_json_error(array('message' => 'Equipo no agregado'));
 }
 
-function handle_complete_profile_form() {
-  if (!isset($_POST['name']) || !isset($_POST['last_name']) || !isset($_POST['phone']) || !isset($_POST['city']) || !isset($_POST['state']) || !isset($_POST['country']) || !isset($_POST['account_type'])) {
-    wp_send_json_error(array('message' => 'Faltan datos'));
-    return;
-  }
-    $user_name = sanitize_text_field($_POST['name']);
-    $user_last_name = sanitize_text_field($_POST['last_name']);
-    $user_contact = sanitize_text_field($_POST['phone']);
-    $user_city = sanitize_text_field($_POST['city']);
-    $user_state = sanitize_text_field($_POST['state']);
-    $user_country = sanitize_text_field($_POST['country']);
-    $user_account_type = sanitize_text_field($_POST['account_type']);
+function handle_complete_profile_form()
+{
+	if (!isset($_POST['name']) || !isset($_POST['last_name']) || !isset($_POST['phone']) || !isset($_POST['city']) || !isset($_POST['state']) || !isset($_POST['country']) || !isset($_POST['account_type'])) {
+		wp_send_json_error(array('message' => 'Faltan datos'));
+		return;
+	}
+	$user_name = sanitize_text_field($_POST['name']);
+	$user_last_name = sanitize_text_field($_POST['last_name']);
+	$user_contact = sanitize_text_field($_POST['phone']);
+	$user_city = sanitize_text_field($_POST['city']);
+	$user_state = sanitize_text_field($_POST['state']);
+	$user_country = sanitize_text_field($_POST['country']);
+	$user_account_type = sanitize_text_field($_POST['account_type']);
 
-    $user_full_name = $user_name . " " . $user_last_name;
-    $user = wp_get_current_user();
+	$user_full_name = $user_name . " " . $user_last_name;
+	$user = wp_get_current_user();
 
 	$result = [false, null];
 
 	if ($user_account_type == 'coach') {
 		$result = CoachesUserDatabase::insert_coach(
-			$user->ID, 
-			$user_full_name, 
-			$user_contact, 
-			$user_city, 
-			$user_state, 
+			$user->ID,
+			$user_full_name,
+			$user_contact,
+			$user_city,
+			$user_state,
 			$user_country
 		);
 		if ($result[0]) {
 			$user->add_role('coach');
 		}
-	}
-	else if ($user_account_type == 'player') {
+	} else if ($user_account_type == 'player') {
 		$result = PlayersUserDatabase::insert_player(
-			$user->ID, 
-			$user_full_name, 
-			$user_contact, 
-			$user_city, 
-			$user_state, 
+			$user->ID,
+			$user_full_name,
+			$user_contact,
+			$user_city,
+			$user_state,
 			$user_country,
 			""
 		);
@@ -922,11 +946,11 @@ function handle_complete_profile_form() {
 		}
 	} else if ($user_account_type == 'official') {
 		$result = OfficialsUserDatabase::insert_official(
-			$user->ID, 
-			$user_full_name, 
-			$user_contact, 
-			$user_city, 
-			$user_state, 
+			$user->ID,
+			$user_full_name,
+			$user_contact,
+			$user_city,
+			$user_state,
 			$user_country
 		);
 		if ($result[0]) {
@@ -935,36 +959,37 @@ function handle_complete_profile_form() {
 	} else {
 		wp_send_json_error(array('message' => 'Tipo de cuenta no encontrado'));
 	}
-    
-    if ($result[0]) {
-      wp_send_json_success(array('message' => 'Perfil guardado exitosamente!', 'html' => render_profile_menu() . render_slot()));
-    } 
-    wp_send_json_error(array('message' => 'Profile not saved'));
+
+	if ($result[0]) {
+		wp_send_json_success(array('message' => 'Perfil guardado exitosamente!', 'html' => render_profile_menu() . render_slot()));
+	}
+	wp_send_json_error(array('message' => 'Profile not saved'));
 }
 
-function handle_update_profile() {
-    if (!isset($_POST['name']) || !isset($_POST['phone']) || !isset($_POST['city']) || !isset($_POST['state']) || !isset($_POST['country'])) {
-      wp_send_json_error(array('message' => 'Faltan datos'));
-      return;
-    }
-    $user_name = sanitize_text_field($_POST['name']);
-    $user_contact = sanitize_text_field($_POST['phone']);
-    $user_photo = $_FILES['logo'];
-    $user_city = sanitize_text_field($_POST['city']);
-    $user_state = sanitize_text_field($_POST['state']);
-    $user_country = sanitize_text_field($_POST['country']);
-    $user_id = get_current_user_id();
+function handle_update_profile()
+{
+	if (!isset($_POST['name']) || !isset($_POST['phone']) || !isset($_POST['city']) || !isset($_POST['state']) || !isset($_POST['country'])) {
+		wp_send_json_error(array('message' => 'Faltan datos'));
+		return;
+	}
+	$user_name = sanitize_text_field($_POST['name']);
+	$user_contact = sanitize_text_field($_POST['phone']);
+	$user_photo = $_FILES['logo'];
+	$user_city = sanitize_text_field($_POST['city']);
+	$user_state = sanitize_text_field($_POST['state']);
+	$user_country = sanitize_text_field($_POST['country']);
+	$user_id = get_current_user_id();
 
 	$user = wp_get_current_user();
 	$user_roles = $user->roles;
 
 	if (in_array("coach", $user_roles)) {
 		$result = CoachesUserDatabase::update_coach(
-			$user_id, 
-			$user_name, 
-			$user_contact, 
-			$user_city, 
-			$user_state, 
+			$user_id,
+			$user_name,
+			$user_contact,
+			$user_city,
+			$user_state,
 			$user_country
 		);
 
@@ -972,19 +997,19 @@ function handle_update_profile() {
 			$coach_instances = CoachesDatabase::get_coaches_by_coach_user($user_id);
 			foreach ($coach_instances as $coach_instance) {
 				CoachesDatabase::update_coach(
-					$coach_instance->coach_id, 
-					$user_name, 
-					$user_contact, 
-					$user_city, 
-					$user_state, 
+					$coach_instance->coach_id,
+					$user_name,
+					$user_contact,
+					$user_city,
+					$user_state,
 					$user_country,
 					true
 				);
 			}
-	
-		  wp_send_json_success(array('message' => 'Profile saved successfully!', 'html' => render_user_data()));
-		} 
-	} else if(in_array("player", $user_roles)) {
+
+			wp_send_json_success(array('message' => 'Profile saved successfully!', 'html' => render_user_data()));
+		}
+	} else if (in_array("player", $user_roles)) {
 
 		// $user_photo = $_FILES['logo'];
 		// // if logo didnt change then replace attachment id to current logo, else add new logo
@@ -996,18 +1021,18 @@ function handle_update_profile() {
 		// }
 
 		$result = PlayersUserDatabase::update_player(
-			$user_id, 
-			$user_name, 
-			"", 
-			"", 
-			"", 
-			"", 
-			"", 
-			);
+			$user_id,
+			$user_name,
+			"",
+			"",
+			"",
+			"",
+			"",
+		);
 
 		if ($result) {
 			// $player_instance = PlayersDatabase::get_player_by_user_id($user_id)[0];
-			
+
 			// if ($player_instance) {
 			// 	PlayersDatabase::update_player(
 			// 		$player_instance->player_id, 
@@ -1015,20 +1040,34 @@ function handle_update_profile() {
 			// 		""
 			// 	);
 			// }
-		
+
 			wp_send_json_success(array('message' => 'Profile saved successfully!', 'html' => render_user_data()));
-		} 
+		}
+	} else if (in_array("official", $user_roles)) {
+		$result = OfficialsUserDatabase::update_official(
+			$user_id,
+			$user_name,
+			$user_contact,
+			$user_city,
+			$user_state,
+			$user_country
+		);
+
+		if ($result) {
+			wp_send_json_success(array('message' => 'Profile saved successfully!', 'html' => render_user_data()));
+		}
 	}
-    
-    
-    wp_send_json_error(array('message' => 'Profile not saved'));
+
+
+	wp_send_json_error(array('message' => 'Profile not saved'));
 }
 
-function handle_coach_teams_in_tournament() {
-    if (!isset($_POST['tournament_id'])) {
-      wp_send_json_error(array('message' => 'Faltan datos'));
-      return;
-    }
+function handle_coach_teams_in_tournament()
+{
+	if (!isset($_POST['tournament_id'])) {
+		wp_send_json_error(array('message' => 'Faltan datos'));
+		return;
+	}
 	$tournament_id = sanitize_text_field($_POST['tournament_id']);
 	$user = wp_get_current_user();
 	$user_roles = $user->roles;
@@ -1041,38 +1080,43 @@ function handle_coach_teams_in_tournament() {
 	}
 }
 
-function handle_results_for_team() {
-    if (!isset($_POST['team_id'])) {
-      wp_send_json_error(array('message' => 'Faltan datos'));
-      return;
-    }
-    $team_id = sanitize_text_field($_POST['team_id']);
+function handle_results_for_team()
+{
+	if (!isset($_POST['team_id'])) {
+		wp_send_json_error(array('message' => 'Faltan datos'));
+		return;
+	}
+	$team_id = sanitize_text_field($_POST['team_id']);
 	$result = render_team_and_division_results($team_id);
-    wp_send_json_success(array('html' => $result['html'], 'elements' => $result['elements']));
+	wp_send_json_success(array('html' => $result['html'], 'elements' => $result['elements']));
 }
 
-function handle_switch_menu() {
-    if (!isset($_POST['menu'])) {
-      wp_send_json_error(array('message' => 'Faltan datos'));
-      return;
-    }
+function handle_switch_menu()
+{
+	if (!isset($_POST['menu'])) {
+		wp_send_json_error(array('message' => 'Faltan datos'));
+		return;
+	}
 
-    $menu = sanitize_text_field($_POST['menu']);
-    match ($menu) {
-        'profile' => wp_send_json_success(array('html' => render_user_data())),
-        'teams' => wp_send_json_success(array('html' => render_user_teams())),
-        'matches' => wp_send_json_success(array('html' => render_teams_for_matches())),
-        'tournaments' => wp_send_json_success(array('html' => render_user_tournaments())),
-        'results' => wp_send_json_success(array('html' => render_user_results())),
+	$menu = sanitize_text_field($_POST['menu']);
+	match ($menu) {
+		'profile' => wp_send_json_success(array('html' => render_user_data())),
+		'teams' => wp_send_json_success(array('html' => render_user_teams())),
+		'matches' => wp_send_json_success(array('html' => render_teams_for_matches())),
+		'tournaments' => wp_send_json_success(array('html' => render_user_tournaments())),
+		'results' => wp_send_json_success(array('html' => render_user_results())),
 		'logout' => handle_user_logout(),
 		'my-team' => wp_send_json_success(array('html' => render_user_team())),
 		'my-matches' => wp_send_json_success(array('html' => render_matches_by_team_player())),
 		'my-results' => wp_send_json_success(array('html' => render_player_results())),
-        default => wp_send_json_error(array('message' => 'Menu no encontrado')),
-    };
+		'matches-official' => wp_send_json_success(array('html' => render_official_tournaments_for_matches())),
+		'tournaments-official' => wp_send_json_success(array('html' => render_official_tournaments())),
+		default => wp_send_json_error(array('message' => 'Menu no encontrado')),
+	};
 }
 
-function handle_user_logout() {
+function handle_user_logout()
+{
 	wp_logout();
 
 	// Redirect to home or login page after logout
@@ -1080,154 +1124,165 @@ function handle_user_logout() {
 	exit;
 }
 
-function handle_user_logged_in() {
-    if (!is_user_logged_in()) {
-        wp_send_json_error(array('message' => 'No estas logueado'));
-        return;
-    }
+function handle_user_logged_in()
+{
+	if (!is_user_logged_in()) {
+		wp_send_json_error(array('message' => 'No estas logueado'));
+		return;
+	}
 
-    $roles = ["coach", "player", "official"];
+	$roles = ["coach", "player", "official"];
 
-		$user = wp_get_current_user();
-		$user_role = $user->roles;
+	$user = wp_get_current_user();
+	$user_role = $user->roles;
 
-		$has_profile = false;
-		if (count(array_intersect($user_role, $roles)) >= 1) {
-			$has_profile = true;
-		}
+	$has_profile = false;
+	if (count(array_intersect($user_role, $roles)) >= 1) {
+		$has_profile = true;
+	}
 
-		$html = render_complete_profile_form($has_profile);
-		$html .= render_slot($has_profile);
+	$html = render_complete_profile_form($has_profile);
+	$html .= render_slot($has_profile);
 
-    wp_send_json_success(array('html' => $html));
+	wp_send_json_success(array('html' => $html));
 }
 
-function handle_fetch_player_info() {
-    if (!isset($_POST['player_id'])) {
-      wp_send_json_error(array('message' => 'Faltan datos'));
-      return;
-    }
+function handle_fetch_player_info()
+{
+	if (!isset($_POST['player_id'])) {
+		wp_send_json_error(array('message' => 'Faltan datos'));
+		return;
+	}
 
-    $player_id = sanitize_text_field($_POST['player_id']);
-    wp_send_json_success(array('html' => render_player_info($player_id)));
+	$player_id = sanitize_text_field($_POST['player_id']);
+	wp_send_json_success(array('html' => render_player_info($player_id)));
 }
 
-function handle_update_player() {
-		$team_id = sanitize_text_field($_POST['team_id']);
-    $player_id = sanitize_text_field($_POST['player_id']);
-    $player_name = sanitize_text_field($_POST['player_name']);
-		// $player_photo = $_FILES['logo'];
+function handle_update_player()
+{
+	$team_id = sanitize_text_field($_POST['team_id']);
+	$player_id = sanitize_text_field($_POST['player_id']);
+	$player_name = sanitize_text_field($_POST['player_name']);
+	// $player_photo = $_FILES['logo'];
 	// 
-		// if ($player_photo['name'] != "") {
-			// $attachment_id = null;
-			// addImageToWordPressMediaLibrary($player_photo['tmp_name'], $player_photo['name'], $player_photo['name'], $attachment_id);
-			// PlayersDatabase::update_player($player_id, $player_name, $attachment_id);
-		// } else {
-			PlayersDatabase::update_player_name($player_id, $player_name);
-		// }
+	// if ($player_photo['name'] != "") {
+	// $attachment_id = null;
+	// addImageToWordPressMediaLibrary($player_photo['tmp_name'], $player_photo['name'], $player_photo['name'], $attachment_id);
+	// PlayersDatabase::update_player($player_id, $player_name, $attachment_id);
+	// } else {
+	PlayersDatabase::update_player_name($player_id, $player_name);
+	// }
 
-    wp_send_json_success(array('html' => render_team_info($team_id)));
+	wp_send_json_success(array('html' => render_team_info($team_id)));
 }
 
-function handle_delete_player() {
-    if (!isset($_POST['player_id']) || !isset($_POST['team_id'])) {
-      wp_send_json_error(array('message' => 'Faltan datos'));
-      return;
-    }
+function handle_delete_player()
+{
+	if (!isset($_POST['player_id']) || !isset($_POST['team_id'])) {
+		wp_send_json_error(array('message' => 'Faltan datos'));
+		return;
+	}
 
-    $player_id = sanitize_text_field($_POST['player_id']);
-    $team_id = sanitize_text_field($_POST['team_id']);
+	$player_id = sanitize_text_field($_POST['player_id']);
+	$team_id = sanitize_text_field($_POST['team_id']);
 
 	$player_instance = PlayersDatabase::get_player_by_id($player_id);
 	if ($player_instance->player_user_id) {
 		PlayersUserDatabase::update_player_has_team($player_instance->player_user_id, false);
 	}
 	PlayersDatabase::delete_player($player_id);
-    wp_send_json_success(array('html' => render_team_info($team_id)));
+	wp_send_json_success(array('html' => render_team_info($team_id)));
 }
 
-function handle_update_team() {
-    if (!isset($_POST['team_id'])) {
-      wp_send_json_error(array('message' => 'Faltan datos'));
-      return;
-    }
+function handle_update_team()
+{
+	if (!isset($_POST['team_id'])) {
+		wp_send_json_error(array('message' => 'Faltan datos'));
+		return;
+	}
 
-    $team_id = sanitize_text_field($_POST['team_id']);
-    $team_name = sanitize_text_field($_POST['name']);
-    $team_logo = $_FILES['logo'];
+	$team_id = sanitize_text_field($_POST['team_id']);
+	$team_name = sanitize_text_field($_POST['name']);
+	$team_logo = $_FILES['logo'];
 
-		if ($team_logo['name'] != "") {
-        $attachment_id = null;
-        addImageToWordPressMediaLibrary($team_logo['tmp_name'], $team_logo['name'], $team_logo['name'], $attachment_id);
-        TeamsUserDatabase::update_team($team_id, $team_name, $attachment_id);
-				TeamsDatabase::update_teams_name_and_logo($team_id, $team_name, $attachment_id);
-    } else {
-        TeamsUserDatabase::update_team_name($team_id, $team_name);
-				TeamsDatabase::update_teams_name($team_id, $team_name);
-    }
+	if ($team_logo['name'] != "") {
+		$attachment_id = null;
+		addImageToWordPressMediaLibrary($team_logo['tmp_name'], $team_logo['name'], $team_logo['name'], $attachment_id);
+		TeamsUserDatabase::update_team($team_id, $team_name, $attachment_id);
+		TeamsDatabase::update_teams_name_and_logo($team_id, $team_name, $attachment_id);
+	} else {
+		TeamsUserDatabase::update_team_name($team_id, $team_name);
+		TeamsDatabase::update_teams_name($team_id, $team_name);
+	}
 
-    wp_send_json_success(array('html' => render_team_info($team_id)));
+	wp_send_json_success(array('html' => render_team_info($team_id)));
 }
 
-function handle_delete_team() {
-    if (!isset($_POST['team_id'])) {
-      wp_send_json_error(array('message' => 'Faltan datos'));
-      return;
-    }
+function handle_delete_team()
+{
+	if (!isset($_POST['team_id'])) {
+		wp_send_json_error(array('message' => 'Faltan datos'));
+		return;
+	}
 
-    $team_id = sanitize_text_field($_POST['team_id']);
+	$team_id = sanitize_text_field($_POST['team_id']);
 
-    TeamsUserDatabase::delete_team($team_id);
-    wp_send_json_success(array('html' => render_user_teams()));
+	TeamsUserDatabase::delete_team($team_id);
+	wp_send_json_success(array('html' => render_user_teams()));
 }
 
-function handle_cancel_registration() {
-    if (!isset($_POST['team_id'])) {
-      wp_send_json_error(array('message' => 'Faltan datos'));
-      return;
-    }
+function handle_cancel_registration()
+{
+	if (!isset($_POST['team_id'])) {
+		wp_send_json_error(array('message' => 'Faltan datos'));
+		return;
+	}
 
-    $team_id = sanitize_text_field($_POST['team_id']);
+	$team_id = sanitize_text_field($_POST['team_id']);
 
-		$is_pending = TeamRegisterQueueDatabase::is_team_pending($team_id);
+	$is_pending = TeamRegisterQueueDatabase::is_team_pending($team_id);
 
-    if ($is_pending) {
-			$registration = TeamRegisterQueueDatabase::get_registration_by_team_id($team_id);
-      TeamRegisterQueueDatabase::delete_team($registration->team_register_queue_id);
-    } else {
-      wp_send_json_error(array('message' => 'No hay registro pendiente'));
-      return;
-    }
-    wp_send_json_success(array('html' => render_team_info($team_id)));
+	if ($is_pending) {
+		$registration = TeamRegisterQueueDatabase::get_registration_by_team_id($team_id);
+		TeamRegisterQueueDatabase::delete_team($registration->team_register_queue_id);
+	} else {
+		wp_send_json_error(array('message' => 'No hay registro pendiente'));
+		return;
+	}
+	wp_send_json_success(array('html' => render_team_info($team_id)));
 }
 
-function handle_back_button() {
-    if (!isset($_POST['screen']) || !isset($_POST['team_id']) || !isset($_POST['tournament_id'])) {
-      wp_send_json_error(array('message' => 'Faltan datos'));
-      return;
-    }
+function handle_back_button()
+{
+	if (!isset($_POST['screen']) || !isset($_POST['team_id']) || !isset($_POST['tournament_id'])) {
+		wp_send_json_error(array('message' => 'Faltan datos'));
+		return;
+	}
 
-    $screen = sanitize_text_field($_POST['screen']);
-    $team_id = sanitize_text_field($_POST['team_id']);
+	$screen = sanitize_text_field($_POST['screen']);
+	$team_id = sanitize_text_field($_POST['team_id']);
 	$tournament_id = sanitize_text_field($_POST['tournament_id']);
 
-    match ($screen) {
-        'user-teams' => wp_send_json_success(array('html' => render_user_teams())),
-        'user-team-info' => wp_send_json_success(array('html' => render_team_info($team_id))),
+	match ($screen) {
+		'user-teams' => wp_send_json_success(array('html' => render_user_teams())),
+		'user-team-info' => wp_send_json_success(array('html' => render_team_info($team_id))),
 		'user-tournaments' => wp_send_json_success(array('html' => render_user_tournaments())),
 		'user-results' => wp_send_json_success(array('html' => render_user_results())),
 		'player-results' => wp_send_json_success(array('html' => render_player_results())),
 		'user-teams-matches' => wp_send_json_success(array('html' => render_teams_for_matches())),
 		'coach-teams-in-tournament' => wp_send_json_success(array('html' => render_coach_teams_in_tournament($tournament_id))),
-        default => wp_send_json_error(array('message' => render_user_data())),
-    };
+		'official-tournaments' => wp_send_json_success(array('html' => render_official_tournaments())),
+		'official-matches' => wp_send_json_success(array('html' => render_official_tournaments_for_matches())),
+		default => wp_send_json_error(array('message' => render_user_data())),
+	};
 }
 
-function user_logged_in() {
+function user_logged_in()
+{
 	if (is_user_logged_in()) {
-			wp_send_json_success(array('message' => 'User is logged in!'));
+		wp_send_json_success(array('message' => 'User is logged in!'));
 	} else {
-			wp_send_json_error(array('message' => 'User is not logged in!'));
+		wp_send_json_error(array('message' => 'User is not logged in!'));
 	}
 }
 

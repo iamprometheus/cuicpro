@@ -1,6 +1,7 @@
 <?php
 
-function render_teams() {
+function render_teams()
+{
   $teams = TeamsDatabase::get_teams();
   $html = "";
 
@@ -11,7 +12,8 @@ function render_teams() {
   return $html;
 }
 
-function create_hours_select_input($tournament_hours) {
+function create_hours_select_input($tournament_hours)
+{
   $html = "";
   foreach ($tournament_hours as $index => $hour) {
     $hours_start = intval($hour->tournament_hours_start);
@@ -26,7 +28,7 @@ function create_hours_select_input($tournament_hours) {
     $html .= "<input type='checkbox' value='all' id='hours-selector-all'>";
     $html .= "<label for='hours-selector-all'> Todo el dia </label>";
     $html .= "</div>";
-    
+
     for ($i = $hours_start; $i <= $hours_end; $i++) {
       $html .= "<div class='hours-selector-item'>";
       $html .= "<input type='checkbox' value='$i' id='hour-checkbox'>";
@@ -38,7 +40,8 @@ function create_hours_select_input($tournament_hours) {
   return $html;
 }
 
-function create_hours_viewer($official_id) {
+function create_hours_viewer($official_id)
+{
   $html = "";
   $official_hours = OfficialsHoursDatabase::get_official_hours($official_id);
   foreach ($official_hours as $official_hour) {
@@ -48,7 +51,7 @@ function create_hours_viewer($official_id) {
     $html .= "</div>";
     $html .= "<div class='hours-viewer hidden' id='hours-viewer-$day_html'>";
     $html .= "<span>Horas:</span>";
-    
+
     foreach (explode(",", $official_hour->official_hours) as $hour) {
       $html .= "<div class='hours-viewer-item'>";
       $html .= "<input type='checkbox' value='$hour' checked disabled>";
@@ -60,7 +63,8 @@ function create_hours_viewer($official_id) {
   return $html;
 }
 
-function create_input_official() {
+function create_input_official()
+{
   $tournament = TournamentsDatabase::get_active_tournaments();
 
   $tournament_hours = [];
@@ -72,7 +76,7 @@ function create_input_official() {
 
   $tournament_days =  "";
   if (empty($tournament)) {
-     $tournament_days = "";
+    $tournament_days = "";
   } else {
     $tournament_days = str_replace(',', ', ', $tournament[0]->tournament_days);
   }
@@ -89,14 +93,19 @@ function create_input_official() {
                 <input type='text' id='official-name' placeholder='Nombre'>
               </div>
             </div>";
-            
+
+  $html .= "<div class='tournament-table-row'>
+              <span class='tournament-table-cell-header'>Contacto: </span>
+              <div class='tournament-table-cell'>
+                <input type='text' id='official-contact' placeholder='Contacto'>
+              </div>
+            </div>";
   $html .= "<div class='tournament-table-row'>
               <span class='tournament-table-cell-header'>Dias: </span>
               <div class='tournament-table-cell'>
                 <input type='text' id='official-schedule' readonly value='$tournament_days'>
               </div>
             </div>";
-            
   $html .= "<div class='tournament-table-row'>
               <span class='tournament-table-cell-header'>Horas: </span>
               <div class='tournament-table-cell'>
@@ -150,26 +159,28 @@ function create_input_official() {
                 <button id='cancel-official-button' class='hidden'>Cancelar</button>
               </div>
             </div>";
-  
-	$html .= "<div class='tournament-table-row'>
+
+  $html .= "<div class='tournament-table-row'>
               <span class='tournament-table-cell-header'>Resultado: </span>				
               <span class='tournament-table-cell' id='official-result-table'>Resultado de la accion.</span>
             </div>";
-  
+
   $html .= "</div>";
 
   return $html;
 }
 
-function render_officials($tournament) {
-  
-	$html = "<div  style='margin-bottom: 15px; font-size: 20px;'>
+function render_officials($tournament)
+{
+
+  $html = "<div  style='margin-bottom: 15px; font-size: 20px;'>
             <span style='font-weight: bold; '>Oficiales registrados en torneo seleccionado:</span>
           </div>";
   $html .= "<div class='table-row'>
             <span class='table-cell'>Nombre: </span>
-            <span class='table-cell'>Horas: </span>
+            <span class='table-cell'>Contacto: </span>
             <span class='table-cell'>Dias: </span>
+            <span class='table-cell'>Horas: </span>
             <span class='table-cell'>Modalidad: </span>
             <span class='table-cell'>Equipo: </span>
             <span class='table-cell'>Ubicacion: </span>
@@ -178,18 +189,18 @@ function render_officials($tournament) {
             <span class='table-cell'>Acciones: </span>
             </div>
             ";
-  
+
   if (is_null($tournament)) {
     return $html;
   }
-            
+
   $officials = OfficialsDatabase::get_officials_by_tournament($tournament->tournament_id);
   // add team data to table
   foreach ($officials as $official) {
     $checked_active = $official->official_is_active ? 'checked' : '';
     $checked_certified = $official->official_is_certified ? 'checked' : '';
     $team = "";
-    if ( !$official->official_team_id ) {
+    if (!$official->official_team_id) {
       $team = "Ninguno";
     } else {
       $team = TeamsDatabase::get_team_by_id($official->official_team_id)->team_name;
@@ -199,6 +210,7 @@ function render_officials($tournament) {
 
     $html .= "<div class='table-row' id='official-$official->official_id'>";
     $html .= "<span class='table-cell'>" . esc_html($official->official_name) . "</span>";
+    $html .= "<span class='table-cell'>" . esc_html($official->official_contact) . "</span>";
     $html .= "<span class='table-cell'>" . esc_html($official_schedule) . "</span>";
     $html .= "<span class='table-cell'>" . create_hours_viewer($official->official_id) . "</span>";
     $html .= "<span class='table-cell'>" . esc_html($official_mode) . "</span>";
@@ -220,7 +232,8 @@ function render_officials($tournament) {
   return $html;
 }
 
-function cuicpro_official_viewer() {
+function cuicpro_official_viewer()
+{
 
   $tournaments = TournamentsDatabase::get_active_tournaments();
   $tournament = null;
@@ -244,20 +257,21 @@ function cuicpro_official_viewer() {
 }
 
 // enqueue scripts related to this file
-function enqueue_official_scripts() {
-	wp_enqueue_style( 'officials-styles', plugins_url('/styles.css', __FILE__) );
-	wp_enqueue_script(
-			'official-script',
-			plugins_url('/handle_officials_request.js', __FILE__),
-			array('jquery'),
-			null,
-			true
-	);
+function enqueue_official_scripts()
+{
+  wp_enqueue_style('officials-styles', plugins_url('/styles.css', __FILE__));
+  wp_enqueue_script(
+    'official-script',
+    plugins_url('/handle_officials_request.js', __FILE__),
+    array('jquery'),
+    null,
+    true
+  );
 
-	// Pass the AJAX URL to JavaScript
-	wp_localize_script('official-script', 'cuicpro', array(
-			'ajax_url' => admin_url('admin-ajax.php')
-	));
+  // Pass the AJAX URL to JavaScript
+  wp_localize_script('official-script', 'cuicpro', array(
+    'ajax_url' => admin_url('admin-ajax.php')
+  ));
 }
 add_action('admin_enqueue_scripts', 'enqueue_official_scripts');
 

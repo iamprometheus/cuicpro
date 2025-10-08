@@ -9,6 +9,11 @@ jQuery(document).ready(function ($) {
 		$(".coach-registration").removeClass("hidden");
 	});
 
+	$("#account-official").click(function () {
+		$(".account-type-selection").addClass("hidden");
+		$(".official-registration").removeClass("hidden");
+	});
+
 	$("#team-logo").change(function () {
 		const file = this.files[0];
 		const imagePreview = document.getElementById("logo-preview");
@@ -62,6 +67,33 @@ jQuery(document).ready(function ($) {
 		e.preventDefault();
 		const formData = new FormData(this);
 		formData.append("action", "handle_player_account_selected");
+
+		$.ajax({
+			url: cuicpro.ajax_url,
+			type: "POST",
+			data: formData,
+			processData: false,
+			contentType: false,
+			success: function (response) {
+				if (response.success) {
+					alert("Perfil completado exitosamente, bienvenido a CUIC.");
+					jQuery("#cuicpro-profile").html(response.data.html);
+				} else {
+					alert(
+						"Error al completar perfil, si el problema persiste contacta al administrador.",
+					);
+				}
+			},
+			error: function (xhr, status, error) {
+				console.error("Error:", error);
+			},
+		});
+	});
+
+	$(document).on("submit", "#official-registration-form", function (e) {
+		e.preventDefault();
+		const formData = new FormData(this);
+		formData.append("action", "handle_official_account_selected");
 
 		$.ajax({
 			url: cuicpro.ajax_url,

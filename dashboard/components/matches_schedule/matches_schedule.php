@@ -64,6 +64,7 @@ function generate_matches_rows($tournament) {
   $days = explode(",", $tournament->tournament_days);
 
   $matches = PendingMatchesDatabase::get_matches_by_tournament($tournament->tournament_id);
+  $breaks = TournamentBreaksDatabase::get_tournament_breaks_by_tournament($tournament->tournament_id);
 
   $fields5v5 = $tournament->tournament_fields_5v5;
   $fields7v7 = $tournament->tournament_fields_7v7;
@@ -72,6 +73,15 @@ function generate_matches_rows($tournament) {
     $matches_this_day = array_filter($matches, function($match) use ($day) {
       return $match->match_date === $day;
     });
+
+    $breaks_this_day = array_filter($breaks, function ($break) use ($day) {
+      return str_contains($break->tournament_days, $day);
+    });
+
+    $break_hours = [];
+    foreach ($breaks_this_day as $break) {
+      $break_hours[intval($break->tournament_break_hour)] = $break->tournament_break_reason;
+    }
 
     // convert day to date
     $date = DateTime::createFromFormat('d/m/y', $day);
@@ -90,9 +100,27 @@ function generate_matches_rows($tournament) {
     $html .= "<td colspan='$colspan' style='text-align: center;'>" . esc_html(strtoupper($formatter->format($date))) . "</td>";
     $html .= "</tr>";
 
+    $header_counter = 0;
+
     for ($i = 7; $i <= 23; $i++) {
+      if ($header_counter == 5) {
+        $html .= "<tr>";
+        $html .= "<th>Horas\Campos</th>";
+        $html .= generate_field_columns($tournament);
+        $html .= "</tr>";
+        $header_counter = 0;
+      }
+      $header_counter++;
+
       $html .= "<tr>";
       $html .= "<td style='text-align: center;'>" . esc_html($i) . ":00</td>";
+
+      if (array_key_exists($i, $break_hours)) {
+        $breakline = $colspan - 1;
+        $html .= "<td colspan='$breakline' style='text-align: center; font-size: 24px; font-weight: 700;'>" . esc_html($break_hours[$i]) . "</td>";
+        $html .= "</tr>";
+        continue;
+      }
 
       $matches_this_hour = array_filter($matches_this_day, function($match) use ($i) {
         return $match->match_time == $i;

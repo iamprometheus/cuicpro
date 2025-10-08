@@ -80,7 +80,6 @@ jQuery(document).on("click", "#accept-team-button", function () {
 			record_id: recordID,
 		},
 		success: function (response) {
-			console.log(response);
 			if (response.success) {
 				trParent.remove();
 				alert(response.data.message);

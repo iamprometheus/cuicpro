@@ -406,12 +406,17 @@
 		gap: 10px;
 	}
 
-	.user-matches {
+	.user-matches,
+	.official-matches {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 30px;
 		padding: 20px;
 		align-items: center;
+	}
+
+	.official-matches {
+		justify-content: center;
 	}
 
 	.playoffs-container {
@@ -820,13 +825,15 @@
 	}
 
 	.coach-registration,
-	.player-registration {
+	.player-registration,
+	.official-registration {
 		height: 90vh;
 		overflow: hidden;
 	}
 
 	.coach-registration img,
-	.player-registration img {
+	.player-registration img,
+	.official-registration img {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
@@ -907,20 +914,25 @@
 		display: none;
 	}
 
-	.player-registration {
+	.player-registration,
+	.official-registration {
 		background-color: gray;
 	}
 
-	.player-registration img {
+	.player-registration img,
+	.official-registration img {
 		opacity: 0.3;
 	}
 
-	.player-registration .form-contact-group-field {
+	.player-registration .form-contact-group-field,
+	.official-registration .form-contact-group-field {
 		max-width: 500px;
 	}
 
 	.player-registration input,
-	.player-registration select {
+	.player-registration select,
+	.official-registration input,
+	.official-registration select {
 		height: 35px;
 		font-size: 16px;
 		background: white;
@@ -928,7 +940,8 @@
 		opacity: 0.8;
 	}
 
-	.player-registration form {
+	.player-registration form,
+	.official-registration form {
 		position: absolute;
 		top: 50%;
 		left: 50%;
@@ -939,7 +952,8 @@
 		align-items: center;
 	}
 
-	.player-registration .title {
+	.player-registration .title,
+	.official-registration .title {
 		text-align: center;
 		font-size: 4em;
 		font-weight: bold;
@@ -948,11 +962,129 @@
 		font-family: arial black;
 	}
 
-	.player-registration label {
+	.player-registration label,
+	.official-registration label {
 		font-size: 16px;
 		font-weight: bold;
 		color: white;
 		text-shadow: 2px 2px 4px #000000;
+	}
+
+	.form-radio {
+		display: flex;
+		gap: 10px;
+		align-items: center;
+	}
+
+	.official-form {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+		padding: 0px 20px;
+	}
+
+	.official-form label {
+		width: inherit;
+		align-self: initial;
+		text-align: initial;
+		font-size: 20px;
+		font-weight: bold;
+	}
+
+	.official-form .form-label {
+		width: 30%;
+	}
+
+	.official-form .form-group {
+		display: flex;
+		gap: 10px;
+		padding: 0 50px;
+		align-items: center;
+	}
+
+	.official-form .form-radio-group {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.official-form .form-input {
+		height: 20px;
+		width: 20px;
+		padding: 10px;
+		border: 1px solid;
+		border-radius: 10px;
+		align-self: center;
+	}
+
+	.hours-selector-container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		padding: 5px 10px;
+		border: 1px solid #696969;
+		border-radius: 10px;
+		margin: 10px 0;
+	}
+
+	.hours-selector-container:hover {
+		background-color: #fed400;
+		cursor: pointer;
+	}
+
+	.hours-selector {
+		position: absolute;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		overflow-y: auto;
+		max-height: 60vh;
+		background-color: #fff;
+		border-radius: 10px;
+		border: 1px solid #696969;
+		padding: 10px 15px;
+		z-index: 10;
+	}
+
+	.hours-selector-item {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 10px;
+	}
+
+	.hours-viewer {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 10px;
+		background-color: #fff;
+		border-radius: 10px;
+		border: 1px solid #696969;
+		padding: 10px 15px;
+	}
+
+	.hours-viewer-item {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 10px;
+	}
+
+	.hours-viewer-container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		padding: 5px 10px;
+		border: 1px solid #696969;
+		border-radius: 10px;
+		margin: 10px 0;
+	}
+
+	.hours-viewer-container:hover {
+		background-color: #696969;
+		cursor: pointer;
 	}
 
 	button {
@@ -965,7 +1097,8 @@
 		width: 100%;
 	}
 
-	.player-registration button {
+	.player-registration button,
+	.official-registration button {
 		max-width: 500px;
 	}
 
@@ -1002,7 +1135,8 @@
 	}
 
 	@media (max-width: 972px) {
-		.player-registration .title {
+		.player-registration .title,
+		.official-registration .title {
 			font-size: 2em;
 		}
 	}

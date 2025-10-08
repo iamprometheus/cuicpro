@@ -807,7 +807,7 @@ jQuery(document).ready(function ($) {
 					$(".user-data-container").html(response.data.html);
 				} else {
 					alert(
-						"Error al acceder a la unión al torneo, si el problema persiste contacta al administrador.",
+						"Error al unirte al torneo, si el problema persiste contacta al administrador.",
 					);
 				}
 			},

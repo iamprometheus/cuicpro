@@ -1,1 +1,236 @@
-.wp-block-cuicpro-cuicpro-standings *{box-sizing:border-box}.wp-block-cuicpro-cuicpro-standings select{-webkit-appearance:none;-moz-appearance:none;appearance:none;background:url(https://upload.wikimedia.org/wikipedia/commons/9/9d/Caret_down_font_awesome_whitevariation.svg) no-repeat left .8em center/1.4em,linear-gradient(-270deg,#000 3em,#ffeb43 0);border:0;border-radius:.25em;box-shadow:0 0 1em 0 rgba(0,0,0,.2);color:#000;cursor:pointer;font:inherit;outline:0;padding:1rem 1rem 1rem 4rem;width:20rem}.wp-block-cuicpro-cuicpro-standings select::-ms-expand{display:none}.wp-block-cuicpro-cuicpro-standings select:focus{outline:none}.wp-block-cuicpro-cuicpro-standings select option{background-color:hsla(0,0%,100%,.2);color:inherit}.wp-block-cuicpro-cuicpro-standings select:focus,.wp-block-cuicpro-cuicpro-standings select:hover{transform:scale(1.1);transition:transform .2s ease-in-out}.wp-block-cuicpro-cuicpro-standings .schedules-container{display:flex;flex-direction:column;gap:25px;justify-content:center}.wp-block-cuicpro-cuicpro-standings .selectors{display:flex;gap:25px;justify-content:center}.wp-block-cuicpro-cuicpro-standings .team-results-container{display:flex;flex-direction:column;gap:10px;padding:20px}.wp-block-cuicpro-cuicpro-standings .user-tournaments{align-items:center;display:flex;flex-wrap:wrap;gap:20px;padding:20px}.wp-block-cuicpro-cuicpro-standings .team-results{display:flex;gap:20px}.wp-block-cuicpro-cuicpro-standings .team-results div{display:flex;flex-direction:column;gap:10px;justify-content:center}.wp-block-cuicpro-cuicpro-standings .team-logo{border-radius:10px;height:150px;-o-object-fit:contain;object-fit:contain;width:150px}.wp-block-cuicpro-cuicpro-standings .left-team div{justify-content:flex-end}.wp-block-cuicpro-cuicpro-standings .matches-results-container{display:flex;flex-direction:column;gap:10px}.wp-block-cuicpro-cuicpro-standings .matches-results-container hr{border:1px solid dimgray;width:100%}.wp-block-cuicpro-cuicpro-standings .match-item{display:grid;font-size:16px;grid-template-columns:1fr 70% 1fr}.wp-block-cuicpro-cuicpro-standings .match-results{align-items:center;display:grid;gap:10px;grid-template-columns:1fr auto 1fr}.wp-block-cuicpro-cuicpro-standings .match-team-container{color:#414141;font-size:16px}.wp-block-cuicpro-cuicpro-standings .team-name{align-items:center;color:#414141;display:flex;font-size:16px;gap:10px}.wp-block-cuicpro-cuicpro-standings .match-info-left,.wp-block-cuicpro-cuicpro-standings .match-info-right{display:flex;flex-direction:column;justify-content:center}.wp-block-cuicpro-cuicpro-standings .match-info-right{text-align:left}.wp-block-cuicpro-cuicpro-standings .winner{color:#000;font-weight:700}.wp-block-cuicpro-cuicpro-standings .winner span{background-color:lime;border-radius:5px;padding:5px}.wp-block-cuicpro-cuicpro-standings .match-scoreboard{background-color:#4d4d4d;border-radius:5px;color:#fff;font-size:18px;font-weight:600;min-width:-moz-fit-content;min-width:fit-content;padding:7px;text-wrap:nowrap}.wp-block-cuicpro-cuicpro-standings .leaderboard-container{overflow:auto}.wp-block-cuicpro-cuicpro-standings .leaderboard-table{border-collapse:collapse;min-width:50%}.wp-block-cuicpro-cuicpro-standings .leaderboard-table th{font-size:15px;font-weight:700;padding:8px}.wp-block-cuicpro-cuicpro-standings .leaderboard-table td{font-size:16px;font-weight:700;padding:8px;text-align:center}.wp-block-cuicpro-cuicpro-standings .leaderboard-table .odd-row{background-color:#b7b7b7}.wp-block-cuicpro-cuicpro-standings .match-info[hidden]{display:block}@media screen and (max-width:1100px){.wp-block-cuicpro-cuicpro-standings hr.hidden{display:none}.wp-block-cuicpro-cuicpro-standings .match-item{font-size:20px;gap:20px;grid-template-columns:1fr;grid-template-rows:auto auto auto}.wp-block-cuicpro-cuicpro-standings .match-data-container{flex-direction:column;padding:5px 10px}.wp-block-cuicpro-cuicpro-standings .match-data{gap:3px}.wp-block-cuicpro-cuicpro-standings .text-right{text-align:right}.wp-block-cuicpro-cuicpro-standings .match-team-container{display:flex}.wp-block-cuicpro-cuicpro-standings .match-info-left,.wp-block-cuicpro-cuicpro-standings .match-info-right{text-align:center}.wp-block-cuicpro-cuicpro-standings .match-results{gap:20px}.wp-block-cuicpro-cuicpro-standings .left-team{justify-content:flex-end!important}.wp-block-cuicpro-cuicpro-standings .left-team div{flex-direction:column}.wp-block-cuicpro-cuicpro-standings .right-team div{flex-direction:column-reverse;justify-content:flex-start!important}.wp-block-cuicpro-cuicpro-standings .white-space{flex:1}}@media screen and (max-width:768px){.wp-block-cuicpro-cuicpro-standings .selectors{align-items:center;flex-direction:column}.wp-block-cuicpro-cuicpro-standings .leaderboard-table th{padding:5px}}
+/*!*********************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/cuicpro-standings/style.scss ***!
+  \*********************************************************************************************************************************************************************************************************************************************************/
+/**
+ * The following styles get applied both on the front of your site
+ * and in the editor.
+ *
+ * Replace them with your own styles or remove the file completely.
+ */
+.wp-block-cuicpro-cuicpro-standings {
+  /* <select> styles */
+}
+.wp-block-cuicpro-cuicpro-standings * {
+  box-sizing: border-box;
+}
+.wp-block-cuicpro-cuicpro-standings select {
+  /* Reset */
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  border: 0;
+  outline: 0;
+  font: inherit;
+  /* Personalize */
+  width: 20rem;
+  padding: 1rem 1rem 1rem 4rem;
+  background: url(https://upload.wikimedia.org/wikipedia/commons/9/9d/Caret_down_font_awesome_whitevariation.svg) no-repeat left 0.8em center/1.4em, linear-gradient(to right, rgb(0, 0, 0) 3em, rgb(255, 235, 67) 3em);
+  color: rgb(0, 0, 0);
+  border-radius: 0.25em;
+  box-shadow: 0 0 1em 0 rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  /* Remove IE arrow */
+  /* Remove focus outline */
+  /* <option> colors */
+}
+.wp-block-cuicpro-cuicpro-standings select::-ms-expand {
+  display: none;
+}
+.wp-block-cuicpro-cuicpro-standings select:focus {
+  outline: none;
+}
+.wp-block-cuicpro-cuicpro-standings select option {
+  color: inherit;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+.wp-block-cuicpro-cuicpro-standings select:hover {
+  transform: scale(1.1);
+  transition: transform 0.2s ease-in-out;
+}
+.wp-block-cuicpro-cuicpro-standings select:focus {
+  transform: scale(1.1);
+  transition: transform 0.2s ease-in-out;
+}
+.wp-block-cuicpro-cuicpro-standings .schedules-container {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  justify-content: center;
+}
+.wp-block-cuicpro-cuicpro-standings .selectors {
+  display: flex;
+  gap: 25px;
+  justify-content: center;
+}
+.wp-block-cuicpro-cuicpro-standings .team-results-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+}
+.wp-block-cuicpro-cuicpro-standings .user-tournaments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
+  align-items: center;
+}
+.wp-block-cuicpro-cuicpro-standings .team-results {
+  display: flex;
+  gap: 20px;
+}
+.wp-block-cuicpro-cuicpro-standings .team-results div {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+}
+.wp-block-cuicpro-cuicpro-standings .team-logo {
+  width: 150px;
+  height: 150px;
+  -o-object-fit: contain;
+     object-fit: contain;
+  border-radius: 10px;
+}
+.wp-block-cuicpro-cuicpro-standings .left-team div {
+  justify-content: flex-end;
+}
+.wp-block-cuicpro-cuicpro-standings .matches-results-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.wp-block-cuicpro-cuicpro-standings .matches-results-container hr {
+  border: 1px solid #696969;
+  width: 100%;
+}
+.wp-block-cuicpro-cuicpro-standings .match-item {
+  display: grid;
+  grid-template-columns: 1fr 70% 1fr;
+  font-size: 16px;
+}
+.wp-block-cuicpro-cuicpro-standings .match-results {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+}
+.wp-block-cuicpro-cuicpro-standings .match-team-container {
+  font-size: 16px;
+  color: #414141;
+}
+.wp-block-cuicpro-cuicpro-standings .team-name {
+  font-size: 16px;
+  color: #414141;
+  align-items: center;
+  display: flex;
+  gap: 10px;
+}
+.wp-block-cuicpro-cuicpro-standings .match-info-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.wp-block-cuicpro-cuicpro-standings .match-info-right {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.wp-block-cuicpro-cuicpro-standings .winner {
+  color: #000;
+  font-weight: bold;
+}
+.wp-block-cuicpro-cuicpro-standings .winner span {
+  background-color: #00ff00;
+  border-radius: 5px;
+  padding: 5px;
+}
+.wp-block-cuicpro-cuicpro-standings .match-scoreboard {
+  background-color: #4d4d4d;
+  padding: 7px;
+  border-radius: 5px;
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  min-width: -moz-fit-content;
+  min-width: fit-content;
+  text-wrap: nowrap;
+}
+.wp-block-cuicpro-cuicpro-standings .leaderboard-container {
+  overflow: auto;
+}
+.wp-block-cuicpro-cuicpro-standings .leaderboard-table {
+  border-collapse: collapse;
+  min-width: 50%;
+}
+.wp-block-cuicpro-cuicpro-standings .leaderboard-table th {
+  padding: 8px;
+  font-size: 15px;
+  font-weight: bold;
+}
+.wp-block-cuicpro-cuicpro-standings .leaderboard-table td {
+  padding: 8px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+}
+.wp-block-cuicpro-cuicpro-standings .leaderboard-table .odd-row {
+  background-color: #b7b7b7;
+}
+.wp-block-cuicpro-cuicpro-standings .match-info[hidden] {
+  display: block;
+}
+@media screen and (max-width: 1100px) {
+  .wp-block-cuicpro-cuicpro-standings hr.hidden {
+    display: none;
+  }
+  .wp-block-cuicpro-cuicpro-standings .match-item {
+    grid-template-rows: auto auto auto;
+    grid-template-columns: 1fr;
+    font-size: 20px;
+    gap: 20px;
+  }
+  .wp-block-cuicpro-cuicpro-standings .match-data-container {
+    flex-direction: column;
+    padding: 5px 10px;
+  }
+  .wp-block-cuicpro-cuicpro-standings .match-data {
+    gap: 3px;
+  }
+  .wp-block-cuicpro-cuicpro-standings .text-right {
+    text-align: right;
+  }
+  .wp-block-cuicpro-cuicpro-standings .match-team-container {
+    display: flex;
+  }
+  .wp-block-cuicpro-cuicpro-standings .match-info-left,
+  .wp-block-cuicpro-cuicpro-standings .match-info-right {
+    text-align: center;
+  }
+  .wp-block-cuicpro-cuicpro-standings .match-results {
+    gap: 20px;
+  }
+  .wp-block-cuicpro-cuicpro-standings .left-team {
+    justify-content: flex-end !important;
+  }
+  .wp-block-cuicpro-cuicpro-standings .left-team div {
+    flex-direction: column;
+  }
+  .wp-block-cuicpro-cuicpro-standings .right-team div {
+    flex-direction: column-reverse;
+    justify-content: flex-start !important;
+  }
+  .wp-block-cuicpro-cuicpro-standings .white-space {
+    flex: 1;
+  }
+}
+@media screen and (max-width: 768px) {
+  .wp-block-cuicpro-cuicpro-standings .selectors {
+    flex-direction: column;
+    align-items: center;
+  }
+  .wp-block-cuicpro-cuicpro-standings .leaderboard-table th {
+    padding: 5px;
+  }
+}

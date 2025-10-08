@@ -128,6 +128,12 @@ jQuery(function ($) {
 		dateFormat: "d/m/y",
 	});
 
+	jQuery("#break-preferred-days").multiDatesPicker({
+		// minDate: date3,
+		// maxDate: date4,
+		dateFormat: "d/m/y",
+	});
+
 	jQuery("#slider-hours").slider({
 		range: true,
 		min: 7,
@@ -139,5 +145,21 @@ jQuery(function ($) {
 			const endHour = (ui.values[1] < 10 ? "0" : "") + ui.values[1];
 			jQuery("#hours-range").val(startHour + ":00 - " + endHour + ":00");
 		},
+	});
+
+	jQuery("#slider-break-time").slider({
+		min: 7,
+		max: 23,
+		step: 1,
+		values: [12], // Initial values (12 PM)
+		slide: function (event, ui) {
+			const startHour = (ui.values[0] < 10 ? "0" : "") + ui.values[0];
+			jQuery("#break-hour").val(startHour + ":00");
+		},
+	});
+
+	jQuery("#break-hour").on("change", function () {
+		const hours = jQuery(this).val().split(":");
+		jQuery("#slider-break-time").slider("values", [hours[0]]);
 	});
 });

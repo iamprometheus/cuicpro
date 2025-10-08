@@ -3,6 +3,7 @@ jQuery(document).on("click", "#add-official-button", function (e) {
 
 	const officialName = jQuery("#official-name").val();
 	let officialSchedule = jQuery("#official-schedule").val();
+	const officialContact = jQuery("#official-contact").val();
 	const officialMode = jQuery("#official-mode").val();
 	const officialTeamId = jQuery("#official-team-id").val();
 	const officialCity = jQuery("#official-city").val();
@@ -108,6 +109,7 @@ jQuery(document).on("click", "#add-official-button", function (e) {
 			action: "add_official",
 			official_name: officialName,
 			official_hours: officialHours,
+			official_contact: officialContact,
 			official_schedule: officialSchedule,
 			official_mode: officialMode,
 			official_team_id: officialTeamId,
@@ -263,8 +265,10 @@ jQuery(document).on("click", "#edit-official-button", function () {
 				const officialCity = official.official_city;
 				const officialState = official.official_state;
 				const officialCountry = official.official_country;
+				const officialContact = official.official_contact;
 
 				jQuery("#official-name").val(officialName);
+				jQuery("#official-contact").val(officialContact);
 				jQuery("#official-schedule").multiDatesPicker("resetDates");
 
 				jQuery("#official-mode").val(officialMode);
@@ -344,6 +348,7 @@ jQuery(document).on("click", "#update-official-button", function (e) {
 
 	const officialID = jQuery(this).data("official-id");
 	const officialName = jQuery("#official-name").val();
+	const officialContact = jQuery("#official-contact").val();
 	let officialSchedule = jQuery("#official-schedule").val();
 	const officialMode = jQuery("#official-mode").val();
 	const officialTeamId = jQuery("#official-team-id").val();
@@ -441,6 +446,7 @@ jQuery(document).on("click", "#update-official-button", function (e) {
 			action: "update_official",
 			official_id: officialID,
 			official_name: officialName,
+			official_contact: officialContact,
 			official_hours: officialHours,
 			official_schedule: officialSchedule,
 			official_mode: officialMode,
@@ -524,6 +530,7 @@ function clearOfficialInputs(tournamentDays) {
 		.val();
 	jQuery("#official-schedule").val(tournament_days);
 	jQuery("#official-mode").val("1");
+	jQuery("#official-contact").val("");
 	jQuery("#official-team-id").val("0");
 	jQuery("#official-city").val("");
 	jQuery("#official-state").val("");

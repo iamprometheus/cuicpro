@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHP file to use when rendering the block type on the server to show on the front end.
  *
@@ -13,32 +14,39 @@
 // Generates a unique id for aria-controls.
 
 if (!function_exists('render_account_type_selection')) {
-  function render_account_type_selection() {
-	$html = "";
+	function render_account_type_selection()
+	{
+		$html = "";
 
-	$img_coach = wp_get_attachment_image_url(318, 'full');
-	$img_player = wp_get_attachment_image_url(317, 'full');
-	$html .= "<div class='account-type-selection'>";
-	$html .= "<div>
+		$img_coach = wp_get_attachment_image_url(318, 'full');
+		$img_player = wp_get_attachment_image_url(317, 'full');
+		$img_official = wp_get_attachment_image_url(318, 'full');
+		$html .= "<div class='account-type-selection'>";
+		$html .= "<div>
 					<p id='account-coach'>Soy Coach</p>
 					<img src='{$img_coach}'/>
 				</div>";
-	$html .= "<div>
+		$html .= "<div>
 					<p id='account-player'>Soy Jugador</p>
 					<img src='{$img_player}'/>
 				</div>";
-	$html .= "</div>";
+		$html .= "<div>
+					<p id='account-official'>Soy Arbitro</p>
+					<img src='{$img_official}'/>
+				</div>";
+		$html .= "</div>";
 
-    return $html;
-  }
+		return $html;
+	}
 }
 
 if (!function_exists('render_coach_registration')) {
-	function render_coach_registration() {
-	  $html = "";
-  
-	  $img_coach = wp_get_attachment_image_url(318, 'full');
-	  $html .= "<div class='coach-registration hidden'>
+	function render_coach_registration()
+	{
+		$html = "";
+
+		$img_coach = wp_get_attachment_image_url(318, 'full');
+		$html .= "<div class='coach-registration hidden'>
 					<img src='{$img_coach}'/>
 					<form id='coach-registration-form'>
 					<span class='title'>¡Registra tu equipo!</span>
@@ -79,37 +87,38 @@ if (!function_exists('render_coach_registration')) {
 						<button type='submit'>Registrarse</button>
 					</form>
 				</div>";
-  
-	  return $html;
+
+		return $html;
 	}
 }
 
 if (!function_exists('render_player_registration')) {
-	function render_player_registration() {
-	  $html = "";
+	function render_player_registration()
+	{
+		$html = "";
 
-	  $current_year = date('Y');
-	  $tournaments = TournamentsDatabase::get_active_tournaments_frontend();
-  
-	  $img_coach = wp_get_attachment_image_url(317, 'full');
-	  $html .= "<div class='player-registration hidden'>";
-	  $html .= "<img src='{$img_coach}'/>
-				<form id='player-registration-form'>
-					<span class='title'>Bienvenido a INTERFLAG {$current_year}</span>
-					<div class='form-contact-group-field'>
-						<label for='player-name'>Nombre</label>
-						<input name='player-name' type='text' placeholder='Nombre' required/>
-					</div>
+		$current_year = date('Y');
+		$tournaments = TournamentsDatabase::get_active_tournaments_frontend();
 
-					<div class='form-contact-group-field'>
-						<label for='tournament-select'>Torneo</label>
-						<select id='tournament-select' name='tournament-select'>
-							<option value=''>Selecciona un torneo</option>";
+		$img_coach = wp_get_attachment_image_url(317, 'full');
+		$html .= "<div class='player-registration hidden'>";
+		$html .= "<img src='{$img_coach}'/>
+			<form id='player-registration-form'>
+				<span class='title'>Bienvenido a INTERFLAG {$current_year}</span>
+				<div class='form-contact-group-field'>
+					<label for='player-name'>Nombre</label>
+					<input name='player-name' type='text' placeholder='Nombre' required/>
+				</div>
 
-	foreach ($tournaments as $tournament) {
-		$html .= "			<option value='{$tournament->tournament_id}'>{$tournament->tournament_name}</option>";
-	}
-	$html .= "			</select>
+				<div class='form-contact-group-field'>
+					<label for='tournament-select'>Torneo</label>
+					<select id='tournament-select' name='tournament-select'>
+						<option value=''>Selecciona un torneo</option>";
+
+		foreach ($tournaments as $tournament) {
+			$html .= "			<option value='{$tournament->tournament_id}'>{$tournament->tournament_name}</option>";
+		}
+		$html .= "			</select>
 					</div>
 
 					<div class='form-contact-group-field'>
@@ -128,24 +137,52 @@ if (!function_exists('render_player_registration')) {
 					<button type='submit'>Unirme</button>
 				</form>
 			</div>";
-  
-	  return $html;
+
+		return $html;
 	}
-  }
+}
+
+if (!function_exists('render_official_registration')) {
+	function render_official_registration()
+	{
+		$html = "";
+		$current_year = date('Y');
+
+		$img_official = wp_get_attachment_image_url(318, 'full');
+		$html .= "<div class='official-registration hidden'>";
+		$html .= "<img src='{$img_official}'/>
+					<form id='official-registration-form'>
+						<span class='title'>Bienvenido a INTERFLAG {$current_year}</span>
+						<div class='form-contact-group-field'>
+							<label for='official-name'>Nombre</label>
+							<input name='official-name' type='text' placeholder='Nombre' required/>
+							<label for='official-contact'>Contacto</label>
+							<input name='official-contact' type='tel' placeholder='123 456 7890' required/>
+						</div>
+
+						<button type='submit'>Unirme a CUIC</button>
+					</form>
+				</div>";
+
+		return $html;
+	}
+}
 
 ?>
 
 <div
 	<?php echo get_block_wrapper_attributes(); ?>
-	data-wp-interactive="cuicpro"
-	>
+	data-wp-interactive="cuicpro">
 	<?php
-		echo render_account_type_selection();
+	echo render_account_type_selection();
 	?>
 	<?php
-		echo render_coach_registration();
+	echo render_coach_registration();
 	?>
 	<?php
-		echo render_player_registration();
+	echo render_player_registration();
+	?>
+	<?php
+	echo render_official_registration();
 	?>
 </div>

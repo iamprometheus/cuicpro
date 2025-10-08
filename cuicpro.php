@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Plugin Name:       CUICPRO
  * Description:       CUICPRO Extension for data management
- * Version:           1.2.1
+ * Version:           1.4.0
  * Requires at least: 6.7
  * Requires PHP:      8.2
  * Author:            Aly Castro
@@ -12,7 +13,7 @@
  * @package CUICPRO
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (! defined('ABSPATH')) {
 	exit; // Exit if accessed directly.
 }
 /**
@@ -24,21 +25,22 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @see https://make.wordpress.org/core/2024/10/17/new-block-type-registration-apis-to-improve-performance-in-wordpress-6-7/
  */
 
-function cuicpro_init() {
+function cuicpro_init()
+{
 	$blocks = array(
-		array( 'name' => 'cuicpro-tournaments' ),
-		array( 'name' => 'cuicpro-profile' ),
-		array( 'name' => 'cuicpro-schedule' ),
-		array( 'name' => 'cuicpro-playoffs' ),
-		array( 'name' => 'cuicpro-standings' ),
-		array( 'name' => 'cuicpro-home' ),
-		array( 'name' => 'cuicpro-maps' ),
-		array( 'name' => 'cuicpro-contact-form' ),
-		array( 'name' => 'cuicpro-registration' ),
+		array('name' => 'cuicpro-tournaments'),
+		array('name' => 'cuicpro-profile'),
+		array('name' => 'cuicpro-schedule'),
+		array('name' => 'cuicpro-playoffs'),
+		array('name' => 'cuicpro-standings'),
+		array('name' => 'cuicpro-home'),
+		array('name' => 'cuicpro-maps'),
+		array('name' => 'cuicpro-contact-form'),
+		array('name' => 'cuicpro-registration'),
 
 	);
 
-	foreach ( $blocks as $block ) {
+	foreach ($blocks as $block) {
 		register_block_type_from_metadata(
 			__DIR__ . '/build/' . $block['name']
 		);
@@ -47,7 +49,7 @@ function cuicpro_init() {
 }
 
 // hooks up your code to initialize and register the blocks
-add_action( 'init', 'cuicpro_init' );
+add_action('init', 'cuicpro_init');
 
 // Models
 require_once __DIR__ . '/model/base/teams.php';
@@ -66,6 +68,11 @@ require_once __DIR__ . '/model/matches.php';
 require_once __DIR__ . '/model/brackets.php';
 require_once __DIR__ . '/model/pending_matches.php';
 require_once __DIR__ . '/model/tournament_scheduler.php';
+require_once __DIR__ . '/model/base/officials_register_queue.php';
+require_once __DIR__ . '/model/base/officials_register_hours.php';
+require_once __DIR__ . '/model/base/notifications.php';
+require_once __DIR__ . '/model/base/tournament_breaks.php';
+
 
 // User models
 require_once __DIR__ . '/model/users/coaches_user.php';
@@ -86,12 +93,13 @@ require_once __DIR__ . '/dashboard/components/matches_schedule/matches_schedule.
 require_once __DIR__ . '/dashboard/components/register/register.php';
 require_once __DIR__ . '/dashboard/components/tournaments/tournaments_list.php';
 require_once __DIR__ . '/dashboard/components/players/players.php';
+require_once __DIR__ . '/dashboard/components/notifications/notifications.php';
+require_once __DIR__ . '/dashboard/components/officials_register/officials_register.php';
+require_once __DIR__ . '/dashboard/components/breaks/breaks.php';
 
 // Frontend components
-// require_once __DIR__ . '/frontend/register_form/register_form.php';
 require_once __DIR__ . '/frontend/tournaments/tournaments_frontend.php';
 require_once __DIR__ . '/frontend/schedule/schedule_frontend.php';
-// require_once __DIR__ . '/frontend/brackets/brackets_frontend.php';
 require_once __DIR__ . '/frontend/profile/profile_frontend.php';
 require_once __DIR__ . '/frontend/playoffs/playoffs.php';
 require_once __DIR__ . '/frontend/standings/standings.php';
@@ -99,7 +107,8 @@ require_once __DIR__ . '/frontend/contact/contact-form.php';
 require_once __DIR__ . '/frontend/registration/registration.php';
 
 // Initialize database tables if they don't exist
-function cuicpro_databases() {
+function cuicpro_databases()
+{
 	ModesDatabase::init();
 	CategoriesDatabase::init();
 	CoachesDatabase::init();
@@ -119,17 +128,22 @@ function cuicpro_databases() {
 	TeamsUserDatabase::init();
 	PlayersUserDatabase::init();
 	OfficialsUserDatabase::init();
+	OfficialsRegisterQueueDatabase::init();
+	OfficialsRegisterHoursDatabase::init();
+	NotificationsDatabase::init();
+	TournamentBreaksDatabase::init();
 }
 
 add_action('admin_menu', 'cuicpro_databases');
 
-if(!defined('WPINC')) {
+if (!defined('WPINC')) {
 	return;
 }
 
 add_action('admin_enqueue_scripts', 'load_jquery');
 // load jQuery
-function load_jquery() {
+function load_jquery()
+{
 	// css
 	wp_enqueue_style('jquery-ui', plugin_dir_url(__FILE__) . 'dashboard/css/jquery-ui.css');
 	wp_enqueue_style('jquery-ui-multidatespicker', plugin_dir_url(__FILE__) . 'dashboard/css/mdp.css');
@@ -141,7 +155,7 @@ function load_jquery() {
 	wp_enqueue_script('jquery-ui');
 	wp_enqueue_script('jquery-ui-tabs');
 	wp_enqueue_script('jquery-ui-slider');
-	wp_enqueue_script('jquery-ui-multidatespicker', plugin_dir_url(__FILE__) . 'dashboard/dependencies/jquery-ui.multidatespicker.js', array('jquery','jquery-ui-datepicker'));
+	wp_enqueue_script('jquery-ui-multidatespicker', plugin_dir_url(__FILE__) . 'dashboard/dependencies/jquery-ui.multidatespicker.js', array('jquery', 'jquery-ui-datepicker'));
 	wp_enqueue_script('leader-line', plugin_dir_url(__FILE__) . 'dashboard/dependencies/leader-line.min.js');
 	wp_enqueue_script('custom-script', plugin_dir_url(__FILE__) . 'dashboard/scripts/jQuery-ui-components.js', array('jquery'));
 	wp_enqueue_script('guidedtourjs', plugin_dir_url(__FILE__) . 'dashboard/dependencies/tour.js');
@@ -152,13 +166,15 @@ function load_jquery() {
 }
 
 // Guided tour
-function cuicpro_guided_tour() {
+function cuicpro_guided_tour()
+{
 	wp_enqueue_script('guidedtour', plugin_dir_url(__FILE__) . 'dashboard/scripts/guidedtour.js');
 }
 add_action('admin_enqueue_scripts', 'cuicpro_guided_tour', 20);
 
 // Roles
-function cuicpro_roles() {
+function cuicpro_roles()
+{
 	add_role('coach', 'Coach', array(
 		'read' => true,
 		'edit_posts' => false,
@@ -186,16 +202,15 @@ function cuicpro_roles() {
 		'publish_posts' => false,
 		'delete_posts' => false,
 	));
-	
-	remove_role('official');
-	// add_role('official', 'Arbitro', array(
-	// 	'read' => true,
-	// 	'edit_posts' => false,
-	// 	'upload_files' => false,
-	// 	'edit_others_posts' => false,
-	// 	'publish_posts' => false,
-	// 	'delete_posts' => false,
-	// ));
+
+	add_role('official', 'Arbitro', array(
+		'read' => true,
+		'edit_posts' => false,
+		'upload_files' => false,
+		'edit_others_posts' => false,
+		'publish_posts' => false,
+		'delete_posts' => false,
+	));
 
 	// add capabilities to admin role
 	$admin_role = get_role('administrator');
@@ -208,7 +223,8 @@ add_action('admin_init', 'cuicpro_roles');
 // Add plugin to menu Page
 add_action('admin_menu', 'cuicpro_menu_page');
 
-function cuicpro_menu_page() {
+function cuicpro_menu_page()
+{
 
 	if (!current_user_can('cuicpro_manage_tournament')) {
 		return;
@@ -249,28 +265,48 @@ function cuicpro_menu_page() {
 		'cuicpro-register',
 		'cuicpro_handle_register_page'
 	);
+
+	add_submenu_page(
+		'cuicpro',
+		'Registro de arbitros',
+		'Registro de arbitros',
+		'cuicpro_manage_tournament',
+		'cuicpro-officials-register',
+		'cuicpro_handle_officials_register_page'
+	);
 }
 
-function cuicpro_handle_admin_page() {
+function cuicpro_handle_admin_page()
+{
 	ob_start();
 	include_once __DIR__ . '/dashboard/views/admin.php';
 	echo ob_get_clean();
 }
 
-function cuicpro_handle_officials_schedule_page() {
+function cuicpro_handle_officials_schedule_page()
+{
 	ob_start();
 	include_once __DIR__ . '/dashboard/views/officials_schedule.php';
 	echo ob_get_clean();
 }
 
-function cuicpro_handle_matches_schedule_page() {
+function cuicpro_handle_matches_schedule_page()
+{
 	ob_start();
 	include_once __DIR__ . '/dashboard/views/matches_schedule.php';
 	echo ob_get_clean();
 }
 
-function cuicpro_handle_register_page() {
+function cuicpro_handle_register_page()
+{
 	ob_start();
 	include_once __DIR__ . '/dashboard/views/register.php';
+	echo ob_get_clean();
+}
+
+function cuicpro_handle_officials_register_page()
+{
+	ob_start();
+	include_once __DIR__ . '/dashboard/views/officials_register.php';
 	echo ob_get_clean();
 }

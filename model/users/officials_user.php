@@ -1,18 +1,22 @@
 <?php
+
 declare(strict_types=1);
 
-Class OfficialsUserDatabase {
-    public static function init() {
+class OfficialsUserDatabase
+{
+    public static function init()
+    {
         self::create_officials_user_table();
     }
 
-    public static function create_officials_user_table() {
+    public static function create_officials_user_table()
+    {
         global $wpdb;
         //check if table exists
-        if ( $wpdb->get_var( "SHOW TABLES LIKE '{$wpdb->prefix}cuicpro_officials_user'" ) ) {
+        if ($wpdb->get_var("SHOW TABLES LIKE '{$wpdb->prefix}cuicpro_officials_user'")) {
             return;
         }
-        
+
         $charset_collate = $wpdb->get_charset_collate();
         $sql = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}cuicpro_officials_user (
             user_id SMALLINT UNSIGNED NOT NULL,
@@ -23,29 +27,33 @@ Class OfficialsUserDatabase {
             user_country VARCHAR(255) NOT NULL,
             PRIMARY KEY (user_id)
         ) $charset_collate;";
-        require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-        dbDelta( $sql );
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+        dbDelta($sql);
     }
 
-    public static function get_officials() {
+    public static function get_officials()
+    {
         global $wpdb;
-        $officials = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cuicpro_officials_user" );
+        $officials = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}cuicpro_officials_user");
         return $officials;
     }
 
-    public static function get_official_by_id(int $user_id) {
+    public static function get_official_by_id(int $user_id)
+    {
         global $wpdb;
-        $official = $wpdb->get_row( "SELECT * FROM {$wpdb->prefix}cuicpro_officials_user WHERE official_id = $user_id" );
+        $official = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}cuicpro_officials_user WHERE user_id = $user_id");
         return $official;
     }
 
-    private static function official_exists(int $user_id) {
+    private static function official_exists(int $user_id)
+    {
         global $wpdb;
-        $official = $wpdb->get_row( "SELECT * FROM {$wpdb->prefix}cuicpro_officials_user WHERE official_id = $user_id" );
+        $official = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}cuicpro_officials_user WHERE user_id = $user_id");
         return $official;
     }
 
-    public static function insert_official( int $user_id, string $official_name, string $official_contact, string $official_city, string $official_state, string $official_country ) {
+    public static function insert_official(int $user_id, string $official_name, string $official_contact, string $official_city, string $official_state, string $official_country)
+    {
         global $wpdb;
         if (self::official_exists($user_id)) {
             return [false, null];
@@ -63,13 +71,14 @@ Class OfficialsUserDatabase {
             )
         );
 
-        if ( $result ) {
+        if ($result) {
             return [true, $wpdb->insert_id];
         }
         return [false, null];
     }
 
-    public static function update_official(int $user_id, string $official_name, string $official_contact, string $official_city, string $official_state, string $official_country ) {
+    public static function update_official(int $user_id, string $official_name, string $official_contact, string $official_city, string $official_state, string $official_country)
+    {
         global $wpdb;
         $result = $wpdb->update(
             $wpdb->prefix . 'cuicpro_officials_user',
@@ -84,13 +93,14 @@ Class OfficialsUserDatabase {
                 'user_id' => $user_id,
             )
         );
-        if ( $result ) {
+        if ($result) {
             return "Official updated successfully";
         }
         return "Official not updated";
     }
 
-    public static function delete_official(int $user_id ) {
+    public static function delete_official(int $user_id)
+    {
         global $wpdb;
         $result = $wpdb->delete(
             $wpdb->prefix . 'cuicpro_officials_user',
@@ -98,7 +108,7 @@ Class OfficialsUserDatabase {
                 'user_id' => $user_id,
             )
         );
-        if ( $result ) {
+        if ($result) {
             return "Official deleted successfully";
         }
         return "Official not deleted or official not found";
