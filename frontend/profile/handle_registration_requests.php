@@ -5,9 +5,9 @@ if (!function_exists('render_account_type_selection')) {
 	{
 		$html = "";
 
-		$img_coach = wp_get_attachment_image_url(318, 'full');
-		$img_player = wp_get_attachment_image_url(317, 'full');
-		$img_official = wp_get_attachment_image_url(318, 'full');
+		$img_coach = 'https://cuic.pro/wp-content/uploads/2025/08/COACH-scaled.jpg';
+		$img_player = 'https://cuic.pro/wp-content/uploads/2025/09/PORRA-SKILLS-scaled.jpg';
+		$img_official = 'https://cuic.pro/wp-content/uploads/2025/08/COACH-scaled.jpg';
 		$html .= "<div class='account-type-selection'>";
 		$html .= "<div>
 					<p id='account-coach'>Soy Coach</p>
@@ -135,7 +135,7 @@ if (!function_exists('render_official_registration')) {
 		$html = "";
 		$current_year = date('Y');
 
-		$img_official = wp_get_attachment_image_url(318, 'full');
+		$img_official = 'https://cuic.pro/wp-content/uploads/2025/08/COACH-scaled.jpg';
 		$html .= "<div class='official-registration hidden'>";
 		$html .= "<img src='{$img_official}'/>
 					<form id='official-registration-form'>

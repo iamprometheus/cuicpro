@@ -1,8 +1,9 @@
 #!/bin/bash
 
 # Set the folder and zip file names
+VERSION=$(jq -r '.version' package.json)
 FOLDER="cuicpro"
-ZIP_FILE="cuicpro.zip"
+ZIP_FILE="cuicpro-$VERSION.zip"
 
 # Check if the folder exists
 if [ ! -d "$FOLDER" ]; then
