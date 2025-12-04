@@ -404,7 +404,7 @@ jQuery(document).on("click", "#enrolled-team-button", function () {
 	const teamID = jQuery(this).data("team-id");
 	const teamIsEnrolled = jQuery(this).is(":checked") ? 1 : 0;
 
-	console.log(teamID, teamIsEnrolled)
+	console.log(teamID, teamIsEnrolled);
 	jQuery.ajax({
 		type: "POST",
 		url: cuicpro.ajax_url,

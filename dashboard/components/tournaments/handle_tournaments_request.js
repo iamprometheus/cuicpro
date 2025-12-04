@@ -537,6 +537,9 @@ jQuery(document).on(
 						response.data.teams_by_division,
 					);
 
+					// assign players of teams in selected tournament
+					jQuery("#players-data-container").html(response.data.players);
+
 					// assign hours data for for officials in selected tournament
 					jQuery("#official-hours").html(response.data.official_hours);
 
@@ -549,20 +552,6 @@ jQuery(document).on(
 					jQuery("#official-schedule").val(
 						response.data.tournament_days.replaceAll(",", ", "),
 					);
-
-					const availableDays = response.data.tournament_days.split(",");
-
-					const rawDate1 = availableDays[0].split("/").reverse();
-					rawDate1[0] = "2025";
-					rawDate1.join("-");
-					const rawDate2 = availableDays[availableDays.length - 1]
-						.split("/")
-						.reverse();
-					rawDate2[0] = "2025";
-					rawDate2.join("-");
-
-					const date1 = new Date(rawDate1);
-					const date2 = new Date(rawDate2);
 
 					jQuery("#official-schedule").multiDatesPicker({
 						dateFormat: "d/m/y",

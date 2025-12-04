@@ -1,6 +1,7 @@
 <?php
 
-function render_available_officials($match) {
+function render_available_officials($match)
+{
   $officials = OfficialsDatabase::get_officials_by_tournament($match->tournament_id);
 
   $html = "";
@@ -23,14 +24,15 @@ function render_available_officials($match) {
     if (!$is_available) {
       continue;
     }
-    
+
     $html .= "<option value='" . $official->official_id . "'>" . $official->official_name . "</option>";
   }
   $html .= "</select>";
   return $html;
 }
 
-function create_bracket_match($match) {
+function create_bracket_match($match)
+{
   $team_1_name = "TBD";
   $team_2_name = "TBD";
 
@@ -60,7 +62,7 @@ function create_bracket_match($match) {
   $html .= "<span>Campo: " . $match->field_number . "</span>";
   $html .= "</div>";
   $html .= "</div>";
-  
+
   $html .= "<hr />";
 
   if (!$match->match_pending) {
@@ -72,7 +74,7 @@ function create_bracket_match($match) {
 
     return $html;
   }
-  
+
   if ($team_1_name !== "TBD" && $team_2_name !== "TBD") {
     $html .= "<div class='match-data-end-data'>";
     $html .= "<span style='font-weight: bold; font-size: 16px;'>Resultados</span>";
@@ -84,7 +86,7 @@ function create_bracket_match($match) {
     $html .= "<span>Anotaciones equipo $team_2_name : </span>";
     $html .= "<input type='number' min='0' data-team-id='" . $match->team_id_2 . "' id='team-2-score-" . $match->match_id . "' value=0 />";
     $html .= "</div>";
-   
+
     $html .= "<div class='winner-select'>";
     $html .= "<span>Ganador: </span>";
     $html .= "<select id='team-winner-" . $match->match_id . "'>";
@@ -93,17 +95,18 @@ function create_bracket_match($match) {
     $html .= "<option value='" . $match->team_id_2 . "'>" . $team_2_name . "</option>";
     $html .= "</select>";
     $html .= "</div>";
-   
+
     $html .= "<button id='save-match-single-elimination' data-match-id='" . $match->match_id . "'>Guardar Resultado</button>";
     $html .= "</div>";
   }
   return $html;
 }
 
-function create_single_elimination_bracket(int $bracket_id) {
+function create_single_elimination_bracket(int $bracket_id)
+{
   $matches = PendingMatchesDatabase::get_matches_by_bracket($bracket_id);
 
-  $bracket_rounds = array_unique(array_map(function($match) {
+  $bracket_rounds = array_unique(array_map(function ($match) {
     return $match->bracket_round;
   }, $matches));
 
@@ -140,10 +143,11 @@ function create_single_elimination_bracket(int $bracket_id) {
   return ['html' => $html, 'elements' => $elements, 'matches' => $matches];
 }
 
-function create_playoffs_bracket(int $bracket_id) {
+function create_playoffs_bracket(int $bracket_id)
+{
   $matches = PendingMatchesDatabase::get_matches_by_bracket($bracket_id);
 
-  $playoffs_id = array_unique(array_map(function($match) {
+  $playoffs_id = array_unique(array_map(function ($match) {
     return $match->playoff_id;
   }, $matches));
 
@@ -154,11 +158,11 @@ function create_playoffs_bracket(int $bracket_id) {
   $html .= "<span style='font-weight: bold; font-size: 40px; text-align: center;'>Playoffs</span>";
   foreach ($playoffs_id as $playoff_id) {
     if (!$playoff_id) continue;
-    $bracket_matches = array_filter($matches, function($match) use ($playoff_id) {
+    $bracket_matches = array_filter($matches, function ($match) use ($playoff_id) {
       return $match->playoff_id == $playoff_id;
     });
 
-    $bracket_rounds = array_unique(array_map(function($match) {
+    $bracket_rounds = array_unique(array_map(function ($match) {
       return $match->bracket_round;
     }, $bracket_matches));
 
@@ -201,7 +205,8 @@ function create_playoffs_bracket(int $bracket_id) {
   return ['html' => $html, 'elements' => $elements, 'matches' => $matches];
 }
 
-function render_round_robin_match($match) {
+function render_round_robin_match($match)
+{
   $team_1_name = TeamsDatabase::get_team_by_id($match->team_id_1)->team_name;
   $team_2_name = TeamsDatabase::get_team_by_id($match->team_id_2)->team_name;
 
@@ -241,7 +246,8 @@ function render_round_robin_match($match) {
   return $html;
 }
 
-function render_playoff_match($match) {
+function render_playoff_match($match)
+{
   $team_1_name = "TBD";
   $team_2_name = "TBD";
 
@@ -286,20 +292,20 @@ function render_playoff_match($match) {
     $html .= "<span>Anotaciones equipo $team_2_name : </span>";
     $html .= "<input type='number' min='0' data-team-id='" . $match->team_id_2 . "' id='team-2-score-" . $match->match_id . "' value=0 />";
     $html .= "<button id='save-match' data-match-id='" . $match->match_id . "'>Guardar Resultado</button>";
-  }
-  else {
+  } else {
     $html .= "<span style='font-weight: bold; font-size: 16px;'>Pendiente resultado de partidos anteriores</span>";
   }
   $html .= "</div>";
   return $html;
 }
 
-function render_leaderboard_table(int $bracket_id) {
+function render_leaderboard_table(int $bracket_id)
+{
   $bracket = BracketsDatabase::get_bracket_by_id($bracket_id);
   $division = $bracket->division_id;
   $teams = TeamsDatabase::get_enrolled_teams_by_division($division);
 
-  usort($teams, function($a, $b) {
+  usort($teams, function ($a, $b) {
     return $b->team_points - $a->team_points;
   });
 
@@ -328,13 +334,13 @@ function render_leaderboard_table(int $bracket_id) {
     $matches = MatchesDatabase::get_round_robin_matches_by_team($team->team_id, $bracket->tournament_id);
 
     $pj = count($matches);
-    $pg = count(array_filter($matches, function($match) use ($team) {
+    $pg = count(array_filter($matches, function ($match) use ($team) {
       return $match->match_winner == $team->team_id;
     }));
-    $pp = count(array_filter($matches, function($match) use ($team) {
+    $pp = count(array_filter($matches, function ($match) use ($team) {
       return $match->match_winner != $team->team_id;
     }));
-    $pe = count(array_filter($matches, function($match) {
+    $pe = count(array_filter($matches, function ($match) {
       return $match->match_winner == null;
     }));
     $gf = MatchesDatabase::get_goals_in_favor_by_team($team->team_id);
@@ -343,16 +349,16 @@ function render_leaderboard_table(int $bracket_id) {
     $dg = $gf - $gc;
     $pts = $team->team_points;
 
-    foreach ($matches as $match) {
-      if ($match->team_id_1 == $team->team_id) {
-        $pts += $match->goals_team_1 > $match->goals_team_2 ? 3 : 0;
-        $pts += $match->goals_team_1 == $match->goals_team_2 ? 1 : 0;
-      }
-      if ($match->team_id_2 == $team->team_id) {
-        $pts += $match->goals_team_2 > $match->goals_team_1 ? 3 : 0;
-        $pts += $match->goals_team_2 == $match->goals_team_1 ? 1 : 0;
-      }
-    }
+    // foreach ($matches as $match) {
+    //   if ($match->team_id_1 == $team->team_id) {
+    //     $pts += $match->goals_team_1 > $match->goals_team_2 ? 3 : 0;
+    //     $pts += $match->goals_team_1 == $match->goals_team_2 ? 1 : 0;
+    //   }
+    //   if ($match->team_id_2 == $team->team_id) {
+    //     $pts += $match->goals_team_2 > $match->goals_team_1 ? 3 : 0;
+    //     $pts += $match->goals_team_2 == $match->goals_team_1 ? 1 : 0;
+    //   }
+    // }
 
     $pa = $pj > 0 ? $gf / $pj : 0;
 
@@ -368,10 +374,9 @@ function render_leaderboard_table(int $bracket_id) {
       "pa" => $pa,
       "pts" => $pts
     ];
-
   }
 
-  usort($data, function($a, $b) {
+  usort($data, function ($a, $b) {
     return $b['pts'] - $a['pts'];
   });
 
@@ -398,19 +403,20 @@ function render_leaderboard_table(int $bracket_id) {
   return $html;
 }
 
-function create_round_robin_bracket(int $bracket_id) {
+function create_round_robin_bracket(int $bracket_id)
+{
   $matches = PendingMatchesDatabase::get_pending_matches_by_bracket($bracket_id);
 
-  $days = array_unique(array_map(function($match) {
+  $days = array_unique(array_map(function ($match) {
     return $match->match_date;
   }, $matches));
-  
+
   $html = "<div class='matches-container'>";
   $html .= "<div class='leaderboard-container'>";
   $html .= render_leaderboard_table($bracket_id);
   $html .= "</div>";
   $elements = [];
-  
+
   foreach ($days as $day) {
     $html .= "<hr/>";
     $html .= "<div class='day-title'> Partidos del dia: " . $day . "</div>";
@@ -430,18 +436,19 @@ function create_round_robin_bracket(int $bracket_id) {
   return ['html' => $html, 'elements' => $elements, 'matches' => $matches];
 }
 
-function create_mixed_bracket(int $bracket_id) {
+function create_mixed_bracket(int $bracket_id)
+{
   $matches = PendingMatchesDatabase::get_pending_matches_by_bracket($bracket_id);
 
-  $days = array_unique(array_map(function($match) {
+  $days = array_unique(array_map(function ($match) {
     return $match->match_date;
   }, $matches));
-  
+
   $html = "<div class='matches-container'>";
   $html .= "<div class='leaderboard-container'>";
   $html .= render_leaderboard_table($bracket_id);
   $html .= "</div>";
-  
+
   foreach ($days as $day) {
     $html .= "<hr/>";
     $html .= "<div class='day-title'> Partidos del dia: " . $day . "</div>";
@@ -466,7 +473,8 @@ function create_mixed_bracket(int $bracket_id) {
   return ['html' => $html, 'elements' => $playoffs['elements'], 'matches' => $matches];
 }
 
-function on_fetch_bracket_data(int $bracket_id) {
+function on_fetch_bracket_data(int $bracket_id)
+{
   $bracket = BracketsDatabase::get_bracket_by_id($bracket_id);
   $tournament = TournamentsDatabase::get_tournament_by_id($bracket->tournament_id);
 
@@ -483,7 +491,8 @@ function on_fetch_bracket_data(int $bracket_id) {
   }
 }
 
-function fetch_bracket_data() {
+function fetch_bracket_data()
+{
   if (!isset($_POST['bracket_id'])) {
     wp_send_json_error(['message' => 'Faltan datos']);
   }
@@ -492,7 +501,8 @@ function fetch_bracket_data() {
   wp_send_json_success(['message' => 'Bracket recuperado correctamente', 'html' => on_fetch_bracket_data($bracket_id)['html'], 'elements' => on_fetch_bracket_data($bracket_id)['elements']]);
 }
 
-function update_match_winner_single_elimination() {
+function update_match_winner_single_elimination()
+{
   if (!isset($_POST['match_id']) || !isset($_POST['match_winner']) || !isset($_POST['team_1_score']) || !isset($_POST['team_2_score'])) {
     wp_send_json_error(['message' => 'Faltan datos']);
   }
@@ -507,10 +517,10 @@ function update_match_winner_single_elimination() {
   $bracket_id = $match_data->bracket_id;
 
   $total_matches = count(PendingMatchesDatabase::get_matches_by_bracket($bracket_id));
-  
-  if ($total_matches != $match_link) { 
+
+  if ($total_matches != $match_link) {
     $match_link_data = PendingMatchesDatabase::get_match_by_match_link($bracket_id, $match_link);
-    
+
     if ($match_link_data !== null) {
       if ($match_link_data->match_link_1 == $match_link) {
         PendingMatchesDatabase::update_match_team_1($match_link_data->match_id, $match_winner);
@@ -519,27 +529,28 @@ function update_match_winner_single_elimination() {
       }
     }
   }
-  
+
   $result = MatchesDatabase::insert_match(
-    $match_data->tournament_id, 
-    $match_data->division_id, 
-    $match_data->bracket_id, 
+    $match_data->tournament_id,
+    $match_data->division_id,
+    $match_data->bracket_id,
     $match_data->bracket_round,
-    $match_data->bracket_match, 
-    $match_data->field_number, 
+    $match_data->bracket_match,
+    $match_data->field_number,
     $match_data->field_type,
-    $match_data->team_id_1, 
-    $match_data->team_id_2, 
+    $match_data->team_id_1,
+    $match_data->team_id_2,
     $match_data->official_id === 0 ? null : $match_data->official_id,
-    $match_data->match_date, 
-    $match_data->match_time, 
+    $match_data->match_date,
+    $match_data->match_time,
     $match_data->match_type,
     $match_data->playoff_id,
     $team_1_score,
     $team_2_score,
     $match_winner,
-    $match_id);
-    
+    $match_id
+  );
+
   if ($result) {
     PendingMatchesDatabase::end_match($match_id);
     $match_winner_name = TeamsDatabase::get_team_by_id($match_winner)->team_name;
@@ -551,7 +562,8 @@ function update_match_winner_single_elimination() {
   wp_send_json_success(['message' => 'Ganador actualizado correctamente']);
 }
 
-function update_match_winner_round_robin() {
+function update_match_winner_round_robin()
+{
   if (!isset($_POST['match_id']) || !isset($_POST['match_winner']) || !isset($_POST['team_1_score']) || !isset($_POST['team_2_score'])) {
     wp_send_json_error(['message' => 'Faltan datos']);
   }
@@ -562,27 +574,43 @@ function update_match_winner_round_robin() {
   $team_2_score = intval($_POST['team_2_score']);
 
   $prev_match_info = PendingMatchesDatabase::get_match_by_id($match_id);
-  
+
+  // if draw, add 1 point to both teams
+  if ($match_winner === null) {
+    TeamsDatabase::update_team_points($prev_match_info->team_id_1, TeamsDatabase::get_team_by_id($prev_match_info->team_id_1)->team_points + 1);
+    TeamsDatabase::update_team_points($prev_match_info->team_id_2, TeamsDatabase::get_team_by_id($prev_match_info->team_id_2)->team_points + 1);
+  }
+
+  // if match winner, add 1 point to winner
+  if ($match_winner !== null) {
+    if ($match_winner === $prev_match_info->team_id_1) {
+      TeamsDatabase::update_team_points($prev_match_info->team_id_1, TeamsDatabase::get_team_by_id($prev_match_info->team_id_1)->team_points + 3);
+    } else {
+      TeamsDatabase::update_team_points($prev_match_info->team_id_2, TeamsDatabase::get_team_by_id($prev_match_info->team_id_2)->team_points + 3);
+    }
+  }
+
   $result = MatchesDatabase::insert_match(
-      $prev_match_info->tournament_id, 
-      $prev_match_info->division_id, 
-      $prev_match_info->bracket_id, 
-      $prev_match_info->bracket_round,
-      $prev_match_info->bracket_match, 
-      $prev_match_info->field_number, 
-      $prev_match_info->field_type,
-      $prev_match_info->team_id_1, 
-      $prev_match_info->team_id_2, 
-      $prev_match_info->official_id === 0 ? null : $prev_match_info->official_id,
-      $prev_match_info->match_date, 
-      $prev_match_info->match_time, 
-      $prev_match_info->match_type,
-      $prev_match_info->playoff_id,
-      $team_1_score,
-      $team_2_score,
-      $match_winner,
-      $match_id);
-  
+    $prev_match_info->tournament_id,
+    $prev_match_info->division_id,
+    $prev_match_info->bracket_id,
+    $prev_match_info->bracket_round,
+    $prev_match_info->bracket_match,
+    $prev_match_info->field_number,
+    $prev_match_info->field_type,
+    $prev_match_info->team_id_1,
+    $prev_match_info->team_id_2,
+    $prev_match_info->official_id === 0 ? null : $prev_match_info->official_id,
+    $prev_match_info->match_date,
+    $prev_match_info->match_time,
+    $prev_match_info->match_type,
+    $prev_match_info->playoff_id,
+    $team_1_score,
+    $team_2_score,
+    $match_winner,
+    $match_id
+  );
+
   if ($result) {
     PendingMatchesDatabase::end_match($match_id);
     wp_send_json_success(['message' => 'Ganador actualizado correctamente']);
@@ -591,7 +619,130 @@ function update_match_winner_round_robin() {
   wp_send_json_error(['message' => 'Error al actualizar el ganador']);
 }
 
-function handle_switch_assigned_official($match_id, $new_official_id) {
+function populate_bracket()
+{
+  if (!isset($_POST['bracket_id'])) {
+    wp_send_json_error(['message' => 'Error: Faltan datos']);
+  }
+
+  $bracket_id = intval($_POST['bracket_id']);
+
+  $bracket = BracketsDatabase::get_bracket_by_id($bracket_id);
+
+  if ($bracket->has_populated_playoffs)
+    wp_send_json_error(['message' => 'Error: Ya se han poblado los playoffs de este Bracket.']);
+
+  $teams = TeamsDatabase::get_teams_by_division($bracket->division_id);
+  $matches = PendingMatchesDatabase::get_matches_by_type(2, $bracket_id);
+  $playoffs = array_values(array_unique(array_column($matches, 'playoff_id')));
+
+  $data = [];
+  foreach ($teams as $index => $team) {
+    $gf = MatchesDatabase::get_goals_in_favor_by_team($team->team_id);
+    $gc = MatchesDatabase::get_goals_against_by_team($team->team_id);
+
+    $dg = $gf - $gc;
+    $pts = $team->team_points;
+
+    $data[] = [
+      "team_id" => intval($team->team_id),
+      "team_name" => $team->team_name,
+      "dg" => $dg,
+      "pts" => $pts
+    ];
+  }
+
+  usort($data, function ($a, $b) {
+    // First, compare by 'points'
+    if ($a['pts'] !== $b['pts']) {
+      return $b['pts'] <=> $a['pts']; // Spaceship operator for comparison
+    }
+    // If points are equal, compare by 'dg'
+    return $b['dg'] <=> $a['dg'];
+  });
+
+  foreach ($playoffs as $playoff) {
+    $matches_this_playoff = array_values(array_filter($matches, function ($match) use ($playoff) {
+      return $match->playoff_id == $playoff && $match->is_first_match;
+    }));
+
+    $rounds = array_values(array_unique(array_column($matches_this_playoff, 'bracket_round')));
+    $teams_per_round = [];
+
+    foreach ($rounds as $round) {
+      $matches_this_round = array_values(array_filter($matches_this_playoff, function ($match) use ($round) {
+        return $match->bracket_round == $round;
+      }));
+
+      $teams_count = 0;
+      foreach ($matches_this_round as $match) {
+        if ($match->match_link_1 == null && $match->match_link_2 == null) {
+          $teams_count += 2;
+          continue;
+        }
+
+        if ($match->match_link_1 == null) {
+          $teams_count += 1;
+          continue;
+        }
+
+        if ($match->match_link_2 == null) {
+          $teams_count += 1;
+          continue;
+        }
+      }
+
+      $teams_per_round[$round] = $teams_count;
+    }
+
+    $teams_this_playoff = array_reverse(array_splice($data, 0, array_sum($teams_per_round)));
+
+    foreach ($rounds as $round) {
+      $matches_this_round = array_values(array_filter($matches_this_playoff, function ($match) use ($round) {
+        return $match->bracket_round == $round;
+      }));
+
+      $teams_this_round = array_values(array_splice($teams_this_playoff, 0, $teams_per_round[$round]));
+      shuffle($teams_this_round);
+
+      foreach ($matches_this_round as $match) {
+        if ($match->match_link_1 == null && $match->match_link_2 == null) {
+          PendingMatchesDatabase::update_match_team_1($match->match_id, $teams_this_round[0]["team_id"]);
+          PendingMatchesDatabase::update_match_team_2($match->match_id, $teams_this_round[1]["team_id"]);
+
+          $teams_this_round = array_splice($teams_this_round, 2);
+          continue;
+        }
+
+        if ($match->match_link_1 == null) {
+          PendingMatchesDatabase::update_match_team_1($match->match_id, $teams_this_round[0]["team_id"]);
+          $teams_this_round = array_splice($teams_this_round, 1);
+          continue;
+        }
+
+        if ($match->match_link_2 == null) {
+          PendingMatchesDatabase::update_match_team_2($match->match_id, $teams_this_round[0]["team_id"]);
+          $teams_this_round = array_splice($teams_this_round, 1);
+          continue;
+        }
+      }
+    }
+  }
+
+  BracketsDatabase::update_bracket_populated_playoffs($bracket_id, true);
+
+  wp_send_json_success([
+    'message' => 'Bracket poblado correctamente',
+    'matches' => $matches,
+    'teams' => $data,
+    'playoffs' => $playoffs,
+    'html' => on_fetch_bracket_data($bracket_id)['html'],
+    'elements' => on_fetch_bracket_data($bracket_id)['elements'],
+  ]);
+}
+
+function handle_switch_assigned_official($match_id, $new_official_id)
+{
   $match = PendingMatchesDatabase::get_match_by_id($match_id);
   if (strval($match->official_id) == strval($new_official_id)) {
     return true;
@@ -607,10 +758,10 @@ function handle_switch_assigned_official($match_id, $new_official_id) {
   // get officials
   $official = OfficialsDatabase::get_official_by_id($match->official_id);
   $new_official = OfficialsDatabase::get_official_by_id($new_official_id);
-  
+
   // update match official
   PendingMatchesDatabase::update_match_official($match_id, $new_official_id);
-  
+
   // get official and new official hours for the day of the match
   $official_hours = OfficialsHoursDatabase::get_official_hours_by_day($official->official_id, $match->match_date);
   $new_official_hours = OfficialsHoursDatabase::get_official_hours_by_day($new_official->official_id, $match->match_date);
@@ -630,7 +781,8 @@ function handle_switch_assigned_official($match_id, $new_official_id) {
   return true;
 }
 
-function switch_assigned_official() {
+function switch_assigned_official()
+{
   if (!isset($_POST['match_id']) || !isset($_POST['official_id'])) {
     wp_send_json_error(['message' => 'Faltan datos']);
   }
@@ -655,3 +807,5 @@ add_action('wp_ajax_update_match_winner_single_elimination', 'update_match_winne
 add_action('wp_ajax_nopriv_update_match_winner_single_elimination', 'update_match_winner_single_elimination');
 add_action('wp_ajax_fetch_bracket_data', 'fetch_bracket_data');
 add_action('wp_ajax_nopriv_fetch_bracket_data', 'fetch_bracket_data');
+add_action('wp_ajax_populate_bracket', 'populate_bracket');
+add_action('wp_ajax_nopriv_populate_bracket', 'populate_bracket');

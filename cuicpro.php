@@ -3,7 +3,7 @@
 /**
  * Plugin Name:       CUICPRO
  * Description:       CUICPRO Extension for data management
- * Version:           1.4.1
+ * Version:           1.6.2
  * Requires at least: 6.7
  * Requires PHP:      8.2
  * Author:            Aly Castro

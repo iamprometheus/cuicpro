@@ -72,15 +72,15 @@ function generate_match_link_multibracket($brackets)
         $matches = array_reverse($matches);
 
         for ($index = 0; $index < $matches_this_round; $index++) {
-          if ($matches[$index]->team_id_1 == null && $matches[$index]->team_id_2 == null) {
+          if ($matches[$index]->team_1_placeholder == null && $matches[$index]->team_2_placeholder == null) {
             $match_link_2 = $playoff_matches[$counter--]->bracket_match;
             $match_link_1 = $playoff_matches[$counter]->bracket_match;
             $match_id = $matches[$index]->match_id;
 
             PendingMatchesDatabase::update_match_link($match_id, $match_link_1, $match_link_2);
             $counter--;
-          } elseif ($matches[$index]->team_id_1 == null || $matches[$index]->team_id_2 == null) {
-            if ($matches[$index]->team_id_1 == null) {
+          } elseif ($matches[$index]->team_1_placeholder == null || $matches[$index]->team_2_placeholder == null) {
+            if ($matches[$index]->team_1_placeholder == null) {
               PendingMatchesDatabase::update_match_link($matches[$index]->match_id, $playoff_matches[$counter]->bracket_match, null);
             } else {
               PendingMatchesDatabase::update_match_link($matches[$index]->match_id, null, $playoff_matches[$counter]->bracket_match);
@@ -424,6 +424,7 @@ function delete_brackets()
   $pending_matches = PendingMatchesDatabase::delete_pending_matches_by_tournament($tournament_id);
   $result = BracketsDatabase::delete_brackets_by_tournament($tournament_id);
   $has_officials = unset_officials_from_matches($tournament_id);
+  TeamsDatabase::reset_teams_points($tournament_id);
 
   TournamentsDatabase::reset_tournament($tournament_id);
 
@@ -440,6 +441,7 @@ function on_add_tournament($tournament)
   $has_matches = $brackets ? true : false;
   $has_officials = $tournament->tournament_has_officials == 1 ? true : false;
   $has_pending_matches = $pending_matches ? true : false;
+  $tournament_has_ended = $tournament->tournament_end_date != '' ? true : false;
 
   $assign_officials_disabled = '';
   $unassign_officials_disabled = '';
@@ -448,7 +450,7 @@ function on_add_tournament($tournament)
   $finish_tournament_disabled = '';
   $archive_tournament_disabled = '';
 
-  if ($tournament->tournament_end_date) {
+  if (!$tournament_has_ended) {
     $archive_tournament_disabled = 'disabled';
   }
 
@@ -732,10 +734,7 @@ function update_tournament()
 
     // check if tournament days has changed
     if ($prev_tournament->tournament_days != $tournament_days) {
-      $tournament_divisions = DivisionsDatabase::get_divisions_by_tournament($tournament_id);
-      foreach ($tournament_divisions as $division) {
-        DivisionsDatabase::update_division_preferred_days($division->division_id, $tournament_days);
-      }
+      update_dates_of_tournament($tournament_id, $tournament_days);
     }
     wp_send_json_success(['message' => 'Torneo actualizado correctamente', 'html' => on_add_tournament($tournament)]);
   }
@@ -761,6 +760,53 @@ function end_tournament()
   wp_send_json_error(['message' => 'Torneo no finalizado, torneo ya finalizado']);
 }
 
+function update_dates_of_tournament(int $tournament_id, string $tournament_days)
+{
+  // update division preferred days 
+  $tournament_divisions = DivisionsDatabase::get_divisions_by_tournament($tournament_id);
+  foreach ($tournament_divisions as $division) {
+    DivisionsDatabase::update_division_preferred_days($division->division_id, $tournament_days);
+  }
+
+  // update tournament breaks
+  $tournament_breaks = TournamentBreaksDatabase::get_tournament_breaks_by_tournament($tournament_id);
+  foreach ($tournament_breaks as $break) {
+    TournamentBreaksDatabase::update_tournament_break_days($break->tournament_break_id, $tournament_days);
+  }
+
+  // update official hours from their schedule
+  $officials = OfficialsDatabase::get_officials_by_tournament($tournament_id);
+  $tournament_days_array = explode(',', $tournament_days);
+  foreach ($officials as $official) {
+    $official_hours = OfficialsHoursDatabase::get_official_hours($official->official_id);
+
+    if (count($tournament_days_array) >= count($official_hours)) {
+      for ($i = 0; $i < count($tournament_days_array); $i++) {
+        if (!isset($official_hours[$i])) continue;
+        OfficialsHoursDatabase::update_official_day($official_hours[$i]->official_hours_id, $tournament_days_array[$i]);
+      }
+    } else {
+      for ($i = 0; $i < count($official_hours); $i++) {
+        if (!isset($tournament_days_array[$i])) {
+          OfficialsHoursDatabase::delete_official_hours_by_id($official_hours[$i]->official_hours_id);
+          continue;
+        }
+        OfficialsHoursDatabase::update_official_day($official_hours[$i]->official_hours_id, $tournament_days_array[$i]);
+      }
+    }
+  }
+
+  // merge their days and update them
+  foreach ($officials as $official) {
+    $official_hours = OfficialsHoursDatabase::get_official_hours($official->official_id);
+    $official_days = array_map(function ($official_hour) {
+      return $official_hour->official_day;
+    }, $official_hours);
+    $official_days = array_unique($official_days);
+    OfficialsDatabase::update_official_schedule($official->official_id, implode(',', $official_days));
+  }
+}
+
 function switch_selected_tournament()
 {
   if (!isset($_POST['tournament_id'])) {
@@ -780,6 +826,7 @@ function switch_selected_tournament()
     'officials' => render_officials($tournament),
     'teams' => cuicpro_teams_by_coach($tournament) . cuicpro_players_by_team(),
     'teams_by_division' => cuicpro_teams_by_division($tournament),
+    'players' => render_player_filters($tournament),
     'tournament_days' => $tournament->tournament_days,
     'official_hours' => create_hours_select_input($tournament_hours),
     'matches' => cuicpro_matches($tournament),
@@ -894,6 +941,8 @@ function unset_officials_from_matches(int $tournament_id)
       OfficialsHoursDatabase::reset_official_available_hours($official_hour->official_hours_id, $official_hour->official_hours);
     }
   }
+
+  TournamentsDatabase::update_tournament_has_officials($tournament_id, false);
 
   return true;
 }

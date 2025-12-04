@@ -1,8 +1,8 @@
 <?php
 
 function handle_filter_by_coach() {
-  if (!isset($_POST['filter']) ) {
-    wp_send_json_error(['message' => 'No se pudo obtener los jugadores']);
+  if (!isset($_POST['filter'])) {
+    wp_send_json_error(['message' => 'Faltan datos']);
   }
 
   $filter_by = $_POST['filter'];
@@ -14,7 +14,7 @@ function handle_filter_by_coach() {
   } 
   
   $coach_id = intval($filter_by);
-  $teams = TeamsUserDatabase::get_teams_by_coach($coach_id);
+  $teams = TeamsDatabase::get_teams_by_coach($coach_id);
   $players = PlayersDatabase::get_players_by_coach($coach_id);
   $html = "";
   $html .= "<option value='all'>Todos los equipos</option>";
@@ -26,22 +26,22 @@ function handle_filter_by_coach() {
 }
 
 function handle_filter_by_team() {
-  if (!isset($_POST['filter']) ) {
-    wp_send_json_error(['message' => 'No se pudo obtener los jugadores']);
+  if (!isset($_POST['filter']) || !isset($_POST['coach'])) {
+    wp_send_json_error(['message' => 'Faltan datos']);
   }
 
   $filter_by = $_POST['filter'];
   $coach_id = $_POST['coach'];
+  $players = [];
 
   if ($filter_by === "all") {
     $players = PlayersDatabase::get_players_by_coach($coach_id);
-    wp_send_json_success(['message' => 'Jugadores obtenidos correctamente', 'players' => render_players($players)]);
-  } 
+  } else {
+    $team_id = intval($filter_by);
+    $players = PlayersDatabase::get_players_by_team($team_id);
+  }
   
-  $team_id = intval($filter_by);
-  $players = PlayersDatabase::get_players_by_team($team_id);
   wp_send_json_success(['message' => 'Jugadores obtenidos correctamente', 'players' => render_players($players)]);
-  
 }
 
 function on_add_player($player) {

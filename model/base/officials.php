@@ -172,6 +172,24 @@ class OfficialsDatabase
         return "Official not updated";
     }
 
+    public static function update_official_schedule(int $official_id, string $official_schedule)
+    {
+        global $wpdb;
+        $result = $wpdb->update(
+            $wpdb->prefix . 'cuicpro_officials',
+            array(
+                'official_schedule' => $official_schedule,
+            ),
+            array(
+                'official_id' => $official_id,
+            )
+        );
+        if ($result) {
+            return "Official schedule updated successfully";
+        }
+        return "Official schedule not updated";
+    }
+
     public static function update_official_active(int $official_id, int $official_is_active)
     {
         global $wpdb;

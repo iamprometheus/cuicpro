@@ -5,7 +5,7 @@
  * Replace them with your own styles or remove the file completely.
  */
 
-.wp-block-cuicpro-cuicpro-leagues {
+.wp-block-cuicpro-cuicpro-home {
 	font-size: 1em;
 	display: flex;
 	flex-direction: column;
@@ -174,5 +174,9 @@
 		font-weight: bold;
 		font-size: 14px;
 		text-align: right;
+	}
+
+	.short-paragraph {
+		text-wrap: wrap;
 	}
 }

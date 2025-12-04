@@ -2,7 +2,6 @@
 
 function create_input_player()
 {
-  $tournament = TournamentsDatabase::get_active_tournaments();
 
   $html = "";
   // dynamic input fields for adding players
@@ -39,6 +38,42 @@ function create_input_player()
               <span class='tournament-table-cell' id='player-result-table'>Resultado de la accion.</span>
             </div>";
 
+  $html .= "</div>";
+
+  return $html;
+}
+
+function render_player_filters($tournament)
+{
+  $players = [];
+  $coaches = CoachesDatabase::get_coaches_by_tournament($tournament->tournament_id);
+
+  foreach ($coaches as $coach) {
+    // do something with each coach
+    $add_players = PlayersDatabase::get_players_by_coach($coach->coach_id);
+    $players = array_merge($players, $add_players);
+  }
+
+  $html = "<div class='filter-container' id='filter-container'>";
+  $html .= "<span class='filter-container-header'>Filtros por coach:</span>";
+  $html .= "<select id='filter-by-coach'>";
+  $html .= "<option value='all'>Todos los coaches</option>";
+
+  foreach ($coaches as $coach) {
+    $html .= "<option value='$coach->coach_id'>" . esc_html($coach->coach_name) . "</option>";
+  }
+
+  $html .= "</select>";
+
+  $html .= "<span class='filter-container-header'>Equipo:</span>";
+  $html .= "<select id='filter-by-team'>";
+  $html .= "<option value='all'>Todos los equipos</option>";
+  $html .= "</select>";
+
+  $html .= "</div>";
+
+  $html .= "<div id='players-data-2'>";
+  $html .= render_players($players);
   $html .= "</div>";
 
   return $html;
@@ -85,35 +120,19 @@ function render_players($players)
 
 function cuicpro_players_viewer()
 {
-  $players = PlayersDatabase::get_players();
+  // get current first tournament 
+  $tournaments = TournamentsDatabase::get_tournaments();
+  $first_tournament = $tournaments ? $tournaments[0] : null;
 
   $html = "<div class='tab-content'>";
+
+  $html .= create_tournament_list();
   $html .= "<div class='table-view-container'> ";
   $html .= create_input_player();
   // create table header
 
   $html .= "<div id='players-data-container'>";
-  $html .= "<div class='filter-container' id='filter-container'>";
-  $html .= "<span class='filter-container-header'>Filtros por coach:</span>";
-  $html .= "<select id='filter-by-coach'>";
-  $html .= "<option value='all'>Todos los coaches</option>";
-
-  $coaches = CoachesUserDatabase::get_coaches();
-  foreach ($coaches as $coach) {
-    $html .= "<option value='$coach->user_id'>" . esc_html($coach->user_name) . "</option>";
-  }
-
-  $html .= "</select>";
-
-  $html .= "<span class='filter-container-header'>Equipo:</span>";
-  $html .= "<select id='filter-by-team'>";
-  $html .= "<option value='all'>Todos los equipos</option>";
-  $html .= "</select>";
-
-  $html .= "</div>";
-  $html .= "<div id='players-data-2'>";
-  $html .= render_players($players);
-  $html .= "</div>";
+  $html .= render_player_filters($first_tournament);
   $html .= "</div>";
   $html .= "</div>";
   $html .= "</div>";

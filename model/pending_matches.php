@@ -39,6 +39,10 @@ class PendingMatchesDatabase
             match_type TINYINT UNSIGNED NOT NULL,
             playoff_id TINYINT UNSIGNED NULL,
             match_pending BOOLEAN NOT NULL,
+            team_1_placeholder SMALLINT UNSIGNED NULL,
+            team_2_placeholder SMALLINT UNSIGNED NULL,
+            is_first_match BOOLEAN NOT NULL,
+            bracket_reverse_round SMALLINT UNSIGNED NULL,
             PRIMARY KEY (match_id),
             FOREIGN KEY (tournament_id) REFERENCES {$wpdb->prefix}cuicpro_tournaments(tournament_id),
             FOREIGN KEY (division_id) REFERENCES {$wpdb->prefix}cuicpro_divisions(division_id),
@@ -141,6 +145,13 @@ class PendingMatchesDatabase
         return $match;
     }
 
+    public static function get_first_playoff_matches_from_bracket(int $bracket_id)
+    {
+        global $wpdb;
+        $matches = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}cuicpro_pending_matches WHERE bracket_id = $bracket_id AND match_type = 2 AND (match_link_1 IS NULL OR match_link_2 IS NULL)");
+        return $matches;
+    }
+
     public static function get_matches_by_type(int $match_type, int $bracket_id)
     {
         global $wpdb;
@@ -183,7 +194,11 @@ class PendingMatchesDatabase
         int | null $team_id_2,
         int $match_type,
         int | null $playoff_id,
-        int $bracket_round
+        int $bracket_round,
+        int | null $team_1,
+        int | null $team_2,
+        bool $is_first_match,
+        int | null $bracket_reverse_round
     ) {
         global $wpdb;
         $result = $wpdb->insert(
@@ -208,6 +223,10 @@ class PendingMatchesDatabase
                 'match_type' => $match_type,
                 'playoff_id' => $playoff_id,
                 'match_pending' => true,
+                'team_1_placeholder' => $team_1,
+                'team_2_placeholder' => $team_2,
+                'is_first_match' => $is_first_match,
+                'bracket_reverse_round' => $bracket_reverse_round
             )
         );
 
@@ -310,6 +329,45 @@ class PendingMatchesDatabase
             return "Match official updated successfully";
         }
         return "Match official not updated";
+    }
+
+    public static function update_match_date_time_and_field(int $match_id, string $match_date, int $match_time, int $field_number, int $field_type)
+    {
+        global $wpdb;
+        $result = $wpdb->update(
+            $wpdb->prefix . 'cuicpro_pending_matches',
+            array(
+                'match_date' => $match_date,
+                'match_time' => $match_time,
+                'field_number' => $field_number,
+                'field_type' => $field_type,
+            ),
+            array(
+                'match_id' => $match_id,
+            )
+        );
+        if ($result) {
+            return "Match date, time and field updated successfully";
+        }
+        return "Match date, time and field not updated";
+    }
+
+    public static function remove_official(int $match_id)
+    {
+        global $wpdb;
+        $result = $wpdb->update(
+            $wpdb->prefix . 'cuicpro_pending_matches',
+            array(
+                'official_id' => null,
+            ),
+            array(
+                'match_id' => $match_id,
+            )
+        );
+        if ($result) {
+            return "Official removed successfully";
+        }
+        return "Official not removed or match not found";
     }
 
     public static function end_match(int $match_id)

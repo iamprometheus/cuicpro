@@ -90,6 +90,24 @@ class TournamentBreaksDatabase
         return [false, null];
     }
 
+    public static function update_tournament_break_days(int $tournament_break_id, string $tournament_days)
+    {
+        global $wpdb;
+        $result = $wpdb->update(
+            $wpdb->prefix . 'cuicpro_tournament_breaks',
+            array(
+                'tournament_days' => $tournament_days,
+            ),
+            array(
+                'tournament_break_id' => $tournament_break_id,
+            )
+        );
+        if ($result) {
+            return [true, $wpdb->insert_id];
+        }
+        return [false, null];
+    }
+
     public static function tournament_id_exists(int $tournament_id)
     {
         global $wpdb;

@@ -194,6 +194,7 @@ jQuery(document).on("change", "#filter-by-coach", function () {
 			filter: filter,
 		},
 		success: function (response) {
+			console.log(response.data)
 			if (response.success) {
 				jQuery("#filter-by-team").html(response.data.filters);
 				jQuery("#players-data-2").html(response.data.players);

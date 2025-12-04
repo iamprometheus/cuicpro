@@ -273,6 +273,7 @@ function enqueue_official_scripts()
     'ajax_url' => admin_url('admin-ajax.php')
   ));
 }
+
 add_action('admin_enqueue_scripts', 'enqueue_official_scripts');
 
 require_once __DIR__ . '/handle_officials_request.php';

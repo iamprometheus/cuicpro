@@ -1,12 +1,22 @@
 <?php
 
 ?>
-<div style="padding: 10px;">
+<div class="matches-schedule-container">
   <div>
     <?php echo create_tournament_list_selector(); ?>
   </div>
-  <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
-    <span style="font-weight: bold; font-size: 24px;">Horarios</span>
+  <div>
+    <?php echo render_modifications_handler(); ?>
+  </div>
+  <div class="matches-schedule-parent">
+    <span class="table-title">Horarios</span>
     <?php matches_schedule_viewer(); ?>
   </div>
+  <dialog id="modify_matches_dialog">
+    <div>
+      <span>Conflicto detectado</span>
+      <p></p>
+      <button>Salir</button>
+    </div>
+  </dialog>
 </div>
